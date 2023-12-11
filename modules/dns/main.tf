@@ -117,7 +117,7 @@ resource "aws_route53_record" "validation" {
   zone_id         = var.route53_zone_id
 }
 
-resource "aws_acm_certificate_validation" "edge" {
+resource "aws_acm_certificate_validation" "blade" {
   count   = var.route53_zone_id == "" ? 0 : 1
   certificate_arn         = aws_acm_certificate.ext_rpc[0].arn
   validation_record_fqdns = [for record in aws_route53_record.validation : record.fqdn]

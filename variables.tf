@@ -13,7 +13,7 @@ variable "base_instance_type" {
 variable "company_name" {
   description = "The name of the company for this particular deployment"
   type        = string
-  default     = "company"
+  default     = "ethernal"
 }
 
 variable "create_ssh_key" {
@@ -121,7 +121,7 @@ variable "private_network_mode" {
 variable "region" {
   description = "The region where we want to deploy"
   type        = string
-  default     = "eu-west-1"
+  default     = "us-west-2"
 }
 
 variable "validator_count" {
@@ -133,5 +133,5 @@ variable "validator_count" {
 variable "zones" {
   description = "The availability zones for deployment"
   type        = list(string)
-  default     = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+  default     = ["us-west-2a", "us-west-2b", "us-west-2c"]
 }

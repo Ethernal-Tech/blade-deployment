@@ -5,6 +5,6 @@ instances:
   ## The directory to monitor. On windows, please make sure you escape back-slashes otherwise the YAML
   ## parser fails (eg. - directory: "C:\\Users\\foo\\Downloads").
   #
-  - directory: "{{ edge_home_dir }}"
+  - directory: "{{ blade_home_dir }}"
     recursive: true
 

@@ -6,7 +6,7 @@ instances:
     ## Full names must be used. Examples: ssh.service, docker.socket
     #
   - unit_names:
-      - edge.service
+      - blade.service
 
     ## @param private_socket - string - optional
     ## Path to systemd private socket needed to retrieve systemd data.

@@ -27,10 +27,10 @@
 - hosts: fullnode:validator
   become: true
   tags:
-    - edge
+    - blade
   roles:
     - mounted-storage
-    - edge
+    - blade
 
 - hosts: fullnode:validator
   become: true

@@ -1,48 +1,48 @@
 ---
-# Build polygon-edge from source
-# https://github.com/0xPolygon/polygon-edge
+# Build blade from source
+# https://github.com/Ethernal-Tech/blade
 
-- name: Clone polygon-edge repository
+- name: Clone blade repository
   ansible.builtin.git:
-    repo: https://github.com/0xPolygon/polygon-edge.git
-    dest: /opt/polygon-edge
-    version: "{{ edge_tag }}"
+    repo: https://github.com/Ethernal-Tech/blade.git
+    dest: /opt/blade
+    version: "{{ blade_tag }}"
     recursive: true
     force: true
 
 # Temporary removal of flag limit
 - name: Remove flag limit in file
   ansible.builtin.lineinfile:
-    path: /opt/polygon-edge/command/rootchain/supernet/stakemanager/stake_manager_deploy.go
+    path: /opt/blade/command/rootchain/supernet/stakemanager/stake_manager_deploy.go
     state: absent
     regexp: '^(\s*)cmd\.MarkFlagsMutuallyExclusive\(rootHelper\.TestModeFlag, polybftsecrets\.PrivateKeyFlag\)'
 
 - name: Remove block of code from file
   ansible.builtin.replace:
-    path: /opt/polygon-edge/command/rootchain/supernet/stakemanager/stake_manager_deploy.go
+    path: /opt/blade/command/rootchain/supernet/stakemanager/stake_manager_deploy.go
     regexp: '(?s)^(\s*)if params\.isTestMode {\n\s*// fund deployer so that he can deploy contracts\n\s*deployerAddr := deployerKey\.Address\(\)\n\s*txn := &ethgo\.Transaction{To: &deployerAddr, Value: ethgo\.Ether\(1\)}\n\n\s*if _, err = txRelayer\.SendTransactionLocal\(txn\); err != nil {\n\s*return fmt\.Errorf\("failed to send local transaction: %w", err\)\n\s*}\n\s*}'
     replace: ''
 
-- name: "Build polygon-edge from commit {{ edge_tag }}"
+- name: "Build blade from commit {{ blade_tag }}"
   ansible.builtin.shell: |
-    cd /opt/polygon-edge
+    cd /opt/blade
     make build
   changed_when: false
 
-- name: Move polygon-edge binary to /usr/local/bin
+- name: Move blade binary to /usr/local/bin
   ansible.builtin.copy:
-    src: /opt/polygon-edge/polygon-edge
+    src: /opt/blade/blade
     dest: /usr/local/bin/
     remote_src: true
     mode: 0755
   notify:
-    - Restart Edge Service
+    - Restart Blade Service
 
-- name: Get polygon-edge version
-  ansible.builtin.command: polygon-edge version
-  register: edge_version_result
+- name: Get blade version
+  ansible.builtin.command: blade version
+  register: blade_version_result
   changed_when: false
 
-- name: Display polygon-edge version
+- name: Display blade version
   ansible.builtin.debug:
-    msg: "{{ edge_version_result.stdout }}"
+    msg: "{{ blade_version_result.stdout }}"

@@ -1,19 +1,19 @@
 [Unit]
-Description=Polygon Edge Client
-Documentation=https://github.com/0xPolygon/polygon-edge/
+Description=Blade Client
+Documentation=https://github.com/Ethernal-Tech/blade
 
 # Bring this up after the network is online
 After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=polygon-edge server --data-dir {{ edge_home_dir }} \
-    --chain {{ edge_home_dir }}/genesis.json \
-    --grpc-address 0.0.0.0:{{ edge_grpc_port }} \
+ExecStart=blade server --data-dir {{ blade_home_dir }} \
+    --chain {{ blade_home_dir }}/genesis.json \
+    --grpc-address 0.0.0.0:{{ blade_grpc_port }} \
     --json-rpc-batch-request-limit 999 \
-    --libp2p 0.0.0.0:{{ edge_p2p_port }} \
-    --jsonrpc 0.0.0.0:{{ edge_jsonrpc_port }} \
-    --prometheus 127.0.0.1:{{ edge_prometheus_port }} \
+    --libp2p 0.0.0.0:{{ blade_p2p_port }} \
+    --jsonrpc 0.0.0.0:{{ blade_jsonrpc_port }} \
+    --prometheus 127.0.0.1:{{ blade_prometheus_port }} \
     --max-slots 276480 \
     --max-enqueued 276480 \
     --log-level INFO \
@@ -32,19 +32,19 @@ RestartSec=5s
 
 Type=simple
 
-User={{ edge_user }}
-Group={{ edge_user }}-group
+User={{ blade_user }}
+Group={{ blade_user }}-group
 
 TimeoutStartSec=infinity
 TimeoutStopSec=600
 
-RuntimeDirectory=edge
+RuntimeDirectory=blade
 RuntimeDirectoryMode=0700
 
-ConfigurationDirectory=edge
+ConfigurationDirectory=blade
 ConfigurationDirectoryMode=0700
 
-StateDirectory=edge
+StateDirectory=blade
 StateDirectoryMode=0750
 
 # Hardening measures

@@ -42,7 +42,7 @@ instances:
     ## @param name - string - required
     ## Used to uniquely identify your metrics as they are tagged with this name in Datadog.
     #
-  - name: edge
+  - name: blade
 
     ## @param search_string - list of strings - optional
     ## If one of the elements in the list matches, it return the count of
@@ -52,7 +52,7 @@ instances:
     ## Note: Exactly one of search_string, pid or pid_file must be specified per instance.
     #
     search_string:
-      - polygon-edge server.*
+      - blade server.*
     #   - <SEARCH_STRING_2>
 
     ## @param pid - integer - optional
