@@ -2,7 +2,7 @@
 clean_deploy_title: nightly
 
 #### Genesis Flags ###
-block_gas_limit: 50_000_000
+block_gas_limit: 10_000_000
 block_time: 5
 chain_id: 100
 
@@ -53,7 +53,8 @@ is_deploy_stake_token_erc20: true
 ### NATIVE TOKEN ###
 ## mintable=false: non child-chain mintable native token: Supernets native token is configured to be the child token of already existing token on the rootchain, meaning that its supply originates from bridging the rootchain token
 ## mintable=true: child chain mintable native token: its supply is managed straight on the Supernets, without bridging some existing rootchain token
-native_token_config: MyToken:MTK:18:true # configuration of native token in format <name:symbol:decimals count:mintable flag>
+native_token_config: Blade:BLADE:18 # configuration of native token in format <name:symbol:decimals count:mintable flag>
+is_bridge_active: false
 
 ### Infra/Ansible Flags ###
 ansible_ssh_private_key_file: ~/devnet_private.key
