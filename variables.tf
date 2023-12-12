@@ -25,7 +25,7 @@ variable "create_ssh_key" {
 variable "deployment_name" {
   description = "The unique name for this particular deployment"
   type        = string
-  default     = "devnet01"
+  default     = "nightly"
 }
 
 variable "devnet_key_value" {
