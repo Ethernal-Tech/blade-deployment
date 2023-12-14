@@ -29,7 +29,7 @@ main() {
         --epoch-size 10 \
         --reward-wallet 0xDEADBEEF:1000000 \
         --block-time {{ block_time }}s \
-        --native-token-config "{{ native_token_config }}" \
+        --native-token-config {{ native_token_config }} \
         --blade-admin $node_address \
         --proxy-contracts-admin $PROXY_CONTRACTS_ADMIN \
         --base-fee-config 1000000000
