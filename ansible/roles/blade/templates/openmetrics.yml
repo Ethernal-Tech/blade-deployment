@@ -1,9 +1,0 @@
-instances:
-  - openmetrics_endpoint: http://127.0.0.1:{{ blade_prometheus_port }}/metrics
-    namespace: blade
-    metrics:
-      - .*
-  - openmetrics_endpoint: http://127.0.0.1:{{ node_exporter_port }}/metrics
-    namespace: blade
-    metrics:
-      - node_disk_.*
