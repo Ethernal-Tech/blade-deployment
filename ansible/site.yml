@@ -31,3 +31,10 @@
   roles:
     - mounted-storage
     - blade
+
+- hosts: fullnode:validator
+  become: true
+  tags:
+    - haproxy
+  roles:
+    - haproxy
