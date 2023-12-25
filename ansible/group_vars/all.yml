@@ -19,7 +19,7 @@ rootchain_coinbase_private_key: "REPLACE_WITH_PRIVATE_KEY"
 
 ### NATIVE TOKEN ###
 native_token_config: "Blade:BLADE:18:true"
-is_bridge_active: false
+is_bridge_active: true
 
 ### Infra/Ansible Flags ###
 ansible_ssh_private_key_file: ~/devnet_private.key
