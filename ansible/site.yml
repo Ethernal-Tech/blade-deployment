@@ -1,5 +1,14 @@
 - hosts: all
   become: true
+  gather_facts: false
+  tags:
+    - always
+  tasks:
+    - name: Wait for all hosts to be reachable
+      ansible.builtin.wait_for_connection:
+
+- hosts: all
+  become: true
   tags:
     - always
   tasks:
