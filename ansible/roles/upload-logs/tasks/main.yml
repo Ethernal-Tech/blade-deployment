@@ -1,0 +1,5 @@
+---
+- name: Setup AWS CLI
+  ansible.builtin.include_tasks: aws-cli.yml
+- name: Prepare log files
+  ansible.builtin.include_tasks: logs.yml
