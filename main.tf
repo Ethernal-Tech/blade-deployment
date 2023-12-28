@@ -1,6 +1,6 @@
 locals {
-  network_type = "edge"
-  base_ami     = "ami-0267f74ea1e610dec"
+  network_type = "blade"
+  base_ami     = "ami-0ecc74eca1d66d8a6"
   base_dn      = format("%s.%s.%s.private", var.deployment_name, local.network_type, var.company_name)
   base_id      = format("%s-%s", var.deployment_name, local.network_type)
 }

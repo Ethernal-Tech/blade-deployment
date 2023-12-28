@@ -1,7 +1,7 @@
 resource "aws_iam_role" "ec2_role" {
   name = format("%s-%s_ec2_role", var.deployment_name, var.network_type)
 
-  assume_role_policy = <<POLYGON
+  assume_role_policy = <<BLADE
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -18,14 +18,14 @@ resource "aws_iam_role" "ec2_role" {
         }
     ]
 }
-POLYGON
+BLADE
 }
 
 resource "aws_iam_policy" "ec2_policy" {
   name        = format("%s-%s_ec2_policy", var.deployment_name, var.network_type)
   path        = "/"
   description = "Policy to provide permissin to EC2"
-  policy      = <<POLYGON
+  policy      = <<BLADE
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -120,7 +120,7 @@ resource "aws_iam_policy" "ec2_policy" {
         }
     ]
 }
-POLYGON
+BLADE
 }
 
 resource "aws_iam_policy_attachment" "ec2_policy_role" {

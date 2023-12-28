@@ -1,0 +1,36 @@
+---
+# Build blade from source
+# https://github.com/Ethernal-Tech/blade
+
+- name: Clone blade repository
+  ansible.builtin.git:
+    repo: https://github.com/Ethernal-Tech/blade.git
+    dest: /opt/blade
+    version: "{{ blade_tag }}"
+    depth: 1
+    recursive: true
+    force: true
+
+- name: "Build blade from commit {{ blade_tag }}"
+  ansible.builtin.shell: |
+    cd /opt/blade
+    make build
+  changed_when: false
+
+- name: Move blade binary to /usr/local/bin
+  ansible.builtin.copy:
+    src: /opt/blade/blade
+    dest: /usr/local/bin/
+    remote_src: true
+    mode: 0755
+  notify:
+    - Restart Blade Service
+
+- name: Get blade version
+  ansible.builtin.command: blade version
+  register: blade_version_result
+  changed_when: false
+
+- name: Display blade version
+  ansible.builtin.debug:
+    msg: "{{ blade_version_result.stdout }}"

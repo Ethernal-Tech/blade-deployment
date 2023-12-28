@@ -1,0 +1,29 @@
+---
+- name: Install zip, unzip
+  ansible.builtin.apt:
+    pkg:
+      - zip
+      - unzip
+    state: present
+    update_cache: true
+
+- name: Download AWS CLI
+  ansible.builtin.shell: |
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/opt/awscliv2.zip"
+
+- name: Unzip AWS CLI
+  ansible.builtin.shell: |
+    cd /opt && unzip awscliv2.zip
+
+- name: Install AWS CLI
+  ansible.builtin.shell: |
+    cd /opt && aws/install
+
+- name: Get AWS CLI version
+  ansible.builtin.command: aws --version
+  register: awscli_version_result
+  changed_when: false
+
+- name: Display AWS CLI version
+  ansible.builtin.debug:
+    msg: "{{ awscli_version_result.stdout }}"

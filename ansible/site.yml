@@ -1,11 +1,20 @@
 - hosts: all
   become: true
+  gather_facts: false
+  tags:
+    - always
+  tasks:
+    - name: Wait for all hosts to be reachable
+      ansible.builtin.wait_for_connection:
+
+- hosts: all
+  become: true
   tags:
     - always
   tasks:
     - name: Gather facts
       ansible.builtin.gather_facts:
-      retries: 3
+      retries: 10
       delay: 10
       register: result
       until: result is not failed
@@ -27,15 +36,7 @@
 - hosts: fullnode:validator
   become: true
   tags:
-    - edge
+    - blade
   roles:
     - mounted-storage
-    - edge
-
-- hosts: fullnode:validator
-  become: true
-  tags:
-    - haproxy
-  roles:
-    - haproxy
-
+    - blade
