@@ -1,15 +1,24 @@
 ---
-- name: Store all logs in /opt/logs
+- name: Create dir for logs
   ansible.builtin.shell: |
-    cd /opt && mkdir logs
-    cp /var/lib/blade/bootstrap/nightly.blade.ethernal.private.tar.gz logs/
-    cp /var/lib/blade/bootstrap_output.txt logs/
-    cp /var/lib/blade/genesis.json logs/
-    cp /var/lib/blade/init.sh logs/
-    cp /var/lib/blade/rootchain-wallet.json logs/
-    cp /var/log/syslog logs/
-    cp /var/lib/geth/geth/nodekey logs/
-    cd logs && zip -rq {{ hostvars[inventory_hostname].tags["Hostname"] }}.zip *
+    mkdir /opt/logs
+
+- name: Get files from validator-001
+  ansible.builtin.shell: |
+    cp /var/lib/blade/bootstrap/nightly.blade.ethernal.private.tar.gz /opt/logs/
+    cp /var/lib/blade/bootstrap_output.txt /opt/logs/
+    cp /var/lib/blade/init.sh /opt/logs/
+    cp /var/lib/blade/rootchain-wallet.json /opt/logs/
+    cp /var/log/syslog /opt/logs/
+    cd /opt/logs/ && zip -rq {{ hostvars[inventory_hostname].tags["Hostname"] }}.zip *
+  when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"
+
+- name: Get files from other hosts
+  ansible.builtin.shell: |
+    cp /var/log/syslog /opt/logs/
+    cp /var/lib/geth/geth/nodekey /opt/logs/
+    cd /opt/logs/ && zip -rq {{ hostvars[inventory_hostname].tags["Hostname"] }}.zip *
+  when: hostvars[inventory_hostname].tags["Hostname"] != "validator-001"
 
 - name: Get current datetime
   ansible.builtin.shell: "date +%Y-%m-%d-%H-%M"
