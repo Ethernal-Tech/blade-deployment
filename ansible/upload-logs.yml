@@ -1,15 +1,3 @@
-- hosts: fullnode:validator
-  become: true
-  tasks:
-    - name: Stop Blade service
-      ansible.builtin.systemd:
-        state: stopped
-        name: blade
-        enabled: false
-    - name: Pause for 1 minute to make sure Blade service is stopped
-      ansible.builtin.pause:
-        minutes: 1
-
 - hosts: all
   become: true
   tags:
