@@ -25,7 +25,7 @@ variable "create_ssh_key" {
 variable "deployment_name" {
   description = "The unique name for this particular deployment"
   type        = string
-  default     = "nightly"
+  default     = "devnet"
 }
 
 variable "devnet_key_value" {
@@ -128,10 +128,16 @@ variable "validator_count" {
   description = "The number of validators that we're going to deploy"
   type        = number
   default     = 4
+  validation {
+    condition = (
+      var.validator_count >= 4
+    )
+    error_message = "Minimum 4 validators!"
+  }
 }
 
 variable "zones" {
   description = "The availability zones for deployment"
   type        = list(string)
-  default     = ["us-west-2a", "us-west-2b", "us-west-2c"]
+  default     = ["us-west-2a", "us-west-2b", "us-west-2c", "us-west-2d"]
 }

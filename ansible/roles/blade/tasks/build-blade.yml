@@ -7,7 +7,6 @@
     repo: https://github.com/Ethernal-Tech/blade.git
     dest: /opt/blade
     version: "{{ blade_tag }}"
-    depth: 1
     recursive: true
     force: true
 

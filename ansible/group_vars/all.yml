@@ -1,5 +1,5 @@
 ---
-clean_deploy_title: nightly
+clean_deploy_title: devnet
 
 #### Genesis Flags ###
 block_gas_limit: 10_000_000
@@ -20,9 +20,10 @@ rootchain_coinbase_private_key: "REPLACE_WITH_PRIVATE_KEY"
 ### NATIVE TOKEN ###
 native_token_config: "Blade:BLADE:18:true"
 is_bridge_active: true
+is_london_fork_active: true
 
 ### Infra/Ansible Flags ###
-ansible_ssh_private_key_file: ~/devnet_private.key
+ansible_ssh_private_key_file: ~/private.key
 ansible_ssh_common_args: >
   -o IdentitiesOnly=yes
   -o StrictHostKeyChecking=no
@@ -47,6 +48,8 @@ node_exporter_web_listen_address: 127.0.0.1:{{ node_exporter_port }}
 haproxy_port: 10222
 blade_home_dir: /var/lib/blade
 blade_user: blade
+restore_data: false
+s3_bucket: "" # AWS S3 Bucket name
 loadtest_account: "0x85da99c8a7c2c95964c8efd687e95e632fc533d6"
 
 ### Disk Flags ###

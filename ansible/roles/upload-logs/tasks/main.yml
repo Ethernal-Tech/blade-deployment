@@ -1,5 +1,39 @@
 ---
-- name: Setup AWS CLI
-  ansible.builtin.include_tasks: aws-cli.yml
-- name: Prepare log files
-  ansible.builtin.include_tasks: logs.yml
+- name: Create dir for logs
+  ansible.builtin.file:
+    path: /tmp/logs
+    state: directory
+
+- name: Create validator-001 archive
+  community.general.archive:
+    path: 
+    - /var/log/syslog
+    - /var/lib/blade/init.sh
+    - /var/lib/blade/bootstrap_output.txt
+    - "/var/lib/blade/bootstrap/{{ base_dn }}.tar.gz"
+    dest: "/tmp/logs/{{ hostvars[inventory_hostname].tags.Hostname }}.tar.gz"
+    format: gz
+  when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"
+
+- name: Create other archives
+  community.general.archive:
+    path: 
+    - /var/log/syslog
+    - /var/lib/geth/geth/nodekey
+    dest: "/tmp/logs/{{ hostvars[inventory_hostname].tags.Hostname }}.tar.gz"
+    format: gz
+    force_archive: true
+  when: hostvars[inventory_hostname].tags["Hostname"] != "validator-001"
+
+- name: Get current datetime
+  ansible.builtin.shell: "date +%Y-%m-%d-%H-%M"
+  register: current_datetime
+
+- name: Upload logs to S3 Bucket
+  ansible.builtin.shell: |
+    cd /tmp/logs/ && aws s3 cp {{ hostvars[inventory_hostname].tags["Hostname"] }}.tar.gz s3://{{ s3_bucket }}/logs/{{ current_datetime.stdout }}/
+
+- name: Cleanup
+  ansible.builtin.file:
+    path: /tmp/logs
+    state: absent

@@ -10,9 +10,9 @@
       ansible.builtin.pause:
         minutes: 1
 
-- hosts: all
+- hosts: validator_001
   become: true
   tags:
-    - upload-logs
+    - upload-data
   roles:
-    - upload-logs
+    - upload-data
