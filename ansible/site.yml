@@ -40,3 +40,10 @@
   roles:
     - mounted-storage
     - blade
+
+- hosts: fullnode:validator:explorer
+  become: true
+  tags:
+    - logrotate
+  roles:
+    - logrotate
