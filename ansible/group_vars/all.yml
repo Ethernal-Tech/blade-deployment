@@ -39,6 +39,7 @@ blade_domain: "{{ base_dn }}"
 node_hostname: "{{ node_name }}.{{ blade_domain }}"
 
 ### Blade Flags ###
+blade_repository: Ethernal-Tech/blade
 blade_grpc_port: 10000
 blade_p2p_port: 10001
 blade_jsonrpc_port: 10002
