@@ -4,10 +4,9 @@
 
 - name: Clone blade repository
   ansible.builtin.git:
-    repo: https://github.com/Ethernal-Tech/blade.git
+    repo: "https://github.com/{{ blade_repository }}.git"
     dest: /opt/blade
     version: "{{ blade_tag }}"
-    depth: 1
     recursive: true
     force: true
 

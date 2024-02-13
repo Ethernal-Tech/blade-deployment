@@ -4,9 +4,9 @@ terraform plan
 terraform apply -auto-approve
 
 ### Output the private key for instances
-terraform output pk_ansible > ~/devnet_private.key
-chmod 600 ~/devnet_private.key
-ssh-add ~/devnet_private.key
+terraform output pk_ansible > ~/private.key
+chmod 600 ~/private.key
+ssh-add ~/private.key
 
 cd ansible
 

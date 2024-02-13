@@ -1,0 +1,62 @@
+---
+# Restore data
+- name: Create dir for data
+  ansible.builtin.file:
+    path: /tmp/blade_data
+    state: directory
+
+- name: Download data from AWS S3 Bucket
+  ansible.builtin.shell: cd /tmp/blade_data && aws s3 cp s3://{{ s3_bucket }}/states/{{ deployment_name }}.data.tar.gz .
+
+- name: Extract data files
+  ansible.builtin.unarchive:
+    src: "/tmp/blade_data/{{ deployment_name }}.data.tar.gz"
+    dest: /tmp/blade_data/
+    remote_src: true
+
+- name: Set up blade files (blockchain, bootstrap, consensus, trie)
+  block:
+    - name: Copy blockchain folder
+      ansible.builtin.copy:
+        src: /tmp/blade_data/blockchain
+        dest: "{{ blade_home_dir }}"
+        owner: "{{ blade_user }}"
+        group: "{{ blade_user }}-group"
+        mode: 0750
+        remote_src: true
+    - name: Copy bootstrap folder
+      ansible.builtin.copy:
+        src: /tmp/blade_data/bootstrap
+        dest: "{{ blade_home_dir }}"
+        owner: "{{ blade_user }}"
+        group: "{{ blade_user }}-group"
+        mode: 0750
+        remote_src: true
+    - name: Copy consensus folder
+      ansible.builtin.copy:
+        src: /tmp/blade_data/consensus
+        dest: "{{ blade_home_dir }}"
+        owner: "{{ blade_user }}"
+        group: "{{ blade_user }}-group"
+        mode: 0750
+        remote_src: true
+    - name: Copy trie folder
+      ansible.builtin.copy:
+        src: /tmp/blade_data/trie
+        dest: "{{ blade_home_dir }}"
+        owner: "{{ blade_user }}"
+        group: "{{ blade_user }}-group"
+        mode: 0750
+        remote_src: true
+
+- name: Change genesis permissions
+  ansible.builtin.file:
+    path: "{{ blade_home_dir }}/bootstrap/genesis.json"
+    owner: "{{ blade_user }}"
+    group: "{{ blade_user }}-group"
+    mode: 0644
+
+- name: Cleanup
+  ansible.builtin.file:
+    path: /tmp/blade_data
+    state: absent

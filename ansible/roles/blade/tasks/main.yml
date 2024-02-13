@@ -50,6 +50,11 @@
 
 - name: Bootstrap blade
   ansible.builtin.include_tasks: bootstrap-blade.yml
+  when: not restore_data
+
+- name: Restore data
+  ansible.builtin.include_tasks: restore-data.yml
+  when: restore_data
 
 - name: Create blade service file
   ansible.builtin.template:

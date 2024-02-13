@@ -51,6 +51,7 @@
       - ncdu
       - traceroute
       - atop
+      - awscli
     state: present
     update_cache: true
   when: ansible_distribution == "Ubuntu"

@@ -1,0 +1,24 @@
+---
+- name: Create dir for data
+  ansible.builtin.file:
+    path: /tmp/blade_data
+    state: directory
+
+- name: Create archive
+  community.general.archive:
+    path: 
+    - "{{ blade_home_dir }}/blockchain"
+    - "{{ blade_home_dir }}/bootstrap"
+    - "{{ blade_home_dir }}/consensus"
+    - "{{ blade_home_dir }}/trie"
+    dest: "/tmp/blade_data/{{ deployment_name }}.data.tar.gz"
+    format: gz
+
+- name: Upload data to S3 Bucket
+  ansible.builtin.shell: |
+    cd /tmp/blade_data/ && aws s3 cp {{ deployment_name }}.data.tar.gz s3://{{ s3_bucket }}/states/{{ deployment_name }}.data.tar.gz
+
+- name: Cleanup
+  ansible.builtin.file:
+    path: /tmp/blade_data
+    state: absent

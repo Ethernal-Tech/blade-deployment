@@ -1,0 +1,6 @@
+- hosts: validator_001
+  become: true
+  tags:
+    - upload-data
+  roles:
+    - upload-data
