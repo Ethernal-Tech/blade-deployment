@@ -24,7 +24,7 @@ main() {
         --block-gas-limit {{ block_gas_limit }} \
         --premine {{ loadtest_account }}:$AMT_24 \
         --premine $ZERO_ADDRESS \
-        {% if is_london_fork_active %} --burn-contract 0:$ZERO_ADDRESS \ {% endif %}
+        {% if (is_london_fork_active) %} --burn-contract 0:$ZERO_ADDRESS \ {% endif %}
         --epoch-size 10 \
         --reward-wallet 0xDEADBEEF:1000000 \
         --block-time {{ block_time }}s \
@@ -33,7 +33,7 @@ main() {
         --proxy-contracts-admin $PROXY_CONTRACTS_ADMIN \
         --base-fee-config 1000000000
 
-    {% if is_bridge_active %}
+    {% if (is_bridge_active) %}
         blade bridge server 2>&1 | tee bridge-server.log &
         
         blade bridge fund \

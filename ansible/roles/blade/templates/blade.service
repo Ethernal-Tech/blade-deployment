@@ -14,8 +14,8 @@ ExecStart=blade server --data-dir {{ blade_home_dir }} \
     --libp2p 0.0.0.0:{{ blade_p2p_port }} \
     --jsonrpc 0.0.0.0:{{ blade_jsonrpc_port }} \
     --prometheus 127.0.0.1:{{ blade_prometheus_port }} \
-    --max-slots 276480 \
-    --max-enqueued 276480 \
+    --max-slots {{ max_slots }} \
+    --max-enqueued {{ max_enqueued }} \
     --log-level INFO \
     --block-gas-target {{ block_gas_limit }} \
     --num-block-confirmations 2 \

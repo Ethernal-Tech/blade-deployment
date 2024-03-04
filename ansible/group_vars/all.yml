@@ -6,6 +6,10 @@ block_gas_limit: 10_000_000
 block_time: 5
 chain_id: 100
 
+### Blade Service Flags ###
+max_slots: 276480
+max_enqueued: 276480
+
 ### Version Flags ###
 polycli_tag: 0.1.30 # https://github.com/maticnetwork/polygon-cli/releases
 blade_tag: a4bee4b77bf5a294163c786789f019cde8aac30d

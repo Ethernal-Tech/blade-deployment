@@ -8,6 +8,7 @@
   community.general.archive:
     path: 
     - /var/log/syslog
+    - "{{ blade_home_dir }}/logs"
     - "{{ blade_home_dir }}/init.sh"
     - "{{ blade_home_dir }}/bootstrap_output.txt"
     - "{{ blade_home_dir }}/bootstrap"
@@ -19,6 +20,7 @@
   community.general.archive:
     path: 
     - /var/log/syslog
+    - "{{ blade_home_dir }}/logs"
     - /var/lib/geth/geth/nodekey
     dest: "/tmp/logs/{{ hostvars[inventory_hostname].tags.Hostname }}.tar.gz"
     format: gz
