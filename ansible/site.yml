@@ -26,24 +26,9 @@
   roles:
     - common
 
-- hosts: geth
-  become: true
-  tags:
-    - geth
-  roles:
-    - rootchain-server
-
 - hosts: fullnode:validator
   become: true
   tags:
     - blade
   roles:
-    - mounted-storage
     - blade
-
-- hosts: fullnode:validator:explorer
-  become: true
-  tags:
-    - logrotate
-  roles:
-    - logrotate

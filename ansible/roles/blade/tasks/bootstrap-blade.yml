@@ -21,38 +21,3 @@
   args:
     executable: /bin/bash
 
-- name: Copy the bootstrap data to local
-  block:
-    - name: Fetch the bootstrap archive stored on the first validator
-      ansible.builtin.fetch:
-        src: /var/lib/bootstrap/{{ base_dn }}.tar.gz
-        dest: /tmp/{{ base_dn }}.tar.gz
-        flat: true
-      when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"
-    - name: Create a folder to hold the bootstrap archive
-      ansible.builtin.file:
-        path: "{{ blade_home_dir }}/bootstrap"
-        state: directory
-        owner: "{{ blade_user }}"
-        group: "{{ blade_user }}-group"
-        mode: 0755
-    - name: Copy the bootstrap archive to a remote system temp folder
-      ansible.builtin.copy:
-        src: "/tmp/{{ base_dn }}.tar.gz"
-        dest: "/tmp/{{ base_dn }}.tar.gz"
-        owner: "{{ blade_user }}"
-        group: "{{ blade_user }}-group"
-        mode: 0755
-    - name: Extract bootstrap files
-      ansible.builtin.unarchive:
-        src: "/tmp/{{ base_dn }}.tar.gz"
-        dest: "{{ blade_home_dir }}/bootstrap/"
-        mode: 0755
-        remote_src: true
-
-- name: Change genesis permissions
-  ansible.builtin.file:
-    path: "{{ blade_home_dir }}/bootstrap/genesis.json"
-    owner: "{{ blade_user }}"
-    group: "{{ blade_user }}-group"
-    mode: 0644

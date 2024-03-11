@@ -13,4 +13,4 @@ cd ansible
 ### Run ansible to configure the nodes
 ansible all -m ping
 ansible-galaxy install -r requirements.yml
-ansible-playbook site.yml --ask-become-pass
+ansible-playbook site.yml

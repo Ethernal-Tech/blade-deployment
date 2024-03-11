@@ -28,8 +28,8 @@
     recurse: true
     mode: 0750
 
-- name: Install go
-  ansible.builtin.include_tasks: go.yml
+# - name: Install go
+#   ansible.builtin.include_tasks: go.yml
 
 - name: Clone geth repo
   ansible.builtin.git:

@@ -67,7 +67,7 @@ variable "fullnode_count" {
 variable "geth_count" {
   description = "The number of geth nodes that we're going to deploy"
   type        = number
-  default     = 1
+  default     = 0
   validation {
     condition = (
       var.geth_count == 0 || var.geth_count == 1

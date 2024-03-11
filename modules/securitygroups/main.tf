@@ -31,16 +31,16 @@ resource "aws_security_group_rule" "all_node_instances" {
   security_group_id = aws_security_group.all_node_instances.id
 }
 
-locals {
-  all_primary_network_interface_ids = concat(var.validator_primary_network_interface_ids, var.fullnode_primary_network_interface_ids, var.geth_primary_network_interface_ids)
-  p2p_primary_network_interface_ids = concat(var.validator_primary_network_interface_ids, var.fullnode_primary_network_interface_ids)
-}
+# locals {
+#   all_primary_network_interface_ids = concat(var.validator_primary_network_interface_ids, var.fullnode_primary_network_interface_ids, var.geth_primary_network_interface_ids)
+#   p2p_primary_network_interface_ids = concat(var.validator_primary_network_interface_ids, var.fullnode_primary_network_interface_ids)
+# }
 
-resource "aws_network_interface_sg_attachment" "all_node_instances" {
-  count                = length(local.all_primary_network_interface_ids)
-  security_group_id    = aws_security_group.all_node_instances.id
-  network_interface_id = local.all_primary_network_interface_ids[count.index]
-}
+# resource "aws_network_interface_sg_attachment" "all_node_instances" {
+#   count                = length(local.all_primary_network_interface_ids)
+#   security_group_id    = aws_security_group.all_node_instances.id
+#   network_interface_id = local.all_primary_network_interface_ids[count.index]
+# }
 
 resource "aws_security_group" "open_rpc" {
   name        = "internal-rpc-access"
@@ -55,11 +55,11 @@ resource "aws_security_group_rule" "open_rpc" {
   cidr_blocks       = var.network_acl
   security_group_id = aws_security_group.open_rpc.id
 }
-resource "aws_network_interface_sg_attachment" "open_rpc" {
-  count                = length(local.p2p_primary_network_interface_ids)
-  security_group_id    = aws_security_group.open_rpc.id
-  network_interface_id = local.p2p_primary_network_interface_ids[count.index]
-}
+# resource "aws_network_interface_sg_attachment" "open_rpc" {
+#   count                = length(local.p2p_primary_network_interface_ids)
+#   security_group_id    = aws_security_group.open_rpc.id
+#   network_interface_id = local.p2p_primary_network_interface_ids[count.index]
+# }
 resource "aws_security_group" "open_http" {
   name        = "external-explorer-access"
   description = "Allowing explorer acccess"
@@ -87,8 +87,8 @@ resource "aws_security_group_rule" "open_rpc_geth" {
   cidr_blocks       = var.network_acl
   security_group_id = aws_security_group.open_rpc_geth.id
 }
-resource "aws_network_interface_sg_attachment" "open_rpc_geth" {
-  count                = var.geth_count
-  security_group_id    = aws_security_group.open_rpc_geth.id
-  network_interface_id = element(var.geth_primary_network_interface_ids, count.index)
-}
+# resource "aws_network_interface_sg_attachment" "open_rpc_geth" {
+#   count                = var.geth_count
+#   security_group_id    = aws_security_group.open_rpc_geth.id
+#   network_interface_id = element(var.geth_primary_network_interface_ids, count.index)
+# }

@@ -3,11 +3,14 @@
 main() {
     mkdir /var/lib/bootstrap /var/lib/bootstrap/secrets
     pushd /var/lib/bootstrap
+    docker pull b4n3/blade:latest
+    blade='docker run --rm --net host -u root -w /data -v /var/lib/bootstrap:/data b4n3/blade'
+
 
     {% for item in hostvars %}
         {% if (hostvars[item].tags.Role == "fullnode" or hostvars[item].tags.Role == "validator") %}
             sed 's/host/{{hostvars[item].tags["Name"]}}/g' {{ blade_home_dir }}/config.json > secrets/{{ hostvars[item].tags["Name"] }}_config.json
-            blade secrets init --config secrets/{{ hostvars[item].tags["Name"] }}_config.json --json > {{ hostvars[item].tags["Name"] }}.json
+            $blade secrets init --config secrets/{{ hostvars[item].tags["Name"] }}_config.json --json > {{ hostvars[item].tags["Name"] }}.json
         {% endif %}
     {% endfor %}
 
@@ -16,7 +19,7 @@ main() {
 
     AMT_24=1000000000000000000000000
 
-    blade genesis \
+    $blade genesis \
         --consensus polybft \
         --chain-id {{ chain_id }} \
         {% for item in hostvars %}{% if (hostvars[item].tags.Role == "validator") %} --validators /dns4/{{ hostvars[item].tags["Name"] }}/tcp/{{ blade_p2p_port }}/p2p/$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].node_id'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].address' | sed 's/^0x//'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].bls_pubkey') {% endif %}{% endfor %} \
@@ -34,18 +37,19 @@ main() {
         --base-fee-config 1000000000
 
     {% if is_bridge_active %}
-        blade bridge server 2>&1 | tee bridge-server.log &
+        $blade bridge server 2>&1 | tee bridge-server.log &
         
-        blade bridge fund \
+        $blade bridge fund \
             --addresses $(cat validator-*.json fullnode-*.json | jq -r ".[0].address" | paste -sd ',' - | tr -d '\n') \
             --amounts $(paste -sd ',' <(yes "1000000000000000000000000" | head -n `ls validator-*.json fullnode-*.json | wc -l`) | tr -d '\n')
 
-        blade bridge deploy \
+        $blade bridge deploy \
             --proxy-contracts-admin $PROXY_CONTRACTS_ADMIN \
             --test
     {% endif %}
 
     tar czf {{ base_dn }}.tar.gz *.json secrets/
+    aws s3 cp {{ base_dn }}.tar.gz s3://{{ clean_deploy_title }}-state-bucket/{{ base_dn }}.tar.gz
     popd
 }
 

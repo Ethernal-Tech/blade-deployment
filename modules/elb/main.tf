@@ -12,12 +12,12 @@ resource "aws_lb_target_group" "int_rpc" {
   port        = var.http_rpc_port
 }
 
-resource "aws_lb_target_group_attachment" "int_rpc" {
-  count            = var.fullnode_count
-  target_group_arn = aws_lb_target_group.int_rpc.arn
-  target_id        = element(var.fullnode_instance_ids, count.index)
-  port             = var.http_rpc_port
-}
+# resource "aws_lb_target_group_attachment" "int_rpc" {
+#   count            = var.fullnode_count
+#   target_group_arn = aws_lb_target_group.int_rpc.arn
+#   target_id        = element(var.fullnode_instance_ids, count.index)
+#   port             = var.http_rpc_port
+# }
 
 resource "aws_lb_listener" "int_rpc" {
   load_balancer_arn = aws_lb.int_rpc.arn
@@ -44,12 +44,12 @@ resource "aws_lb_target_group" "ext_rpc" {
   vpc_id      = var.devnet_id
   port        = var.http_rpc_port
 }
-resource "aws_lb_target_group_attachment" "ext_rpc" {
-  count            = var.fullnode_count > 0 ? var.fullnode_count : var.validator_count
-  target_group_arn = aws_lb_target_group.ext_rpc.arn
-  target_id        = element(var.fullnode_count > 0 ? var.fullnode_instance_ids : var.validator_instance_ids, count.index)
-  port             = var.http_rpc_port
-}
+# resource "aws_lb_target_group_attachment" "ext_rpc" {
+#   count            = var.fullnode_count > 0 ? var.fullnode_count : var.validator_count
+#   target_group_arn = aws_lb_target_group.ext_rpc.arn
+#   target_id        = element(var.fullnode_count > 0 ? var.fullnode_instance_ids : var.validator_instance_ids, count.index)
+#   port             = var.http_rpc_port
+# }
 resource "aws_lb_listener" "ext_rpc" {
   load_balancer_arn = aws_lb.ext_rpc.arn
   port              = 80
@@ -87,12 +87,12 @@ resource "aws_lb_target_group" "ext_rpc_geth" {
   vpc_id      = var.devnet_id
   port        = var.rootchain_rpc_port
 }
-resource "aws_lb_target_group_attachment" "ext_rpc_geth" {
-  count            = var.geth_count
-  target_group_arn = aws_lb_target_group.ext_rpc_geth.arn
-  target_id        = element(var.geth_instance_ids, count.index)
-  port             = var.rootchain_rpc_port
-}
+# resource "aws_lb_target_group_attachment" "ext_rpc_geth" {
+#   count            = var.geth_count
+#   target_group_arn = aws_lb_target_group.ext_rpc_geth.arn
+#   target_id        = element(var.geth_instance_ids, count.index)
+#   port             = var.rootchain_rpc_port
+# }
 resource "aws_lb_listener" "ext_rpc_geth" {
   load_balancer_arn = aws_lb.ext_rpc_geth.arn
   port              = 80

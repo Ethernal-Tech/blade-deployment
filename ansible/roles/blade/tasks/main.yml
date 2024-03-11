@@ -1,25 +1,8 @@
 ---
-- name: Set up the blade group
-  block:
-    - name: Create the blade group
-      ansible.builtin.group:
-        name: "{{ blade_user }}-group"
-        state: present
-    - name: Add the blade user to the blade group
-      ansible.builtin.user:
-        name: "{{ blade_user }}"
-        groups: "{{ blade_user }}-group"
-        comment: Blade Application user
+
 
 - name: Create blade folders
   block:
-    - name: Create folder for blade data
-      ansible.builtin.file:
-        path: "{{ blade_home_dir }}"
-        state: directory
-        owner: "{{ blade_user }}"
-        group: "{{ blade_user }}-group"
-        mode: 0750
     - name: Create folder for blade configs
       ansible.builtin.file:
         path: /etc/blade
@@ -41,13 +24,6 @@
         dest: /etc/blade/validatorlist.txt
         mode: 0700
 
-- name: Build blade binary
-  block:
-    - name: Install go
-      ansible.builtin.include_tasks: go.yml
-    - name: Build blade from source
-      ansible.builtin.include_tasks: build-blade.yml
-
 - name: Bootstrap blade
   ansible.builtin.include_tasks: bootstrap-blade.yml
   when: not restore_data
@@ -61,11 +37,12 @@
     src: blade.service
     dest: /etc/systemd/system/blade.service
     mode: 0644
-  notify:
-    - Restart Blade Service
 
-- name: Restart Blade Service
-  ansible.builtin.systemd:
-    state: started
-    name: blade
-    enabled: true
+- name: Upload service files to bucket
+  ansible.builtin.shell: aws s3 cp /etc/systemd/system/blade.service s3://mmnet-state-bucket/{{ hostvars[inventory_hostname].tags["Hostname"] }}.service
+
+# - name: Restart Blade Service
+#   ansible.builtin.systemd:
+#     state: started
+#     name: blade
+#     enabled: true

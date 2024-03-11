@@ -1,5 +1,5 @@
 ---
-clean_deploy_title: devnet
+clean_deploy_title: mmnet
 
 #### Genesis Flags ###
 block_gas_limit: 10_000_000
@@ -19,7 +19,7 @@ rootchain_coinbase_private_key: "REPLACE_WITH_PRIVATE_KEY"
 
 ### NATIVE TOKEN ###
 native_token_config: "Blade:BLADE:18:true"
-is_bridge_active: true
+is_bridge_active: false
 is_london_fork_active: true
 
 ### Infra/Ansible Flags ###
