@@ -1,5 +1,5 @@
 ---
-clean_deploy_title: mmnet
+clean_deploy_title: xnet
 
 #### Genesis Flags ###
 block_gas_limit: 10_000_000

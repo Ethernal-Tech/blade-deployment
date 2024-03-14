@@ -39,10 +39,16 @@
     mode: 0644
 
 - name: Upload service files to bucket
-  ansible.builtin.shell: aws s3 cp /etc/systemd/system/blade.service s3://mmnet-state-bucket/{{ hostvars[inventory_hostname].tags["Hostname"] }}.service
+  ansible.builtin.shell: aws s3 cp /etc/systemd/system/blade.service s3://{{deployment_name}}-state-bucket/{{ hostvars[inventory_hostname].tags["Hostname"] }}.service
 
-# - name: Restart Blade Service
-#   ansible.builtin.systemd:
-#     state: started
-#     name: blade
-#     enabled: true
+- name: Upload service files to bucket
+  ansible.builtin.shell: |
+    aws s3 cp s3://{{deployment_name}}-state-bucket/{{deployment_name}}.blade.ethernal.private.tar.gz /tmp/{{deployment_name}}.blade.ethernal.private.tar.gz
+    mkdir /var/lib/blade/bootstrap && chown blade /var/lib/blade/bootstrap && chgrp blade-group /var/lib/blade/bootstrap
+    tar -xf /tmp/{{deployment_name}}.blade.ethernal.private.tar.gz --directory /var/lib/blade/bootstrap
+
+- name: Restart Blade Service
+  ansible.builtin.systemd:
+    state: started
+    name: blade
+    enabled: true

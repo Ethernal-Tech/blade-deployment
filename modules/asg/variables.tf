@@ -64,36 +64,77 @@ variable "geth_count" {
 }
 
 variable "node_storage" {
-
+  description = "Size for the node storage"
 }
 
 variable "int_validator_alb_arn" {
+  description = "Load balancer ARN"
 
 }
 
 variable "int_fullnode_alb_arn" {
-
+  description = "Load balancer ARN"
 }
 
 variable "int_geth_alb_arn" {
-
+  description = "Load balancer ARN"
 }
 
 variable "zones" {
-
+  description = "List of availability zones"
 }
 
 variable "sg_all_node_id" {
+  description = "Security group id for all nodes"
 
 }
 variable "sg_open_rpc_id" {
+  description = "Open RPC Security group id for fullnodes/validators"
 
 }
 
 variable "sg_open_rpc_geth_id" {
+  description = "Open RPC Security group id for geth"
 
 }
 
 variable "default_tags" {
-  
+  description = "A map of tags from the parent module"
+
+}
+
+variable "autoscale_handler_unique_identifier" {
+  description = "asg_dns_handler"
+  type        = string
+  default     = "asg-dns-handler"
+}
+
+variable "use_public_ip" {
+  description = "Use public IP instead of private"
+  default     = false
+  type        = bool
+}
+
+variable "autoscale_route53zone_arn" {
+  description = "The ARN of route53 zone associated with autoscaling group"
+  type        = string
+}
+
+variable "autoscale_route53reverse_zone_arn" {
+  description = "The ARN of route53 reverse zone associated with autoscaling group"
+  type        = string
+}
+
+variable "route53_record_ttl" {
+  description = "TTL to use for the Route 53 Records created"
+  default     = 300
+  type        = number
+}
+
+variable "private_zone_id" {
+
+}
+
+variable "reverse_zone_id" {
+
 }

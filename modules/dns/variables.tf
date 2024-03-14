@@ -30,16 +30,6 @@ variable "geth_count" {
 variable "devnet_id" {
   type = string
 }
-
-variable "validator_private_ips" {
-  type = list(string)
-}
-variable "fullnode_private_ips" {
-  type = list(string)
-}
-variable "geth_private_ips" {
-  type = list(string)
-}
 variable "aws_lb_int_rpc_domain" {
   type = string
 }

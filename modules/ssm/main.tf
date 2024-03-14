@@ -24,7 +24,7 @@ BLADE
 resource "aws_iam_policy" "ec2_policy" {
   name        = format("%s-%s_ec2_policy", var.deployment_name, var.network_type)
   path        = "/"
-  description = "Policy to provide permissin to EC2"
+  description = "Policy to provide permission to EC2"
   policy      = <<BLADE
 {
     "Version": "2012-10-17",
@@ -129,6 +129,12 @@ resource "aws_iam_policy_attachment" "ec2_policy_role" {
   name       = "ssm.${var.base_dn}"
   roles      = [aws_iam_role.ec2_role.name]
   policy_arn = aws_iam_policy.ec2_policy.arn
+}
+
+resource "aws_iam_policy_attachment" "cloudwatch_role" {
+  name       = "cloudwatch.${var.base_dn}"
+  roles      = [aws_iam_role.ec2_role.name]
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
 }
 
 resource "aws_iam_instance_profile" "ec2_profile" {

@@ -34,45 +34,10 @@ module "dns" {
   geth_count      = var.geth_count
   route53_zone_id = var.route53_zone_id
   deployment_name = var.deployment_name
-
   devnet_id                  = module.networking.devnet_id
   aws_lb_int_rpc_domain      = module.elb.aws_lb_int_rpc_domain
   aws_lb_ext_rpc_geth_domain = module.elb.aws_lb_ext_rpc_geth_domain
-  validator_private_ips      = []
-  fullnode_private_ips       = []
-  geth_private_ips           = []
 }
-
-# module "ebs" {
-#   source          = "./modules/ebs"
-#   zones           = var.zones
-#   node_storage    = var.node_storage
-#   validator_count = var.validator_count
-#   fullnode_count  = var.fullnode_count
-
-#   validator_instance_ids = module.ec2.validator_instance_ids
-#   fullnode_instance_ids  = module.ec2.fullnode_instance_ids
-# }
-
-# module "ec2" {
-#   source               = "./modules/ec2"
-#   base_dn              = local.base_dn
-#   base_instance_type   = var.base_instance_type
-#   base_ami             = local.base_ami
-#   fullnode_count       = var.fullnode_count
-#   geth_count           = var.geth_count
-#   validator_count      = var.validator_count
-#   base_devnet_key_name = format("%s_ssh_key", var.deployment_name)
-#   private_network_mode = var.private_network_mode
-#   network_type         = local.network_type
-#   deployment_name      = var.deployment_name
-#   create_ssh_key       = var.create_ssh_key
-#   devnet_key_value     = var.devnet_key_value
-
-#   devnet_private_subnet_ids = module.networking.devnet_private_subnet_ids
-#   devnet_public_subnet_ids  = module.networking.devnet_public_subnet_ids
-#   ec2_profile_name          = module.ssm.ec2_profile_name
-# }
 
 module "securitygroups" {
   source = "./modules/securitygroups"
@@ -123,6 +88,10 @@ module "asg" {
   sg_open_rpc_geth_id = module.securitygroups.security_group_open_rpc_geth_id
   default_tags = local.default_tags
   geth_ami = local.geth_ami
+  private_zone_id = module.dns.private_zone_id
+  reverse_zone_id = module.dns.reverse_zone_id
+  autoscale_route53reverse_zone_arn = module.dns.reverse_zone_arn
+  autoscale_route53zone_arn = module.dns.private_zone_arn
 }
 
 module "elb" {

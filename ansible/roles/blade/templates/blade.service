@@ -13,8 +13,8 @@ TimeoutStartSec=0
 Restart=always
 ExecStartPre=-/usr/bin/docker stop %n
 ExecStartPre=-/usr/bin/docker rm %n
-ExecStartPre=/usr/bin/docker pull b4n3/blade
-ExecStart=/usr/bin/docker run --rm --name %n -u 1001:1001 --net host -w /blade -v {{blade_home_dir}}:/blade:z b4n3/blade server --data-dir /blade \
+ExecStartPre=/usr/bin/docker pull b4n3/blade:1.0.1
+ExecStart=/usr/bin/docker run --rm --name %n -u 1001:1001 --net host -w /blade -v /etc/blade:/etc/blade -v {{blade_home_dir}}:/blade:z b4n3/blade:1.0.1 server --data-dir /blade \
     --chain /blade/bootstrap/genesis.json \
     --grpc-address 0.0.0.0:{{ blade_grpc_port }} \
     --json-rpc-batch-request-limit 999 \

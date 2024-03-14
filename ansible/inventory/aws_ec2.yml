@@ -19,7 +19,7 @@ leading_separator: "no"
 cache: "yes"
 
 filters:
-  tag:BaseDN: "mmnet.blade.ethernal.private"
+  tag:BaseDN: "xnet.blade.ethernal.private"
 
 hostnames:
   - instance-id

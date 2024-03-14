@@ -1,1 +1,1 @@
-deployment_name = "mmnet"
+deployment_name = "xnet"
