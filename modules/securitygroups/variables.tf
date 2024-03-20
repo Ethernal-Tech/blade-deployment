@@ -21,16 +21,3 @@ variable "rootchain_rpc_port" {
 variable "devnet_id" {
   type = string
 }
-variable "validator_primary_network_interface_ids" {
-  type = list(string)
-}
-variable "fullnode_primary_network_interface_ids" {
-  type = list(string)
-}
-variable "geth_primary_network_interface_ids" {
-  type = list(string)
-}
-variable "geth_count" {
-  description = "The number of geth nodes that we're going to deploy"
-  type        = number
-}

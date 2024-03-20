@@ -69,6 +69,13 @@ variable "node_storage" {
 
 variable "int_validator_alb_arn" {
   description = "Load balancer ARN"
+}
+
+variable "ext_validator_alb_arn" {
+
+}
+
+variable "ext_fullnode_alb_arn" {
 
 }
 

@@ -22,7 +22,7 @@ resource "aws_route53_record" "int_rpc" {
   name    = "int-rpc.${var.base_dn}"
   type    = "CNAME"
   ttl     = "60"
-  records = [var.aws_lb_int_rpc_domain]
+  records = [var.lb_int_rpc_domain]
 }
 
 resource "aws_route53_record" "geth_rpc" {
@@ -30,7 +30,7 @@ resource "aws_route53_record" "geth_rpc" {
   name    = "geth-rpc.${var.base_dn}"
   type    = "CNAME"
   ttl     = "60"
-  records = [var.aws_lb_ext_rpc_geth_domain]
+  records = [var.lb_ext_rpc_geth_domain]
 }
 
 data "aws_route53_zone" "ext_rpc" {
@@ -72,3 +72,10 @@ resource "aws_acm_certificate_validation" "blade" {
 }
 
 
+resource "aws_route53_record" "rpc" {
+  zone_id = var.route53_zone_id
+  name    = "${var.deployment_name}-rpc"
+  type    = "CNAME"
+  ttl     = "60"
+  records = [var.lb_ext_rpc_domain]
+}

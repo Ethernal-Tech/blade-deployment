@@ -4,14 +4,14 @@ locals {
   geth_ami     = "ami-06d59880babda767d"
   base_dn      = format("%s.%s.%s.private", var.deployment_name, local.network_type, var.company_name)
   base_id      = format("%s-%s", var.deployment_name, local.network_type)
-  default_tags =  {
-      Environment    = var.environment
-      Network        = local.network_type
-      Owner          = var.owner
-      DeploymentName = var.deployment_name
-      BaseDN         = local.base_dn
-      Name           = local.base_dn
-    }
+  default_tags = {
+    Environment    = var.environment
+    Network        = local.network_type
+    Owner          = var.owner
+    DeploymentName = var.deployment_name
+    BaseDN         = local.base_dn
+    Name           = local.base_dn
+  }
 }
 
 terraform {
@@ -26,17 +26,18 @@ terraform {
 }
 
 module "dns" {
-  source          = "./modules/dns"
-  base_dn         = local.base_dn
-  region          = var.region
-  fullnode_count  = var.fullnode_count
-  validator_count = var.validator_count
-  geth_count      = var.geth_count
-  route53_zone_id = var.route53_zone_id
-  deployment_name = var.deployment_name
-  devnet_id                  = module.networking.devnet_id
-  aws_lb_int_rpc_domain      = module.elb.aws_lb_int_rpc_domain
-  aws_lb_ext_rpc_geth_domain = module.elb.aws_lb_ext_rpc_geth_domain
+  source                 = "./modules/dns"
+  base_dn                = local.base_dn
+  region                 = var.region
+  fullnode_count         = var.fullnode_count
+  validator_count        = var.validator_count
+  geth_count             = var.geth_count
+  route53_zone_id        = var.route53_zone_id
+  deployment_name        = var.deployment_name
+  devnet_id              = module.networking.devnet_id
+  lb_int_rpc_domain      = module.elb.aws_lb_int_rpc_domain
+  lb_ext_rpc_geth_domain = module.elb.aws_lb_ext_rpc_geth_domain
+  lb_ext_rpc_domain      = module.elb.aws_lb_ext_rpc_domain
 }
 
 module "securitygroups" {
@@ -50,11 +51,7 @@ module "securitygroups" {
   http_rpc_port      = var.http_rpc_port
   rootchain_rpc_port = var.rootchain_rpc_port
 
-  devnet_id                               = module.networking.devnet_id
-  validator_primary_network_interface_ids = []
-  fullnode_primary_network_interface_ids  = []
-  geth_primary_network_interface_ids      = []
-  geth_count                              = var.geth_count
+  devnet_id = module.networking.devnet_id
 }
 
 module "asg" {
@@ -71,27 +68,29 @@ module "asg" {
   deployment_name      = var.deployment_name
   create_ssh_key       = var.create_ssh_key
   devnet_key_value     = var.devnet_key_value
-  node_storage = 100
+  node_storage         = 100
 
   devnet_private_subnet_ids = module.networking.devnet_private_subnet_ids
   devnet_public_subnet_ids  = module.networking.devnet_public_subnet_ids
   ec2_profile_name          = module.ssm.ec2_profile_name
-  
-  zones = var.zones
-  
-  int_fullnode_alb_arn = module.elb.aws_lb_tg_ext_rpc_domain
-  int_geth_alb_arn =  module.elb.aws_lb_tg_ext_rpc_geth_domain
-  int_validator_alb_arn = module.elb.aws_lb_tg_int_rpc_domain
 
-  sg_all_node_id = module.securitygroups.security_group_all_node_instances_id
-  sg_open_rpc_id = module.securitygroups.security_group_open_rpc_id
-  sg_open_rpc_geth_id = module.securitygroups.security_group_open_rpc_geth_id
-  default_tags = local.default_tags
-  geth_ami = local.geth_ami
-  private_zone_id = module.dns.private_zone_id
-  reverse_zone_id = module.dns.reverse_zone_id
+  zones = var.zones
+
+  int_fullnode_alb_arn  = module.elb.tg_ext_rpc_domain
+  int_geth_alb_arn      = module.elb.tg_ext_rpc_geth_domain
+  int_validator_alb_arn = module.elb.tg_int_rpc_domain
+  ext_fullnode_alb_arn  = module.elb.tg_ext_rpc_domain
+  ext_validator_alb_arn = module.elb.tg_ext_rpc_domain
+
+  sg_all_node_id                    = module.securitygroups.security_group_all_node_instances_id
+  sg_open_rpc_id                    = module.securitygroups.security_group_open_rpc_id
+  sg_open_rpc_geth_id               = module.securitygroups.security_group_open_rpc_geth_id
+  default_tags                      = local.default_tags
+  geth_ami                          = local.geth_ami
+  private_zone_id                   = module.dns.private_zone_id
+  reverse_zone_id                   = module.dns.reverse_zone_id
   autoscale_route53reverse_zone_arn = module.dns.reverse_zone_arn
-  autoscale_route53zone_arn = module.dns.private_zone_arn
+  autoscale_route53zone_arn         = module.dns.private_zone_arn
 }
 
 module "elb" {
@@ -106,9 +105,6 @@ module "elb" {
 
   devnet_private_subnet_ids   = module.networking.devnet_private_subnet_ids
   devnet_public_subnet_ids    = module.networking.devnet_public_subnet_ids
-  fullnode_instance_ids       = []
-  validator_instance_ids      = []
-  geth_instance_ids           = []
   devnet_id                   = module.networking.devnet_id
   security_group_open_http_id = module.securitygroups.security_group_open_http_id
   security_group_default_id   = module.securitygroups.security_group_default_id

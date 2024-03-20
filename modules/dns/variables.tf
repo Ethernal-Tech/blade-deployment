@@ -30,10 +30,15 @@ variable "geth_count" {
 variable "devnet_id" {
   type = string
 }
-variable "aws_lb_int_rpc_domain" {
+variable "lb_int_rpc_domain" {
   type = string
 }
-variable "aws_lb_ext_rpc_geth_domain" {
+
+variable "lb_ext_rpc_domain" {
+  type = string
+
+}
+variable "lb_ext_rpc_geth_domain" {
   type = string
 }
 

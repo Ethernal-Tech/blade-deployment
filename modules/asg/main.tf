@@ -34,6 +34,7 @@ resource "aws_launch_template" "validator" {
     ebs {
       volume_size = var.node_storage
       volume_type = "gp3"
+      encrypted   = true
     }
   }
 
@@ -87,7 +88,7 @@ resource "aws_autoscaling_group" "validator" {
     id      = aws_launch_template.validator[count.index].id
     version = "$Latest"
   }
-  target_group_arns = [var.int_validator_alb_arn]
+  target_group_arns = [var.int_validator_alb_arn, var.ext_validator_alb_arn]
   initial_lifecycle_hook {
     name                    = "${aws_launch_template.validator[count.index].id}-lifecycle-launching"
     default_result          = "ABANDON"
@@ -105,6 +106,9 @@ resource "aws_autoscaling_group" "validator" {
   #   notification_target_arn = aws_sns_topic.autoscale_handling.arn
   #   role_arn                = aws_iam_role.lifecycle.arn
   # }
+  warm_pool {
+
+  }
   tag {
     key                 = "Hostname"
     value               = format("validator-%03d", count.index + 1)
@@ -191,7 +195,6 @@ resource "aws_launch_template" "fullnode" {
 
 
 }
-
 
 resource "aws_autoscaling_group" "fullnode" {
   count = var.fullnode_count
