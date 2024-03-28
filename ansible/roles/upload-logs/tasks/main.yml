@@ -7,7 +7,7 @@
 - name: Create validator-001 archive
   community.general.archive:
     path: 
-    - /var/log/syslog
+    - /var/log/syslog*
     - "{{ blade_home_dir }}/logs"
     - "{{ blade_home_dir }}/init.sh"
     - "{{ blade_home_dir }}/bootstrap_output.txt"
@@ -19,7 +19,7 @@
 - name: Create other archives
   community.general.archive:
     path: 
-    - /var/log/syslog
+    - /var/log/syslog*
     - "{{ blade_home_dir }}/logs"
     - /var/lib/geth/geth/nodekey
     dest: "/tmp/logs/{{ hostvars[inventory_hostname].tags.Hostname }}.tar.gz"
