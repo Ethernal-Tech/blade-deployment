@@ -10,13 +10,13 @@ Wants=network-online.target
 ExecStart=blade server --data-dir {{ blade_home_dir }} \
     --chain {{ blade_home_dir }}/bootstrap/genesis.json \
     --grpc-address 0.0.0.0:{{ blade_grpc_port }} \
-    --json-rpc-batch-request-limit 999 \
+    --json-rpc-batch-request-limit 0 \
     --libp2p 0.0.0.0:{{ blade_p2p_port }} \
     --jsonrpc 0.0.0.0:{{ blade_jsonrpc_port }} \
     --prometheus 127.0.0.1:{{ blade_prometheus_port }} \
     --max-slots {{ max_slots }} \
     --max-enqueued {{ max_enqueued }} \
-    --log-level INFO \
+    --log-level DEBUG \
     --block-gas-target {{ block_gas_limit }} \
     --num-block-confirmations 2 \
     --secrets-config {{ blade_home_dir }}/bootstrap/secrets/{{ hostvars[inventory_hostname].tags.Hostname }}.{{ base_dn }}_config.json \
