@@ -9,7 +9,7 @@ packer {
 
 variable "debug_mode" {
   type    = bool
-  default = true
+  default = false
 }
 
 variable "go_tag" {
@@ -57,6 +57,7 @@ build {
       "POLYCLI_TAG=${var.polycli_tag}"
     ]
     execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    max_retries     = 2 # sometimes fails to update/upgrade Ubuntu
     script          = "${path.root}/scripts/common.sh"
   }
 

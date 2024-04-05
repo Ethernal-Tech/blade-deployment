@@ -21,11 +21,11 @@ sudo cp /root/.foundry/bin/* /usr/local/bin
 ##############
 echo "Installing golang"
 rm -rf /usr/local/go
-sudo wget https://go.dev/dl/go${GO_TAG}.tar.gz /opt/go${GO_TAG}.tar.gz
+sudo wget https://go.dev/dl/go${GO_TAG}.tar.gz -O /opt/go${GO_TAG}.tar.gz
 sudo chmod 0755 /opt/go${GO_TAG}.tar.gz
 sudo tar -C /usr/local/ -xzf /opt/go${GO_TAG}.tar.gz
 sudo ln -s /usr/local/go/bin/go /usr/local/bin/go
-rm -rf /opt/go${GO_TAG}.tar.gz
+sudo rm -rf /opt/go${GO_TAG}.tar.gz
 
 ###############
 ### POLYCLI ###
@@ -35,4 +35,4 @@ sudo wget https://github.com/maticnetwork/polygon-cli/releases/download/v${POLYC
 sudo chmod 0600 /opt/polycli_${POLYCLI_TAG}_linux_amd64.tar.gz
 sudo tar -C /opt/ -xzf /opt/polycli_${POLYCLI_TAG}_linux_amd64.tar.gz
 sudo ln -s /opt/polycli_${POLYCLI_TAG}_linux_amd64/polycli /usr/local/bin/polycli
-rm -rf /opt/polycli_${POLYCLI_TAG}_linux_amd64.tar.gz
+sudo rm -rf /opt/polycli_${POLYCLI_TAG}_linux_amd64.tar.gz
