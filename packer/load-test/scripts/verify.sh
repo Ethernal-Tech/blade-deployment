@@ -1,8 +1,4 @@
 #!/bin/bash -e
-
-############################
-### Verify installations ###
-############################
 echo "make version: `make --version`"
 echo "jq version: `jq -V`"
 echo "forge version: `forge -V`"
