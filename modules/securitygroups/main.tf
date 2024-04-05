@@ -58,6 +58,14 @@ resource "aws_security_group_rule" "open_http" {
   cidr_blocks       = var.network_acl
   security_group_id = aws_security_group.open_http.id
 }
+resource "aws_security_group_rule" "open_https" {
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "TCP"
+  cidr_blocks       = var.network_acl
+  security_group_id = aws_security_group.open_http.id
+}
 
 resource "aws_security_group" "open_rpc_geth" {
   name        = "internal-geth-access"

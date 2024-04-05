@@ -105,6 +105,10 @@ variable "sg_open_rpc_geth_id" {
 
 }
 
+variable "security_group_default_id" {
+  
+}
+
 variable "default_tags" {
   description = "A map of tags from the parent module"
 

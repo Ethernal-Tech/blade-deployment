@@ -1,0 +1,38 @@
+---
+
+
+- name: Create folder for blade data
+  ansible.builtin.file:
+    path: "{{ blade_home_dir }}/certificates"
+    state: directory
+    owner: "{{ blade_user }}"
+    group: "{{ blade_user }}-group"
+    mode: 0750
+
+- name: Generate an OpenSSL private key
+  community.crypto.openssl_privatekey:
+    path: "{{ blade_home_dir }}/certificates/{{ server_hostname }}_privkey.pem"
+    size: "{{ key_size }}"
+    type: "{{ key_type }}"
+    backup: yes
+    owner: "{{ blade_user }}"
+    group: "{{ blade_user }}-group"
+    mode: 0640
+- name: Generate an OpenSSL Certificate Signing Request with Subject information
+  community.crypto.openssl_csr:
+    path: "{{ blade_home_dir }}/certificates/{{ server_hostname }}.csr"
+    privatekey_path: "{{ blade_home_dir }}/certificates/{{ server_hostname }}_privkey.pem"
+    country_name: "{{ country_name }}"
+    organization_name: "{{ organization_name }}"
+    email_address: "{{ email_address }}"
+    common_name: "{{ server_hostname }}"
+    owner: "{{ blade_user }}"
+    group: "{{ blade_user }}-group"
+- name: Generate a Self Signed OpenSSL certificate
+  community.crypto.x509_certificate:
+    path: "{{ blade_home_dir }}/certificates/{{ server_hostname }}_cert.pem"
+    privatekey_path: "{{ blade_home_dir }}/certificates/{{ server_hostname }}_privkey.pem"
+    csr_path: "{{ blade_home_dir }}/certificates/{{ server_hostname }}.csr"
+    provider: selfsigned
+    owner: "{{ blade_user }}"
+    group: "{{ blade_user }}-group"

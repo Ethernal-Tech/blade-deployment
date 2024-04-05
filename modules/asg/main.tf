@@ -25,7 +25,7 @@ resource "aws_launch_template" "validator" {
 
   network_interfaces {
     subnet_id       = element(var.private_network_mode ? var.devnet_private_subnet_ids : var.devnet_public_subnet_ids, count.index)
-    security_groups = [var.sg_open_rpc_id, var.sg_all_node_id]
+    security_groups = [var.sg_open_rpc_id, var.sg_all_node_id, var.security_group_default_id]
 
   }
 
@@ -153,7 +153,7 @@ resource "aws_launch_template" "fullnode" {
 
   network_interfaces {
     subnet_id       = element(var.private_network_mode ? var.devnet_private_subnet_ids : var.devnet_public_subnet_ids, count.index)
-    security_groups = [var.sg_open_rpc_id, var.sg_all_node_id]
+    security_groups = [var.sg_open_rpc_id, var.sg_all_node_id,var.security_group_default_id]
   }
 
   block_device_mappings {
@@ -275,7 +275,7 @@ resource "aws_launch_template" "geth" {
 
   network_interfaces {
     subnet_id       = element(var.private_network_mode ? var.devnet_private_subnet_ids : var.devnet_public_subnet_ids, count.index)
-    security_groups = [var.sg_open_rpc_geth_id, var.sg_all_node_id]
+    security_groups = [var.sg_open_rpc_geth_id, var.sg_all_node_id, var.security_group_default_id]
   }
 
   tag_specifications {

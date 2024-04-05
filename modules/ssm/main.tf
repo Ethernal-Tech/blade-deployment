@@ -137,6 +137,12 @@ resource "aws_iam_policy_attachment" "cloudwatch_role" {
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
 }
 
+# resource "aws_iam_policy_attachment" "cloudwatch_logs" {
+#   name       = "logs.${var.base_dn}"
+#   roles      = [aws_iam_role.ec2_role.name]
+#   policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+# }
+
 resource "aws_iam_instance_profile" "ec2_profile" {
   name = "ssm-profile.${var.base_dn}"
   role = aws_iam_role.ec2_role.name

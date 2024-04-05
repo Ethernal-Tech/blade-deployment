@@ -13,8 +13,8 @@ TimeoutStartSec=0
 Restart=always
 ExecStartPre=-/usr/bin/docker stop %n
 ExecStartPre=-/usr/bin/docker rm %n
-ExecStartPre=/usr/bin/docker pull b4n3/blade:1.0.1
-ExecStart=/usr/bin/docker run --rm --name %n -u 1001:1001 --net host -w /blade -v /etc/blade:/etc/blade -v {{blade_home_dir}}:/blade:z b4n3/blade:1.0.1 server --data-dir /blade \
+ExecStartPre=/usr/bin/docker pull 0xethernal/blade:0.0.2
+ExecStart=/usr/bin/docker run --rm --log-driver=awslogs --log-opt awslogs-group=docker-logs --name %n -u 1001:1001 --net host -w /blade -v /etc/blade:/etc/blade -v {{blade_home_dir}}:/blade:z 0xethernal/blade:0.0.2 server --data-dir /blade \
     --chain /blade/bootstrap/genesis.json \
     --grpc-address 0.0.0.0:{{ blade_grpc_port }} \
     --json-rpc-batch-request-limit 999 \
@@ -27,6 +27,8 @@ ExecStart=/usr/bin/docker run --rm --name %n -u 1001:1001 --net host -w /blade -
     --block-gas-target {{ block_gas_limit }} \
     --num-block-confirmations 2 \
     --secrets-config /blade/bootstrap/secrets/{{ hostvars[inventory_hostname].tags.Hostname }}.{{ base_dn }}_config.json \
+    --tls-cert-file /blade/certificates/{{ server_hostname }}_cert.pem \
+    --tls-key-file /blade/certificates/{{ server_hostname }}_privkey.pem \
     {% if (hostvars[inventory_hostname].tags.Hostname == "validator-001") %}
     --relayer \
     {% endif %}

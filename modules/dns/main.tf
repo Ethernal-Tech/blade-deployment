@@ -74,7 +74,7 @@ resource "aws_acm_certificate_validation" "blade" {
 
 resource "aws_route53_record" "rpc" {
   zone_id = var.route53_zone_id
-  name    = "${var.deployment_name}-rpc"
+  name    = "${var.deployment_name}"
   type    = "CNAME"
   ttl     = "60"
   records = [var.lb_ext_rpc_domain]

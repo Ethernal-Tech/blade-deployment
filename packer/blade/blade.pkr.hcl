@@ -18,7 +18,7 @@ variable "polycli_tag" {
 }
 
 source "amazon-ebs" "ubuntu" {
-  ami_name      = "packer-linux-aws-blade"
+  ami_name      = "packer-linux-aws-blade-test"
   instance_type = "t2.micro"
   region        = "us-west-2"
   source_ami_filter {
@@ -31,61 +31,100 @@ source "amazon-ebs" "ubuntu" {
     owners      = ["099720109477"]
   }
   ssh_username = "ubuntu"
+  skip_create_ami = false
 }
 
 build {
   name = "packer-build-ubuntu"
+  
   sources = [
     "source.amazon-ebs.ubuntu"
   ]
 
   provisioner "file" {
-    source = "docker-compose.yml"
-    destination = "/tmp/docker-compose.yml"
+    source = "conf/node_exporter.service"
+    destination = "/tmp/node_exporter.service"
+  }
+
+  provisioner "file" {
+    source = "conf/cw_agent_config.json"
+    destination = "/tmp/cw_agent_config.json"
+  }
+  provisioner "file" {
+    source = "conf/prometheus.yml"
+    destination = "/tmp/prometheus.yml"
+  }
+
+  provisioner "file" {
+    source = "conf/prometheus_sd.yml"
+    destination = "/tmp/prometheus_sd.yml"
+  }
+
+  provisioner "shell" {
+    environment_vars = [
+      "DEBIAN_FRONTEND=noninteractive"
+    ]
+    execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    script           = "${path.root}/scripts/common.sh"
+  }
+
+   provisioner "shell" {
+    environment_vars = [
+      "DEBIAN_FRONTEND=noninteractive"
+    ]
+    execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    script           = "${path.root}/scripts/docker.sh"
+  }
+  provisioner "shell" {
+    environment_vars = [
+      "DEBIAN_FRONTEND=noninteractive",
+      "GOLANG_VERSION=${var.go_tag}"
+    ]
+    execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    script           = "${path.root}/scripts/golang.sh"
+  }
+  provisioner "shell" {
+    environment_vars = [
+      "DEBIAN_FRONTEND=noninteractive"
+    ]
+    execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    script           = "${path.root}/scripts/foundry.sh"
+  }
+
+  provisioner "shell" {
+    environment_vars = [
+      "DEBIAN_FRONTEND=noninteractive"
+    ]
+    execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    script           = "${path.root}/scripts/cloudwatch.sh"
+  }
+
+  provisioner "shell" {
+    environment_vars = [
+      "DEBIAN_FRONTEND=noninteractive"
+    ]
+    execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    script           = "${path.root}/scripts/node_exporter.sh"
+}
+    provisioner "shell" {
+    environment_vars = [
+      "DEBIAN_FRONTEND=noninteractive",
+      "POLYCLI_TAG=${var.polycli_tag}"
+    ]
+    execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    script           = "${path.root}/scripts/polycli.sh"
   }
 
   provisioner "shell" {
   environment_vars= ["DEBIAN_FRONTEND=noninteractive"]
   inline = [
-    "echo Installing Common Packages",
-    "sleep 30",
-    "sudo apt-get update",
-    "sudo apt-get install -y wget apt-transport-https ca-certificates curl software-properties-common python3-pip virtualenv python3-setuptools zile gnupg net-tools inxi git make gcc jq lsof sysstat ncdu traceroute atop awscli",
-    "echo Installing cloudwatch agent",
-    "wget https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb",
-    "sudo dpkg -i -E ./amazon-cloudwatch-agent.deb",
-    "echo Installing docker",
-    "for pkg in docker.io docker-doc docker-compose docker-compose-v2 containerd runc; do sudo apt-get remove $pkg; done",
-    "sudo install -m 0755 -d /etc/apt/keyrings",
-    "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg",
-    "sudo chmod a+r /etc/apt/keyrings/docker.gpg",
-    "echo \"deb [arch=\"$(dpkg --print-architecture)\" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \"$(. /etc/os-release && echo \"$VERSION_CODENAME\")\" stable\" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null",
-    "sudo apt-get update",
-    "sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin",
-    "echo Installig golang",
-    "sudo wget https://go.dev/dl/go${var.go_tag}.tar.gz -O /opt/go${var.go_tag}.tar.gz",
-    "sudo chmod 0755 /opt/go${ var.go_tag }.tar.gz",
-    "file /opt/go${ var.go_tag }.tar.gz",
-    "sudo tar -C /usr/local/ -xzf /opt/go${ var.go_tag }.tar.gz ",
-    "sudo ln -s /usr/local/go/bin/go /usr/local/bin/go",
-    "echo Installing polycli",
-    "sudo wget https://github.com/maticnetwork/polygon-cli/releases/download/v${ var.polycli_tag }/polycli_${ var.polycli_tag }_linux_amd64.tar.gz -O /opt/polycli_${ var.polycli_tag }_linux_amd64.tar.gz",
-    "sudo tar -C /usr/local/ -xzf /opt/polycli_${ var.polycli_tag }_linux_amd64.tar.gz",
-    "sudo ln -s /usr/local/polycli_${ var.polycli_tag }_linux_amd64/polycli /usr/local/bin/polycli",
-    "echo Installing foundry",
-    "curl -L https://foundry.paradigm.xyz | bash",
-    "sleep 5",
-    "/home/ubuntu/.foundry/bin/foundryup",
-    "sudo cp /home/ubuntu/.foundry/bin/* /usr/local/bin",
-
     "echo BLADE",
     "sudo groupadd blade-group -g 1001",
     "sudo useradd -g blade-group -u 1001 blade",
     "sudo usermod -a -G docker blade",
     "sudo mkdir /etc/blade && sudo chown -R blade:blade-group /etc/blade && sudo chmod 0750 /etc/blade"
-
-
   ]
 }
+
 
 }

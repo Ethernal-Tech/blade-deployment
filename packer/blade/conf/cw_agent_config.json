@@ -1,0 +1,66 @@
+{
+    "agent": {
+      "metrics_collection_interval": 10,
+      "region":"us-west-2"
+    },
+    "metrics": {
+      "metrics_collected": {
+        "disk": {
+          "resources": ["/", "/tmp"],
+          "measurement": ["disk_used_percent"],
+          "ignore_file_system_types": ["sysfs", "devtmpfs"]
+        },
+        "mem": {
+          "measurement": ["mem_available_percent"]
+        }
+      },
+      "aggregation_dimensions": [["InstanceId", "InstanceType"], ["InstanceId"]]
+    },
+    "logs": {
+        "logs_collected": {
+            "files" :{
+                "collect_list":[
+                    {
+                        "file_path":"/var/log/syslog*"
+                    }
+                ]
+                
+            }
+        },
+        "metrics_collected":{
+          "prometheus":{
+             "cluster_name":"prometheus-cluster",
+             "log_group_name":"Prometheus",
+             "prometheus_config_path":"/opt/aws/amazon-cloudwatch-agent/prometheus.yml",
+             "emf_processor":{
+                "metric_declaration_dedup":true,
+                "metric_namespace":"CWAgent-Prometheus",
+                "metric_unit":{
+                   "jvm_threads_current": "Count",
+                   "jvm_gc_collection_seconds_sum": "Milliseconds"
+                },
+                "metric_declaration":[
+                   {
+                      "source_labels":[
+                         "job", "key2"
+                      ],
+                      "label_matcher":"MY_JOB;^value2",
+                      "dimensions":[
+                         [
+                            "key1", "key2"
+                         ],
+                         [
+                            "key2"
+                         ]
+                      ],
+                      "metric_selectors":[
+                         "^jvm_threads_current$",
+                         "^jvm_gc_collection_seconds_sum$"
+                      ]
+                   }
+                ]
+             }
+          }
+       }
+    }
+}
