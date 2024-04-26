@@ -1,6 +1,0 @@
-- targets:
-    - 127.0.0.1:9091
-    - 127.0.0.1:9092
-  labels:
-    key1: value1
-    key2: value2

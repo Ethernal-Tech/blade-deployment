@@ -45,6 +45,24 @@ resource "aws_security_group_rule" "open_rpc" {
   security_group_id = aws_security_group.open_rpc.id
 }
 
+resource "aws_security_group_rule" "open_node_exporter" {
+  type              = "ingress"
+  from_port         = 9100
+  to_port           = 9100
+  protocol          = "TCP"
+  cidr_blocks       = var.network_acl
+  security_group_id = aws_security_group.open_rpc.id
+}
+
+resource "aws_security_group_rule" "open_prometheys" {
+  type              = "ingress"
+  from_port         = 9091
+  to_port           = 9091
+  protocol          = "TCP"
+  cidr_blocks       = var.network_acl
+  security_group_id = aws_security_group.open_rpc.id
+}
+
 resource "aws_security_group" "open_http" {
   name        = "external-explorer-access"
   description = "Allowing explorer acccess"

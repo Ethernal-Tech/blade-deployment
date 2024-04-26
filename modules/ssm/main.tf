@@ -119,6 +119,24 @@ resource "aws_iam_policy" "ec2_policy" {
                 "s3:ListBucketMultipartUploads"
             ],
             "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "aps:RemoteWrite"
+                
+            ],
+            "Resource": "*"
+        },
+        {
+             "Effect": "Allow",
+            "Action": [
+                "ec2:DescribeTags",
+                "ec2:DescribeInstance"
+                
+            ],
+            "Resource": "*"
+
         }
     ]
 }

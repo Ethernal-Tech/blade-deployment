@@ -1,6 +1,6 @@
 locals {
   network_type = "blade"
-  base_ami     = "ami-03145da87f05a4f1e"
+  base_ami     = "ami-0add1526ed372f405"
   geth_ami     = "ami-06d59880babda767d"
   base_dn      = format("%s.%s.%s.private", var.deployment_name, local.network_type, var.company_name)
   base_id      = format("%s-%s", var.deployment_name, local.network_type)
@@ -85,13 +85,14 @@ module "asg" {
   sg_all_node_id                    = module.securitygroups.security_group_all_node_instances_id
   sg_open_rpc_id                    = module.securitygroups.security_group_open_rpc_id
   sg_open_rpc_geth_id               = module.securitygroups.security_group_open_rpc_geth_id
-  security_group_default_id = module.securitygroups.security_group_default_id
+  security_group_default_id         = module.securitygroups.security_group_default_id
   default_tags                      = local.default_tags
   geth_ami                          = local.geth_ami
   private_zone_id                   = module.dns.private_zone_id
   reverse_zone_id                   = module.dns.reverse_zone_id
   autoscale_route53reverse_zone_arn = module.dns.reverse_zone_arn
   autoscale_route53zone_arn         = module.dns.private_zone_arn
+  devnet_id = module.networking.devnet_id
 }
 
 module "elb" {

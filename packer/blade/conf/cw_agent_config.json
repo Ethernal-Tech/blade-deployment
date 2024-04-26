@@ -30,32 +30,39 @@
         "metrics_collected":{
           "prometheus":{
              "cluster_name":"prometheus-cluster",
-             "log_group_name":"Prometheus",
+             "log_group_name":"blade",
              "prometheus_config_path":"/opt/aws/amazon-cloudwatch-agent/prometheus.yml",
              "emf_processor":{
                 "metric_declaration_dedup":true,
-                "metric_namespace":"CWAgent-Prometheus",
+                "metric_namespace":"BLADE_Metrics",
                 "metric_unit":{
-                   "jvm_threads_current": "Count",
-                   "jvm_gc_collection_seconds_sum": "Milliseconds"
+                   "edge_consensus_base_fee": "Gauge",
+                   "edge_consensus_block_building_time": "Gauge",
+                   "edge_consensus_block_counter": "Counter",
+                   "edge_consensus_block_execution_time" : "Gauge",
+                   "edge_consensus_block_interval" : "Gauge",
+                   "edge_consensus_block_space_used": "Gauge",
+                   "edge_consensus_chain_head" : "Gauge",
+                   "edge_consensus_epoch_number" : "Gague",
+                   "edge_consensus_num_txs" : "Gague",
+                   "edge_consensus_rounds": "Gauge"
                 },
                 "metric_declaration":[
                    {
                       "source_labels":[
-                         "job", "key2"
+                         "job"
                       ],
-                      "label_matcher":"MY_JOB;^value2",
+                      "label_matcher":"blade",
                       "dimensions":[
                          [
-                            "key1", "key2"
-                         ],
-                         [
-                            "key2"
+                            "name", "host"
                          ]
                       ],
                       "metric_selectors":[
-                         "^jvm_threads_current$",
-                         "^jvm_gc_collection_seconds_sum$"
+                         "^edge_consensus_chain_head$",
+                         "^edge_consensus_epoch_number$",
+                         "^edge_consensus_num_txs$",
+                         "^edge_consensus_rounds$"
                       ]
                    }
                 ]

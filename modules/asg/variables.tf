@@ -72,19 +72,20 @@ variable "int_validator_alb_arn" {
 }
 
 variable "ext_validator_alb_arn" {
+  description = "ARN for the application load balancer"
 
 }
 
 variable "ext_fullnode_alb_arn" {
-
+  description = "ARN for the application load balancer"
 }
 
 variable "int_fullnode_alb_arn" {
-  description = "Load balancer ARN"
+  description = "Internal Load balancer ARN for"
 }
 
 variable "int_geth_alb_arn" {
-  description = "Load balancer ARN"
+  description = "Internal Load balancer ARN for geth"
 }
 
 variable "zones" {
@@ -106,7 +107,8 @@ variable "sg_open_rpc_geth_id" {
 }
 
 variable "security_group_default_id" {
-  
+  description = "Default security group id"
+
 }
 
 variable "default_tags" {
@@ -143,9 +145,16 @@ variable "route53_record_ttl" {
 }
 
 variable "private_zone_id" {
+  description = "ID for the private DNS zone"
 
 }
 
 variable "reverse_zone_id" {
+  description = "The ID of the reverse DNS zone"
 
+}
+
+variable "devnet_id" {
+  description = "The VPC id"
+  
 }

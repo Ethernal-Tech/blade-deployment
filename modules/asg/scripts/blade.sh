@@ -28,5 +28,5 @@ aws s3 cp s3://${deployment_name}-state-bucket/${hostname}.service /etc/systemd/
 chmod 0644 /etc/systemd/system/blade.service
 systemctl start blade
 
-sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/opt/aws/amazon-cloudwatch-agent/bin/config.json
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c ssm:/${deployment_name}/${hostname}/cw_agent_config
 systemctl status amazon-cloudwatch-agent.service

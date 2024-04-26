@@ -18,7 +18,7 @@ variable "polycli_tag" {
 }
 
 source "amazon-ebs" "ubuntu" {
-  ami_name      = "packer-linux-aws-blade-test"
+  ami_name      = "packer-linux-aws-blade-new"
   instance_type = "t2.micro"
   region        = "us-west-2"
   source_ami_filter {
@@ -64,6 +64,8 @@ build {
     environment_vars = [
       "DEBIAN_FRONTEND=noninteractive"
     ]
+    max_retries = 2
+    expect_disconnect = true
     execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
     script           = "${path.root}/scripts/common.sh"
   }

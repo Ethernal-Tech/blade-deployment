@@ -133,6 +133,12 @@ resource "aws_autoscaling_group" "validator" {
     propagate_at_launch = true
   }
 
+  tag {
+    key = "service_name"
+    value = "node_exporter"
+    propagate_at_launch = true
+  }
+
   lifecycle {
     create_before_destroy = false
   }
@@ -153,7 +159,7 @@ resource "aws_launch_template" "fullnode" {
 
   network_interfaces {
     subnet_id       = element(var.private_network_mode ? var.devnet_private_subnet_ids : var.devnet_public_subnet_ids, count.index)
-    security_groups = [var.sg_open_rpc_id, var.sg_all_node_id,var.security_group_default_id]
+    security_groups = [var.sg_open_rpc_id, var.sg_all_node_id, var.security_group_default_id]
   }
 
   block_device_mappings {

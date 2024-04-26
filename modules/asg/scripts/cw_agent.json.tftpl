@@ -1,0 +1,79 @@
+{
+    "agent": {
+      "metrics_collection_interval": 10,
+      "region":"us-west-2"
+    },
+    "metrics": {
+      "metrics_collected": {
+        "cpu": {
+            "resources":  ["*"],
+            "totalcpu": true,
+            "measurement" : ["time_active","time_guest", "time_guest_nice", "time_idle", "time_iowait", "time_irq", "time_nice", "time_softirq", "time_steal", "time_system", "time_user", "usage_active", "usage_guest", "usage_guest_nice", "usage_idle", "usage_iowait", "usage_irq", "usage_nice", "usage_softirq", "usage_steal", "usage_system", "usage_user"],
+            "append_dimensions" : {
+              "Role" : "${role}",
+              "Name" : "${hostname}"
+            }
+         },
+        "disk": {
+          "resources": ["/", "/tmp", "/var/lib/blade"],
+          "measurement": ["disk_used_percent", "free", "total", "used", "used_percent", "inodes_free", "inodes_used", "inodes_total"],
+          "ignore_file_system_types": ["sysfs", "devtmpfs"],
+          "append_dimensions" : {
+            "Role" : "${role}",
+            "Name" : "${hostname}"
+          }
+        },
+        "diskio" : {
+            "resources" : ["*"],
+            "measurement" : ["reads", "writes", "read_bytes", "write_bytes", "read_time", "write_time", "io_time", "iops_in_progress"],
+            "append_dimensions" : {
+              "Role" : "${role}",
+              "Name" : "${hostname}"
+            }
+
+        },
+        "mem": {
+          "measurement": ["mem_available_percent", "active", "available", "available_percent", "buffered", "cached", "free", "inactive", "total", "used", "used_percent"],
+          "append_dimensions" : {
+            "Role" : "${role}",
+            "Name" : "${hostname}"
+          }
+        },
+        "net": {
+            "resources" : ["*"],
+            "measurement" : ["bytes_sent", "bytes_recv", "drop_in", "drop_out", "err_in", "err_out", "packets_sent", "packets_recv"],
+            "append_dimensions" : {
+              "Role" : "${role}",
+              "Name" : "${hostname}"
+            }
+        }, 
+        "netstat": {
+            "measurement" : ["tcp_close", "tcp_close_wait", "tcp_closing", "tcp_established", "tcp_fin_wait1", "tcp_fin_wait2", "tcp_last_ack", "tcp_listen", "tcp_none", "tcp_syn_sent", "tcp_syn_recv", "tcp_time_wait", "udp_socket"],
+            "append_dimensions" : {
+              "Role" : "${role}",
+              "Name" : "${hostname}"
+            }
+          }
+      },
+      "aggregation_dimensions": [["InstanceId", "InstanceType"], ["InstanceId"]],
+      "append_dimensions": {
+        "ImageId":"$${aws:ImageId}",
+        "InstanceId":"$${aws:InstanceId}",
+        "InstanceType":"$${aws:InstanceType}",
+        "AutoScalingGroupName":"$${aws:AutoScalingGroupName}"
+      }
+    },
+    "logs": {
+        "logs_collected": {
+            "files" :{
+                "collect_list":[
+                    {
+                        "file_path":"/var/log/syslog*"
+                    }
+                ]
+                
+            }
+        }
+          
+    }
+}
