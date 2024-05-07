@@ -64,6 +64,7 @@ resource "aws_launch_template" "validator" {
     is_bootstrap_node = count.index == 0 ? true : false
     blade_home_dir = "/var/lib/blade"
     base_dn = var.base_dn
+    region = "us-west-2"
   }))
 
   lifecycle {
@@ -213,6 +214,7 @@ resource "aws_launch_template" "fullnode" {
     is_bootstrap_node = false
     blade_home_dir = "/var/lib/blade"
     base_dn = var.base_dn
+    region = "us-west-2"
   }))
 
   lifecycle {
