@@ -1,32 +1,49 @@
 #!/bin/bash
 
-parted /dev/nvme1n1 --script mklabel gpt mkpart primary ext4 0% 100%
-sleep 5
-mkfs.ext4 /dev/nvme1n1p1
-sleep 5
-partprobe /dev/nvme1n1p1
-sleep 5
-mkdir -p /var/lib/blade 
-mount /dev/nvme1n1p1 /var/lib/blade
-echo UUID=`(blkid /dev/nvme1n1p1 -s UUID -o value)` /var/lib/blade       ext4     defaults,nofail         1       2 >> /etc/fstab
+if [ ! -f /etc/blade/.disk_parted ];
+then
+    parted /dev/nvme1n1 --script mklabel gpt mkpart primary ext4 0% 100%
+    sleep 5
+    mkfs.ext4 /dev/nvme1n1p1
+    sleep 5
+    partprobe /dev/nvme1n1p1
+    sleep 5
+    mkdir -p ${ blade_home_dir } 
+    mount /dev/nvme1n1p1 ${ blade_home_dir }
+    echo UUID=`(blkid /dev/nvme1n1p1 -s UUID -o value)` ${ blade_home_dir }       ext4     defaults,nofail         1       2 >> /etc/fstab
 
-chmod -R 777 /var/lib/blade
+    chmod -R 777 ${ blade_home_dir }
+    touch /etc/blade/.disk_parted
 
-sleep 30
+    sleep 30
+fi
 
-aws s3api wait object-exists \
+if [ ! -f /etc/blade/.bootstrap ];
+then
+%{ if is_bootstrap_node }
+    aws ssm get-parameter --region ${region} --name /${deployment_name}/bootstrap.sh --query Parameter.Value --output text > ${ blade_home_dir }/bootstrap.sh && \
+    aws ssm get-parameter --region ${region} --name /${deployment_name}/config.json  --query Parameter.Value --output text > ${ blade_home_dir }/config.json && \ 
+    chmod +x ${ blade_home_dir }/bootstrap.sh && \
+    ${ blade_home_dir }/bootstrap.sh && \
+    touch /etc/blade/.bootstrap
+%{ else }
+    aws s3api wait object-exists \
     --bucket ${deployment_name}-state-bucket \
-    --key ${deployment_name}.blade.ethernal.private.tar.gz
+    --key ${ base_dn }.tar.gz
 
-sleep 10
+%{ endif }
+fi
 
-aws s3 cp s3://${deployment_name}-state-bucket/${deployment_name}.blade.ethernal.private.tar.gz /tmp/${deployment_name}.blade.ethernal.private.tar.gz
-mkdir /var/lib/blade/bootstrap && chown blade /var/lib/blade/bootstrap && chgrp blade-group /var/lib/blade/bootstrap
-tar -xf /tmp/${deployment_name}.blade.ethernal.private.tar.gz --directory /var/lib/blade/bootstrap
 
-aws s3 cp s3://${deployment_name}-state-bucket/${hostname}.service /etc/systemd/system/blade.service
-chmod 0644 /etc/systemd/system/blade.service
+aws s3 cp s3://${deployment_name}-state-bucket/${ base_dn }.tar.gz /tmp/${ base_dn }.tar.gz && \
+mkdir ${ blade_home_dir }/bootstrap && chown blade ${ blade_home_dir }/bootstrap && chgrp blade-group ${ blade_home_dir }/bootstrap && \
+tar -xf /tmp/${ base_dn }.tar.gz --directory ${ blade_home_dir }/bootstrap 
+
+aws ssm get-parameter --region ${region} --name /${deployment_name}/${hostname}.${base_dn}.service --query Parameter.Value --output text > /etc/systemd/system/blade.service && \
+chmod 0644 /etc/systemd/system/blade.service && \
+systemctl enable blade && \
 systemctl start blade
+
 
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c ssm:/${deployment_name}/${hostname}/cw_agent_config
 systemctl status amazon-cloudwatch-agent.service

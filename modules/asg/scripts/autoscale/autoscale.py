@@ -109,9 +109,9 @@ def process_message(message):
         ip = fetch_ip_from_ec2(instance_id)
     else:
         ip = fetch_ip_from_route53(hostname, zone_id)
-
-    update_record(zone_id, ip, hostname, operation)
-    update_record(reverse_zone_id, ip, hostname, operation, reverse=True)
+    if message['Destination'] == "AutoScalingGroup":
+        update_record(zone_id, ip, hostname, operation)
+        update_record(reverse_zone_id, ip, hostname, operation, reverse=True)
 
 # Picks out the message from a SNS message and deserializes it
 def process_record(record):

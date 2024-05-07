@@ -1,0 +1,8 @@
+{
+    "Type": "aws-ssm",
+    "Name": "host",
+    "Extra": {
+      "region": "us-west-2",
+      "ssm-parameter-path": "/${ deployment_name }" 
+    }
+} 

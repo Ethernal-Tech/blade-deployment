@@ -28,6 +28,7 @@ variable "geth_count" {
 }
 
 variable "devnet_id" {
+  description = "The ID of the VPC"
   type = string
 }
 variable "lb_int_rpc_domain" {

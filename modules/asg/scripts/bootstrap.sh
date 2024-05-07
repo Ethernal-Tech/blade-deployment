@@ -1,0 +1,55 @@
+#!/bin/bash -x
+
+main() {
+    mkdir /var/lib/bootstrap /var/lib/bootstrap/secrets
+    pushd /var/lib/bootstrap
+    docker pull b4n3/blade:latest
+    blade='docker run --rm --net host -u root -w /data -v /var/lib/bootstrap:/data b4n3/blade'
+
+
+    %{ for item in hostvars }
+        
+        sed 's/host/${item}/g' ${ blade_home_dir }/config.json > secrets/${item}_config.json
+        $blade secrets init --config secrets/${item}_config.json --json > ${item}.json
+    
+    %{ endfor }
+
+    ZERO_ADDRESS=0x0000000000000000000000000000000000000000
+    PROXY_CONTRACTS_ADMIN=0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed
+
+    AMT_24=1000000000000000000000000
+
+    $blade genesis \
+        --consensus polybft \
+        --chain-id ${ chain_id } \
+        %{ for item in validators } --validators /dns4/${item}/tcp/${ blade_p2p_port }/p2p/$(cat ${item}.json | jq -r '.[0].node_id'):$(cat ${item}.json | jq -r '.[0].address' | sed 's/^0x//'):$(cat ${item}.json | jq -r '.[0].bls_pubkey') %{ endfor } \
+        %{ for item in fullnodes } --premine $(cat ${item}.json | jq -r '.[0].address'):$AMT_24 %{ endfor } \
+        --block-gas-limit ${ block_gas_limit } \
+        --premine ${ loadtest_account }:$AMT_24 \
+        --premine $ZERO_ADDRESS %{ if is_london_fork_active } --burn-contract 0:$ZERO_ADDRESS  %{ endif } \
+        --epoch-size 10 \
+        --reward-wallet 0xDEADBEEF:1000000 \
+        --block-time ${ block_time }s \
+        --native-token-config ${ native_token_config } \
+        --blade-admin $(cat validator-001.${ base_dn }.json | jq -r '.[0].address') \
+        --proxy-contracts-admin $PROXY_CONTRACTS_ADMIN \
+        --base-fee-config 1000000000
+
+    %{ if is_bridge_active }
+        $blade bridge server 2>&1 | tee bridge-server.log &
+        
+        $blade bridge fund \
+            --addresses $(cat validator-*.json fullnode-*.json | jq -r ".[0].address" | paste -sd ',' - | tr -d '\n') \
+            --amounts $(paste -sd ',' <(yes "1000000000000000000000000" | head -n `ls validator-*.json fullnode-*.json | wc -l`) | tr -d '\n')
+
+        $blade bridge deploy \
+            --proxy-contracts-admin $PROXY_CONTRACTS_ADMIN \
+            --test
+    %{ endif }
+
+    tar czf ${ base_dn }.tar.gz *.json secrets/
+    aws s3 cp ${ base_dn }.tar.gz s3://${ clean_deploy_title }-state-bucket/${ base_dn }.tar.gz
+    popd
+}
+
+main
