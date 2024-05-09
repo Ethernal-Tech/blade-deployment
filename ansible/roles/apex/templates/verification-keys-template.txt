@@ -1,0 +1,8 @@
+{
+{% for vkey in vkeys.results %}
+    "{{ vkey.chain }}": {
+        "multisig": "{{ vkey.stdout_lines[0] }}",
+        "multisigfee": "{{ vkey.stdout_lines[1] }}"
+    }{% if not loop.last %},{% endif %}
+{% endfor %}
+}

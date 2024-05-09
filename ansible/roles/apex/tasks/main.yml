@@ -1,0 +1,31 @@
+---
+- name: Set up the apex group
+  block:
+    - name: Create the apex group
+      ansible.builtin.group:
+        name: "{{ apex_user }}-group"
+        state: present
+    - name: Add the apex user to the apex group
+      ansible.builtin.user:
+        name: "{{ apex_user }}"
+        groups: "{{ apex_user }}-group"
+        comment: Apex Application user
+
+- name: Create apex folders
+  block:
+    - name: Create folder for apex data
+      ansible.builtin.file:
+        path: "{{ apex_bridge_home_dir }}"
+        state: directory
+        owner: "{{ apex_user }}"
+        group: "{{ apex_user }}-group"
+        mode: 0750
+
+- name: Build apex-bridge
+  block:
+    - name: Build cardano-cli binary
+      ansible.builtin.include_tasks: build-cardano.yml
+    - name: Build apex-bridge from source
+      ansible.builtin.include_tasks: build-apex-bridge.yml
+    - name: Bootstrap apex-bridge
+      ansible.builtin.include_tasks: bootstrap-apex-bridge.yml

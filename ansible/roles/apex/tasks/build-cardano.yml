@@ -1,0 +1,30 @@
+---
+# https://github.com/intersectmbo/cardano-node
+
+- name: Download the hydra binaries of cardano-node and cardano-cli
+  ansible.builtin.get_url:
+    url: "https://github.com/IntersectMBO/cardano-node/releases/download/{{ cardano_tag }}/cardano-node-{{ cardano_tag }}-linux.tar.gz"
+    dest: "/opt/cardano-node-{{ cardano_tag }}-linux.tar.gz"
+    mode: 0755
+    force: false
+
+- name: Extract cardano-node binary
+  ansible.builtin.unarchive:
+    src: "/opt/cardano-node-{{ cardano_tag }}-linux.tar.gz"
+    dest: /opt/
+    remote_src: true
+
+- name: Create a symlink for cardano-cli
+  ansible.builtin.file:
+    src: /opt/bin/cardano-cli
+    dest: /usr/local/bin/cardano-cli
+    state: link
+
+- name: Get cardano-cli version
+  ansible.builtin.command: cardano-cli version
+  register: cardano_cli_version_result
+  changed_when: false
+
+- name: Display cardano-cli version
+  ansible.builtin.debug:
+    msg: "{{ cardano_cli_version_result.stdout }}"

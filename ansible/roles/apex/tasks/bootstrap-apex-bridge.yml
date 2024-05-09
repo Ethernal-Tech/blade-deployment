@@ -1,0 +1,56 @@
+---
+# Bootstrap apex-bridge
+- name: Execute wallet-create
+  ansible.builtin.shell: apex-bridge wallet-create --chain {{ chain }} --dir {{ apex_bridge_home_dir }}
+  loop: "{{ cardano_chains }}"
+  loop_control:
+    loop_var: chain
+
+- name: Get multisig and multisigfee vkeys
+  ansible.builtin.shell: |
+    cat {{ apex_bridge_home_dir }}/{{ chain }}/multisig/payment.vkey | jq -r '.cborHex'
+    cat {{ apex_bridge_home_dir }}/{{ chain }}/multisigfee/payment.vkey | jq -r '.cborHex'
+  loop: "{{ cardano_chains }}"
+  loop_control:
+    loop_var: chain
+  register: vkeys
+
+- name: Create JSON file with multisig and multisigfee vkeys
+  ansible.builtin.template:
+    src: verification-keys-template.txt
+    dest: "{{ apex_bridge_home_dir }}/verification-keys.json"
+
+- name: Fetch the JSON file with multisig and multisigfee vkeys
+  ansible.builtin.fetch:
+    src: "{{ apex_bridge_home_dir }}/verification-keys.json"
+    dest: "{{ role_path }}/templates/{{ hostvars[inventory_hostname].tags['Hostname'] }}-verification-keys.json"
+    flat: true
+
+- name: Pause until you create cardano-keys.json
+  ansible.builtin.pause:
+
+# - name: Get cardano-keys.json data
+#   ansible.builtin.include_vars:
+#     file: "{{ role_path }}/templates/cardano-keys.json"
+#     name: cardano_vkeys
+
+# - name: Display loaded JSON variable
+#   ansible.builtin.debug:
+#     msg: "{{ cardano_vkeys }}"
+
+# - name: Cardano chains ready
+#   ansible.builtin.shell: |
+#     ./apex-bridge register-chain \
+#       --chain {{ chain }} \
+#       --keys-dir {{ apex_bridge_home_dir }}/{{ chain }} \
+#       --bridge-validator-config {{ blade_home_dir }} \
+#       --addr {{ cardano_vkeys[hostvars[inventory_hostname].tags["Hostname"]][chain]["multisig"] }} \
+#       --addr-fee {{ cardano_vkeys[hostvars[inventory_hostname].tags["Hostname"]][chain]["multisigfee"] }} \
+#       --token-supply {{ cardano_vkeys[hostvars[inventory_hostname].tags["Hostname"]][chain]["token-supply"] }} \
+#       --block-frost {{ cardano_vkeys[hostvars[inventory_hostname].tags["Hostname"]][chain]["block-frost-url"] }} \
+#       --bridge-url ADRESA_BLADE_NODEA \
+#       --bridge-addr 0xABEF000000000000000000000000000000000000
+#   loop: "{{ cardano_chains }}"
+#   loop_control:
+#     loop_var: chain
+#   register: sad

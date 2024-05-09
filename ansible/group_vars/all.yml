@@ -15,7 +15,9 @@ max_enqueued: 276480
 
 ### Version Flags ###
 polycli_tag: 0.1.30 # https://github.com/maticnetwork/polygon-cli/releases
-blade_tag: develop
+blade_tag: feature/apex-bridge
+cardano_tag: 8.9.2
+apex_bridge_tag: main
 geth_tag: v1.12.0
 go_tag: 1.21.6.linux-amd64
 ## If the L1 is NOT an unlocked test account, then you'll need some wallet
@@ -58,6 +60,22 @@ blade_user: blade
 restore_data: false
 s3_bucket: "" # AWS S3 Bucket name
 loadtest_account: "0x85da99c8a7c2c95964c8efd687e95e632fc533d6"
+
+### GitHub credential ###
+## This need to access private repositories ##
+gh_user: ""
+gh_pat: ""
+
+### Cardano Flags ###
+cardano_chains:
+  - vector
+  - prime
+
+### Apex Flags ###
+apex_bridge_repository: Ethernal-Tech/apex-bridge
+apex_bridge_home_dir: /var/lib/apex-bridge
+apex_bridge_api_port: 10003
+apex_user: apex
 
 ### Disk Flags ###
 ## This is the configuration related to mounting a separate device

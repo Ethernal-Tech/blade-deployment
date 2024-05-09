@@ -1,0 +1,38 @@
+---
+# Build apex-bridge from source
+# https://github.com/Ethernal-Tech/apex-bridge
+
+- name: Setup GitHub credential
+  ansible.builtin.shell: echo "machine github.com login {{ gh_user }} password {{ gh_pat }}" > ~/.netrc
+  changed_when: false
+
+- name: Clone apex-bridge repository
+  ansible.builtin.git:
+    repo: "https://github.com/{{ apex_bridge_repository }}.git"
+    dest: /opt/apex-bridge
+    version: "{{ apex_bridge_tag }}"
+    recursive: true
+    force: true
+
+- name: Build apex-bridge
+  ansible.builtin.shell: cd /opt/apex-bridge && make build
+  changed_when: false
+
+- name: Move apex-bridge binary to /usr/local/bin
+  ansible.builtin.copy:
+    src: /opt/apex-bridge/apex-bridge
+    dest: /usr/local/bin/
+    remote_src: true
+    mode: 0755
+
+- name: Get apex-bridge help
+  ansible.builtin.command: apex-bridge -h
+  register: apex_bridge_version_result
+  changed_when: false
+
+- name: Display apex-bridge version
+  ansible.builtin.debug:
+    msg: "{{ apex_bridge_version_result.stdout }}"
+
+- name: Remove GitHub credential
+  ansible.builtin.shell: rm -rf ~/.netrc
