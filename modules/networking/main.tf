@@ -47,7 +47,7 @@ resource "aws_subnet" "devnet_public" {
   depends_on = [aws_internet_gateway.devnet]
 
   tags = {
-    Name = format("devnet-public-%03d.%s", count.index + 1, var.base_dn)
+    Name = format("testnet-public-%03d.%s", count.index + 1, var.base_dn)
   }
 }
 
@@ -57,7 +57,7 @@ resource "aws_subnet" "devnet_private" {
   availability_zone = element(var.zones, count.index)
   cidr_block        = element(var.devnet_private_subnet, count.index)
   tags = {
-    Name = format("devnet-private-%03d.%s", count.index + 1, var.base_dn)
+    Name = format("testnet-private-%03d.%s", count.index + 1, var.base_dn)
   }
 }
 
@@ -68,7 +68,7 @@ resource "aws_route_table" "devnet_private" {
   count  = length(var.zones)
   vpc_id = aws_vpc.devnet.id
   tags = {
-    Name = format("devnet-public-%03d.%s", count.index + 1, var.base_dn)
+    Name = format("testnet-public-%03d.%s", count.index + 1, var.base_dn)
   }
 }
 

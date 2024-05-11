@@ -44,6 +44,63 @@ resource "aws_lb_target_group" "ext_rpc" {
   vpc_id      = var.devnet_id
   port        = var.http_rpc_port
 }
+
+
+resource "aws_lb_target_group" "ext_rpc_node" {
+  count       = var.fullnode_count > 0 ? var.fullnode_count : var.validator_count
+  name        = format("ext-rpc-%s-%03d", var.base_id, count.index + 1)
+  protocol    = "HTTP"
+  target_type = "instance"
+  vpc_id      = var.devnet_id
+  port        = var.http_rpc_port
+}
+resource "aws_lb_target_group_attachment" "ext_rpc_node" {
+  count            = var.fullnode_count > 0 ? var.fullnode_count : var.validator_count
+  target_group_arn = aws_lb_target_group.ext_rpc_node[count.index].arn
+  target_id        = element(var.fullnode_count > 0 ? var.fullnode_instance_ids : var.validator_instance_ids, count.index)
+  port             = var.http_rpc_port
+}
+resource "aws_lb_listener" "ext_rpc_node" {
+  count             = var.fullnode_count > 0 ? var.fullnode_count : var.validator_count
+  load_balancer_arn = aws_lb.ext_rpc.arn
+  port              = 8000 + count.index + 1
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.ext_rpc_node[count.index].arn
+  }
+}
+
+
+resource "aws_lb_target_group" "ext_p2p_node" {
+  count       = var.fullnode_count > 0 ? var.fullnode_count : var.validator_count
+  name        = format("ext-p2p-%s-%03d", var.base_id, count.index + 1)
+  protocol    = "HTTP"
+  target_type = "instance"
+  vpc_id      = var.devnet_id
+  port        = 10001
+}
+resource "aws_lb_target_group_attachment" "ext_p2p_node" {
+  count            = var.fullnode_count > 0 ? var.fullnode_count : var.validator_count
+  target_group_arn = aws_lb_target_group.ext_p2p_node[count.index].arn
+  target_id        = element(var.fullnode_count > 0 ? var.fullnode_instance_ids : var.validator_instance_ids, count.index)
+  port             = 10001
+}
+resource "aws_lb_listener" "ext_p2p_node" {
+  count             = var.fullnode_count > 0 ? var.fullnode_count : var.validator_count
+  load_balancer_arn = aws_lb.ext_rpc.arn
+  port              = 9000 + count.index + 1
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.ext_p2p_node[count.index].arn
+  }
+}
+
+
+
 resource "aws_lb_target_group_attachment" "ext_rpc" {
   count            = var.fullnode_count > 0 ? var.fullnode_count : var.validator_count
   target_group_arn = aws_lb_target_group.ext_rpc.arn

@@ -25,7 +25,7 @@ variable "create_ssh_key" {
 variable "deployment_name" {
   description = "The unique name for this particular deployment"
   type        = string
-  default     = "devnet"
+  default     = "testnet"
 }
 
 variable "devnet_key_value" {
@@ -55,7 +55,7 @@ variable "devnet_vpc_block" {
 variable "environment" {
   description = "The environment for deployment for this particular deployment"
   type        = string
-  default     = "devnet"
+  default     = "testnet"
 }
 
 variable "fullnode_count" {

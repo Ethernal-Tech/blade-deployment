@@ -65,6 +65,25 @@ resource "aws_security_group" "open_http" {
   description = "Allowing explorer acccess"
   vpc_id      = var.devnet_id
 }
+
+resource "aws_security_group_rule" "fullnode_access" {
+  type              = "ingress"
+  from_port         = 8001
+  to_port           = 8001 + var.fullnode_count
+  protocol          = "TCP"
+  cidr_blocks       = var.network_acl
+  security_group_id = aws_security_group.open_http.id
+}
+
+resource "aws_security_group_rule" "fullnode_access_p2p" {
+  type              = "ingress"
+  from_port         = 9001
+  to_port           = 9001 + var.fullnode_count
+  protocol          = "TCP"
+  cidr_blocks       = var.network_acl
+  security_group_id = aws_security_group.open_http.id
+}
+
 resource "aws_security_group_rule" "open_http" {
   type              = "ingress"
   from_port         = 80

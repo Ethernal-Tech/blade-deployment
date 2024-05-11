@@ -34,3 +34,8 @@ variable "geth_count" {
   description = "The number of geth nodes that we're going to deploy"
   type        = number
 }
+
+variable "fullnode_count" {
+  description = "The number of full nodes that we're going to deploy"
+  type        = number
+}
