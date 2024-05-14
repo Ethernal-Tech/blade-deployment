@@ -1,15 +1,15 @@
 ---
 # Bootstrap apex-bridge
 - name: Create wallets
-  ansible.builtin.shell: apex-bridge wallet-create --chain {{ chain }} --dir {{ apex_bridge_home_dir }}/chains
+  ansible.builtin.shell: apex-bridge wallet-create --chain {{ chain }} --dir {{ apex_bridge_home_dir }}
   loop: "{{ cardano_chains }}"
   loop_control:
     loop_var: chain
 
 - name: Get multisig and multisigfee verification keys
   ansible.builtin.shell: |
-    cat {{ apex_bridge_home_dir }}/chains/{{ chain }}/multisig/payment.vkey | jq -r '.cborHex'
-    cat {{ apex_bridge_home_dir }}/chains/{{ chain }}/multisigfee/payment.vkey | jq -r '.cborHex'
+    cat {{ apex_bridge_home_dir }}/{{ chain }}/multisig/payment.vkey | jq -r '.cborHex'
+    cat {{ apex_bridge_home_dir }}/{{ chain }}/multisigfee/payment.vkey | jq -r '.cborHex'
   loop: "{{ cardano_chains }}"
   loop_control:
     loop_var: chain
@@ -18,48 +18,44 @@
 - name: Create JSON file with multisig and multisigfee verification keys
   ansible.builtin.template:
     src: verification-keys-template.txt
-    dest: "{{ apex_bridge_home_dir }}/chains/verification-keys.json"
+    dest: "{{ apex_bridge_home_dir }}/verification-keys.json"
 
-- name: Fetch the JSON file with multisig and multisigfee verification keys
+- name: Fetch the JSON file
   ansible.builtin.fetch:
-    src: "{{ apex_bridge_home_dir }}/chains/verification-keys.json"
+    src: "{{ apex_bridge_home_dir }}/verification-keys.json"
     dest: "{{ role_path }}/templates/{{ hostvars[inventory_hostname].tags['Hostname'] }}-verification-keys.json"
     flat: true
 
-- name: Copy the cardano data to hosts
-  block:
-    - name: Create a folder to hold the cardano archive
-      ansible.builtin.file:
-        path: "{{ apex_bridge_home_dir }}/cardano/"
-        state: directory
-        owner: "{{ apex_user }}"
-        group: "{{ apex_user }}-group"
-        mode: 0755
-    - name: Copy the cardano archive to a remote system temp folder
-      ansible.builtin.copy:
-        src: "{{ role_path }}/templates/cardano.tar.gz"
-        dest: "/tmp/cardano.tar.gz"
-        owner: "{{ blade_user }}"
-        group: "{{ blade_user }}-group"
-        mode: 0755
-    - name: Extract the cardano archive files
-      ansible.builtin.unarchive:
-        src: "/tmp/cardano.tar.gz"
-        dest: "{{ apex_bridge_home_dir }}/"
-        mode: 0755
-        remote_src: true
+- name: Create manually cardano-data.json for each validator
+  ansible.builtin.pause:
+
+- name: Copy the cardano-data.json file to hosts
+  ansible.builtin.copy:
+    src: "{{ role_path }}/templates/{{ hostvars[inventory_hostname].tags['Hostname'] }}-cardano-data.json"
+    dest: "{{ apex_bridge_home_dir }}/cardano-data.json"
+    owner: "{{ blade_user }}"
+    group: "{{ blade_user }}-group"
+    mode: 0755
+
+- name: Read the cardano-data.json
+  ansible.builtin.shell: cat {{ apex_bridge_home_dir }}/cardano-data.json
+  register: cardano_data
+
+- name: Save the cardano-data.json to a variable
+  ansible.builtin.set_fact:
+    json_data: "{{ cardano_data.stdout | from_json }}"
 
 - name: Register chains
   ansible.builtin.shell: |
     apex-bridge register-chain \
       --chain {{ chain }} \
-      --keys-dir {{ apex_bridge_home_dir }}/cardano/{{ chain }} \
+      --keys-dir {{ apex_bridge_home_dir }}/{{ chain }} \
       --bridge-validator-config {{ blade_home_dir }}/bootstrap/secrets/{{ hostvars[inventory_hostname].tags.Hostname }}.{{ base_dn }}_config.json \
-      --addr `cat {{ apex_bridge_home_dir }}/cardano/{{ chain }}/data.json | jq -r '.multisig'` \
-      --addr-fee `cat {{ apex_bridge_home_dir }}/cardano/{{ chain }}/data.json | jq -r '.multisigfee'` \
-      --token-supply `cat {{ apex_bridge_home_dir }}/cardano/{{ chain }}/data.json | jq -r '.tokensupply'` \
-      --ogmios `cat {{ apex_bridge_home_dir }}/cardano/{{ chain }}/data.json | jq -r '.ogmiosurl'` \
-      --bridge-url 0xABCDE0000000000000000000000000000000FFFF \
+      --addr {{ json_data[chain]["multisig"] }} \
+      --addr-fee {{ json_data[chain]["multisigfee"] }} \
+      --token-supply {{ json_data[chain]["tokensupply"] }} \
+      --ogmios {{ json_data[chain]["ogmiosurl"] }} \
+      --bridge-url 0.0.0.0:{{ blade_jsonrpc_port }} \
       --bridge-addr 0xABEF000000000000000000000000000000000000
   loop: "{{ cardano_chains }}"
   loop_control:
@@ -69,18 +65,26 @@
   ansible.builtin.shell: |
     apex-bridge generate-configs \
       --output-dir {{ apex_bridge_home_dir }}/configs \
-      --prime-keys-dir {{ apex_bridge_home_dir }}/chains/prime \
-      --prime-network-address URL_FOR_SOME_CARDANO_NODE_IN_PRIME_NETWORK \
-      --prime-network-magic PRIME_NETWORK_MAGIC_NUMBER \
-      --prime-ogmios-url PRIME_OGMIOS_URL \
-      --vector-keys-dir {{ apex_bridge_home_dir }}/chains/vector \
-      --vector-network-address URL_FOR_SOME_CARDANO_NODE_IN_VECTOR_NETWORK \
-      --vector-network-magic VECTOR_NETWORK_MAGIC_NUMBER \
-      --vector-ogmios-url VECTOR_OGMIOS_URL \
-      --bridge-node-url URL_TO_BLADE_NODE \
+      --prime-keys-dir {{ apex_bridge_home_dir }}/prime \
+      --prime-network-address {{ json_data["prime"]["networkaddress"] }} \
+      --prime-network-magic {{ json_data["prime"]["networkmagicnumber"] }} \
+      --prime-ogmios-url {{ json_data["prime"]["ogmiosurl"] }} \
+      --vector-keys-dir {{ apex_bridge_home_dir }}/vector \
+      --vector-network-address {{ json_data["vector"]["networkaddress"] }} \
+      --vector-network-magic {{ json_data["vector"]["networkmagicnumber"] }} \
+      --vector-ogmios-url {{ json_data["vector"]["ogmiosurl"] }} \
+      --bridge-node-url 0.0.0.0:{{ blade_jsonrpc_port }} \
       --bridge-sc-address 0xABEF000000000000000000000000000000000000 \
-      --bridge-validator-data-dir PUTANJA_DO_BLADE_DATA_DIR
-      --logs-path PUTANJA_DO_DIREKTORIJUMA_ZA_LOG_FAJLOVE \
-      --dbs-path PUTANJA_DO_DIREKTORIJUMA_GDE_CE_BITI_FAJLOVE_BBOLT_BAZE \
-      --api-port API_PORT \
-      --api-keys test_api_key_1
+      --bridge-validator-config {{ blade_home_dir }}/bootstrap/secrets/{{ hostvars[inventory_hostname].tags.Hostname }}.{{ base_dn }}_config.json \
+      --logs-path {{ apex_bridge_home_dir }}/logs \
+      --dbs-path {{ apex_bridge_home_dir }}/db \
+      --api-port {{ apex_bridge_api_port }} \
+      --api-keys "{{ apex_bridge_api_key_1 }}" \
+      --api-keys "{{ apex_bridge_api_key_2 }}"
+
+- name: Run validator componets
+  ansible.builtin.shell: apex-bridge run-validator-components --config {{ apex_bridge_home_dir }}/configs/config.json --run-api
+
+- name: Run relayer on validator-001
+  ansible.builtin.shell: apex-bridge run-relayer --config {{ apex_bridge_home_dir }}/configs/relayer_config.json
+  when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"

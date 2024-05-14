@@ -1,0 +1,18 @@
+{
+    "vector": {
+        "multisig": "addr_test1wrs0nrc0rvrfl7pxjl1vgqp5xuvt8j4n8a2lu8gef80wxhq4lmleh",
+        "multisigfee": "addr_test1vqjysa7p4mhu0k25qknwznvj0kghtr29ud7zp732ezwtzec0w8g3u",
+        "tokensupply": 20000000,
+        "ogmiosurl": "http://vector.ogmios.com",
+        "networkaddress": "http://vector.network.address.com",
+        "networkmagicnumber": 242
+    },
+    "prime": {
+        "multisig": "addr_test1wrs0nrc0rvrfl7pxjl2vgqp5xuvt8j4n8a2lu8gef80wxhq4lmlea",
+        "multisigfee": "addr_test1vqjysa7p4mhu0j25qknwznvj0kghtr29ud7zp732ezwtzec0w8g3a",
+        "tokensupply": 10000000,
+        "ogmiosurl": "http://prime.ogmios.com",
+        "networkaddress": "http://prime.network.address.com",
+        "networkmagicnumber": 142
+    }
+}

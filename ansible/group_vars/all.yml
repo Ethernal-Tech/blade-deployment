@@ -75,6 +75,8 @@ cardano_chains:
 apex_bridge_repository: Ethernal-Tech/apex-bridge
 apex_bridge_home_dir: /var/lib/apex-bridge
 apex_bridge_api_port: 10003
+apex_bridge_api_key_1: test-api-key-001
+apex_bridge_api_key_2: test-api-key-002
 apex_user: apex
 
 ### Disk Flags ###
