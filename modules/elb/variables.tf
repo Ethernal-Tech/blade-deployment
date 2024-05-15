@@ -21,14 +21,17 @@ variable "geth_count" {
 }
 
 variable "devnet_private_subnet_ids" {
+  description = "Subnet IDs used in the private network"
   type = list(string)
 }
 variable "devnet_public_subnet_ids" {
+   description = "Subnet IDs used in the public network"
   type = list(string)
 }
 
 variable "devnet_id" {
-  type = string
+  description = "The ID of the VPC"
+  type        = string
 }
 variable "base_id" {
   type = string
@@ -45,6 +48,6 @@ variable "certificate_arn" {
 }
 
 variable "route53_zone_id" {
-  description = "The ID for external DNS"
+  description = "The ID of the hosted zone to contain the CNAME record to our LB"
   type        = string
 }

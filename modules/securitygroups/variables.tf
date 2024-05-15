@@ -19,5 +19,6 @@ variable "rootchain_rpc_port" {
   type        = number
 }
 variable "devnet_id" {
-  type = string
+  description = "The ID of the VPC"
+  type        = string
 }

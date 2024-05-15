@@ -3,8 +3,8 @@
 main() {
     mkdir /var/lib/bootstrap /var/lib/bootstrap/secrets
     pushd /var/lib/bootstrap
-    docker pull b4n3/blade:latest
-    blade='docker run --rm --net host -u root -w /data -v /var/lib/bootstrap:/data b4n3/blade'
+    docker pull ${ docker_image }
+    blade='docker run --rm --net host -u root -w /data -v /var/lib/bootstrap:/data ${ docker_image }'
 
 
     %{ for item in hostvars }

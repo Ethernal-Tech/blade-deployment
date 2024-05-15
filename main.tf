@@ -55,33 +55,29 @@ module "securitygroups" {
 }
 
 module "asg" {
-  source               = "./modules/asg"
-  base_dn              = local.base_dn
-  base_instance_type   = var.base_instance_type
-  base_ami             = local.base_ami
-  fullnode_count       = var.fullnode_count
-  geth_count           = var.geth_count
-  validator_count      = var.validator_count
-  base_devnet_key_name = format("%s_ssh_key", var.deployment_name)
-  private_network_mode = var.private_network_mode
-  network_type         = local.network_type
-  deployment_name      = var.deployment_name
-  create_ssh_key       = var.create_ssh_key
-  devnet_key_value     = var.devnet_key_value
-  node_storage         = 100
-
-  devnet_private_subnet_ids = module.networking.devnet_private_subnet_ids
-  devnet_public_subnet_ids  = module.networking.devnet_public_subnet_ids
-  ec2_profile_name          = module.ssm.ec2_profile_name
-
-  zones = var.zones
-
-  int_fullnode_alb_arn  = module.elb.tg_ext_rpc_domain
-  int_geth_alb_arn      = module.elb.tg_ext_rpc_geth_domain
-  int_validator_alb_arn = module.elb.tg_int_rpc_domain
-  ext_fullnode_alb_arn  = module.elb.tg_ext_rpc_domain
-  ext_validator_alb_arn = module.elb.tg_ext_rpc_domain
-
+  source                            = "./modules/asg"
+  base_dn                           = local.base_dn
+  base_instance_type                = var.base_instance_type
+  base_ami                          = local.base_ami
+  fullnode_count                    = var.fullnode_count
+  geth_count                        = var.geth_count
+  validator_count                   = var.validator_count
+  base_devnet_key_name              = format("%s_ssh_key", var.deployment_name)
+  private_network_mode              = var.private_network_mode
+  network_type                      = local.network_type
+  deployment_name                   = var.deployment_name
+  create_ssh_key                    = var.create_ssh_key
+  devnet_key_value                  = var.devnet_key_value
+  node_storage                      = 100
+  devnet_private_subnet_ids         = module.networking.devnet_private_subnet_ids
+  devnet_public_subnet_ids          = module.networking.devnet_public_subnet_ids
+  ec2_profile_name                  = module.ssm.ec2_profile_name
+  zones                             = var.zones
+  int_fullnode_alb_arn              = module.elb.tg_ext_rpc_domain
+  int_geth_alb_arn                  = module.elb.tg_ext_rpc_geth_domain
+  int_validator_alb_arn             = module.elb.tg_int_rpc_domain
+  ext_fullnode_alb_arn              = module.elb.tg_ext_rpc_domain
+  ext_validator_alb_arn             = module.elb.tg_ext_rpc_domain
   sg_all_node_id                    = module.securitygroups.security_group_all_node_instances_id
   sg_open_rpc_id                    = module.securitygroups.security_group_open_rpc_id
   sg_open_rpc_geth_id               = module.securitygroups.security_group_open_rpc_geth_id
@@ -92,19 +88,34 @@ module "asg" {
   reverse_zone_id                   = module.dns.reverse_zone_id
   autoscale_route53reverse_zone_arn = module.dns.reverse_zone_arn
   autoscale_route53zone_arn         = module.dns.private_zone_arn
-  devnet_id = module.networking.devnet_id
+  devnet_id                         = module.networking.devnet_id
+}
+
+module "monitoring" {
+  source                    = "./modules/monitoring"
+  base_dn                   = local.base_dn
+  sg_all_node_id            = module.securitygroups.security_group_all_node_instances_id
+  sg_open_rpc_id            = module.securitygroups.security_group_open_rpc_id
+  sg_open_rpc_geth_id       = module.securitygroups.security_group_open_rpc_geth_id
+  security_group_default_id = module.securitygroups.security_group_default_id
+  default_tags              = local.default_tags
+  devnet_id                 = module.networking.devnet_id
+  devnet_private_subnet_ids = module.networking.devnet_private_subnet_ids
+  devnet_public_subnet_ids  = module.networking.devnet_public_subnet_ids
+  network_type              = local.network_type
+  deployment_name           = var.deployment_name
+  devnet_key_pair_name      = module.asg.key_pair_name 
 }
 
 module "elb" {
-  source             = "./modules/elb"
-  http_rpc_port      = var.http_rpc_port
-  rootchain_rpc_port = var.rootchain_rpc_port
-  fullnode_count     = var.fullnode_count
-  validator_count    = var.validator_count
-  geth_count         = var.geth_count
-  route53_zone_id    = var.route53_zone_id
-  base_id            = local.base_id
-
+  source                      = "./modules/elb"
+  http_rpc_port               = var.http_rpc_port
+  rootchain_rpc_port          = var.rootchain_rpc_port
+  fullnode_count              = var.fullnode_count
+  validator_count             = var.validator_count
+  geth_count                  = var.geth_count
+  route53_zone_id             = var.route53_zone_id
+  base_id                     = local.base_id
   devnet_private_subnet_ids   = module.networking.devnet_private_subnet_ids
   devnet_public_subnet_ids    = module.networking.devnet_public_subnet_ids
   devnet_id                   = module.networking.devnet_id

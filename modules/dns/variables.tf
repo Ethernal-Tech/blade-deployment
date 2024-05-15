@@ -29,7 +29,7 @@ variable "geth_count" {
 
 variable "devnet_id" {
   description = "The ID of the VPC"
-  type = string
+  type        = string
 }
 variable "lb_int_rpc_domain" {
   type = string
@@ -44,6 +44,6 @@ variable "lb_ext_rpc_geth_domain" {
 }
 
 variable "route53_zone_id" {
-  description = "The ID for external DNS"
+  description = "The ID of the hosted zone to contain the CNAME record to our LB"
   type        = string
 }

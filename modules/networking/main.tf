@@ -20,7 +20,7 @@ resource "aws_internet_gateway" "devnet" {
 }
 
 resource "aws_eip" "nat" {
-  domain = "vpc"
+  domain     = "vpc"
   count      = length(var.zones)
   depends_on = [aws_internet_gateway.devnet]
   tags = {

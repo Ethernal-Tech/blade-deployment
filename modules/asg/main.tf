@@ -2,11 +2,6 @@ resource "tls_private_key" "pk" {
   algorithm = "RSA"
   rsa_bits  = 4096
 }
-
-locals {
-  devnet_key_name = "${var.base_devnet_key_name}-${var.deployment_name}-${var.network_type}"
-}
-
 resource "aws_key_pair" "devnet" {
   key_name   = local.devnet_key_name
   public_key = var.create_ssh_key ? tls_private_key.pk.public_key_openssh : var.devnet_key_value
@@ -59,19 +54,19 @@ resource "aws_launch_template" "validator" {
   }
 
   user_data = base64encode(templatefile("${path.module}/scripts/blade.sh", {
-    deployment_name = var.deployment_name,
-    hostname        = format("validator-%03d", count.index + 1)
+    deployment_name   = var.deployment_name,
+    hostname          = format("validator-%03d", count.index + 1)
     is_bootstrap_node = count.index == 0 ? true : false
-    blade_home_dir = "/var/lib/blade"
-    base_dn = var.base_dn
-    region = "us-west-2"
+    blade_home_dir    = local.blade_home_dir
+    base_dn           = var.base_dn
+    region            = local.region
   }))
 
   lifecycle {
     create_before_destroy = false
   }
 
-  depends_on = [ aws_ssm_parameter.validator_bootstrap ]
+  depends_on = [aws_ssm_parameter.validator_bootstrap]
 
 
 }
@@ -100,7 +95,7 @@ resource "aws_autoscaling_group" "validator" {
     preferences {
       min_healthy_percentage = 50
     }
-     
+
   }
   target_group_arns = [var.int_validator_alb_arn, var.ext_validator_alb_arn]
   initial_lifecycle_hook {
@@ -112,16 +107,8 @@ resource "aws_autoscaling_group" "validator" {
     role_arn                = aws_iam_role.lifecycle.arn
   }
 
-  # initial_lifecycle_hook {
-  #   name                    = "${aws_launch_template.validator[count.index].id}-lifecycle-terminating"
-  #   default_result          = "ABANDON"
-  #   heartbeat_timeout       = 60
-  #   lifecycle_transition    = "autoscaling:EC2_INSTANCE_TERMINATING"
-  #   notification_target_arn = aws_sns_topic.autoscale_handling.arn
-  #   role_arn                = aws_iam_role.lifecycle.arn
-  # }
   warm_pool {
-    min_size = 1
+    min_size   = 1
     pool_state = "Stopped"
   }
   force_delete_warm_pool = true
@@ -150,8 +137,8 @@ resource "aws_autoscaling_group" "validator" {
   }
 
   tag {
-    key = "service_name"
-    value = "node_exporter"
+    key                 = "service_name"
+    value               = "node_exporter"
     propagate_at_launch = true
   }
 
@@ -159,7 +146,7 @@ resource "aws_autoscaling_group" "validator" {
     create_before_destroy = false
   }
 
-  depends_on = [ aws_ssm_parameter.validator_bootstrap ]
+  depends_on = [aws_ssm_parameter.validator_bootstrap]
 
 
 }
@@ -209,12 +196,12 @@ resource "aws_launch_template" "fullnode" {
   }
 
   user_data = base64encode(templatefile("${path.module}/scripts/blade.sh", {
-    deployment_name = var.deployment_name,
-    hostname        = format("fullnode-%03d", count.index + 1)
+    deployment_name   = var.deployment_name,
+    hostname          = format("fullnode-%03d", count.index + 1)
     is_bootstrap_node = false
-    blade_home_dir = "/var/lib/blade"
-    base_dn = var.base_dn
-    region = "us-west-2"
+    blade_home_dir    = local.blade_home_dir
+    base_dn           = var.base_dn
+    region            = local.region
   }))
 
   lifecycle {
@@ -239,26 +226,9 @@ resource "aws_autoscaling_group" "fullnode" {
   termination_policies      = ["OldestInstance"]
   launch_template {
     id      = aws_launch_template.fullnode[count.index].id
-    version =  aws_launch_template.fullnode[count.index].latest_version
+    version = aws_launch_template.fullnode[count.index].latest_version
   }
   target_group_arns = [var.int_fullnode_alb_arn]
-  # initial_lifecycle_hook {
-  #   name                    = "${aws_launch_template.fullnode[count.index].id}-lifecycle-launching"
-  #   default_result          = "ABANDON"
-  #   heartbeat_timeout       = 60
-  #   lifecycle_transition    = "autoscaling:EC2_INSTANCE_LAUNCHING"
-  #   notification_target_arn = aws_sns_topic.autoscale_handling.arn
-  #   role_arn                = aws_iam_role.lifecycle.arn
-  # }
-
-  # initial_lifecycle_hook {
-  #   name                    = "${aws_launch_template.fullnode[count.index].id}-lifecycle-terminating"
-  #   default_result          = "ABANDON"
-  #   heartbeat_timeout       = 60
-  #   lifecycle_transition    = "autoscaling:EC2_INSTANCE_TERMINATING"
-  #   notification_target_arn = aws_sns_topic.autoscale_handling.arn
-  #   role_arn                = aws_iam_role.lifecycle.arn
-  # }
   tag {
     key                 = "Hostname"
     value               = format("fullnode-%03d.%s", count.index + 1, var.base_dn)
@@ -327,7 +297,6 @@ resource "aws_launch_template" "geth" {
     create_before_destroy = false
   }
 
-
 }
 
 
@@ -349,23 +318,7 @@ resource "aws_autoscaling_group" "geth" {
     version = "$Latest"
   }
   target_group_arns = [var.int_geth_alb_arn]
-  # initial_lifecycle_hook {
-  #   name                    = "${aws_launch_template.geth[count.index].id}-lifecycle-launching"
-  #   default_result          = "ABANDON"
-  #   heartbeat_timeout       = 60
-  #   lifecycle_transition    = "autoscaling:EC2_INSTANCE_LAUNCHING"
-  #   notification_target_arn = aws_sns_topic.autoscale_handling.arn
-  #   role_arn                = aws_iam_role.lifecycle.arn
-  # }
 
-  # initial_lifecycle_hook {
-  #   name                    = "${aws_launch_template.geth[count.index].id}-lifecycle-terminating"
-  #   default_result          = "ABANDON"
-  #   heartbeat_timeout       = 60
-  #   lifecycle_transition    = "autoscaling:EC2_INSTANCE_TERMINATING"
-  #   notification_target_arn = aws_sns_topic.autoscale_handling.arn
-  #   role_arn                = aws_iam_role.lifecycle.arn
-  # }
   tag {
     key                 = "Hostname"
     value               = format("geth-%03d", count.index + 1)
@@ -393,6 +346,5 @@ resource "aws_autoscaling_group" "geth" {
   lifecycle {
     create_before_destroy = false
   }
-
 
 }

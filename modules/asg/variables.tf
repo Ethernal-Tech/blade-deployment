@@ -48,13 +48,16 @@ variable "devnet_key_value" {
 }
 
 variable "devnet_private_subnet_ids" {
+  description = "Subnet IDs used in the private network"
   type = list(string)
 }
 variable "devnet_public_subnet_ids" {
+   description = "Subnet IDs used in the public network"
   type = list(string)
 }
 
 variable "ec2_profile_name" {
+  description = "value"
   type = string
 }
 
@@ -155,6 +158,6 @@ variable "reverse_zone_id" {
 }
 
 variable "devnet_id" {
-  description = "The VPC id"
-  
+  description = "The ID of the VPC"
+  type        = string
 }
