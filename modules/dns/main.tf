@@ -165,7 +165,7 @@ resource "aws_route53_record" "public_rpc" {
 }
 
 resource "aws_route53_record" "public_explorer" {
-  count   = var.explorer_count > 0 ? var.explorer_count : 0
+  count   = var.explorer_count > 0 ? 1 : 0
   zone_id = data.aws_route53_zone.public_zone.id
   name    = "explorer"
   type    = "CNAME"

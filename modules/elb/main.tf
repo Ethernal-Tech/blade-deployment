@@ -206,13 +206,13 @@ resource "aws_lb_target_group" "explorer" {
   protocol    = "HTTP"
   target_type = "instance"
   vpc_id      = var.devnet_id
-  port        = 3000
+  port        = 4000
 }
 resource "aws_lb_target_group_attachment" "explorer" {
   count            = length(var.explorer_instance_ids)
   target_group_arn = aws_lb_target_group.explorer[count.index].arn
   target_id        = element(var.explorer_instance_ids, count.index)
-  port             = 3000
+  port             = 4000
 }
 resource "aws_lb_listener" "explorer" {
   count             = var.explorer_count
