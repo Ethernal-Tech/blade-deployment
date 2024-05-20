@@ -77,6 +77,15 @@ resource "aws_route53_record" "int_rpc" {
   records = [var.aws_lb_int_rpc_domain]
 }
 
+resource "aws_route53_record" "explorer" {
+  count   = var.explorer_count > 0 ? var.explorer_count : 0
+  zone_id = aws_route53_zone.private_zone.zone_id
+  name    = "explorer-db.${var.base_dn}"
+  type    = "CNAME"
+  ttl     = "60"
+  records = var.aws_rds_cluster_explorer
+}
+
 resource "aws_route53_record" "geth_rpc" {
   zone_id = aws_route53_zone.private_zone.zone_id
   name    = "geth-rpc.${var.base_dn}"
@@ -85,42 +94,89 @@ resource "aws_route53_record" "geth_rpc" {
   records = [var.aws_lb_ext_rpc_geth_domain]
 }
 
-data "aws_route53_zone" "ext_rpc" {
-  count   = var.route53_zone_id == "" ? 0 : 1
-  zone_id = var.route53_zone_id
+# data "aws_route53_zone" "ext_rpc" {
+#   count   = var.route53_zone_id == "" ? 0 : 1
+#   zone_id = var.route53_zone_id
+# }
+
+# resource "aws_acm_certificate" "ext_rpc" {
+#   count             = var.route53_zone_id == "" ? 0 : 1
+#   domain_name       = "${var.deployment_name}.${data.aws_route53_zone.ext_rpc[0].name}"
+#   validation_method = "DNS"
+
+#   lifecycle {
+#     create_before_destroy = true
+#   }
+# }
+
+# resource "aws_route53_record" "validation" {
+#   for_each = {
+#     for dvo in(var.route53_zone_id == "" ? [] : aws_acm_certificate.ext_rpc[0].domain_validation_options) : dvo.domain_name => {
+#       name   = dvo.resource_record_name
+#       record = dvo.resource_record_value
+#       type   = dvo.resource_record_type
+#     }
+#   }
+
+#   allow_overwrite = true
+#   name            = each.value.name
+#   records         = [each.value.record]
+#   ttl             = 60
+#   type            = each.value.type
+#   zone_id         = var.route53_zone_id
+# }
+
+# resource "aws_acm_certificate_validation" "blade" {
+#   count                   = var.route53_zone_id == "" ? 0 : 1
+#   certificate_arn         = aws_acm_certificate.ext_rpc[0].arn
+#   validation_record_fqdns = [for record in aws_route53_record.validation : record.fqdn]
+# }
+
+resource "aws_route53_record" "explorer_private" {
+  count   = var.explorer_count
+  zone_id = aws_route53_zone.private_zone.zone_id
+  name    = format("explorer-%03d.%s", count.index + 1, var.base_dn)
+  type    = "A"
+  ttl     = "60"
+  records = [element(var.explorer_private_ips, count.index)]
+}
+resource "aws_route53_record" "explorer_private_reverse" {
+  count   = var.explorer_count
+  zone_id = aws_route53_zone.reverse_zone.zone_id
+  records = [format("explorer-%03d.%s", count.index + 1, var.base_dn)]
+  type    = "PTR"
+  ttl     = "60"
+  name    = join(".", reverse(split(".", element(var.explorer_private_ips, count.index))))
 }
 
-resource "aws_acm_certificate" "ext_rpc" {
-  count   = var.route53_zone_id == "" ? 0 : 1
-  domain_name       = "${var.deployment_name}.${data.aws_route53_zone.ext_rpc[0].name}"
-  validation_method = "DNS"
+#### Hard coded zone ids for testnet.ethernal.work
 
-  lifecycle {
-    create_before_destroy = true
-  }
+data "aws_route53_zone" "public_zone" {
+  name         = "testnet.ethernal.work"
+  private_zone = false
 }
 
-resource "aws_route53_record" "validation" {
-  for_each = {
-    for dvo in (var.route53_zone_id == "" ? [] : aws_acm_certificate.ext_rpc[0].domain_validation_options) : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      record = dvo.resource_record_value
-      type   = dvo.resource_record_type
-    }
-  }
-
-  allow_overwrite = true
-  name            = each.value.name
-  records         = [each.value.record]
-  ttl             = 60
-  type            = each.value.type
-  zone_id         = var.route53_zone_id
+resource "aws_route53_record" "public_rpc" {
+  zone_id = data.aws_route53_zone.public_zone.id
+  name    = "rpc"
+  type    = "CNAME"
+  ttl     = "60"
+  records = [var.aws_lb_ext_rpc_domain]
 }
 
-resource "aws_acm_certificate_validation" "blade" {
-  count   = var.route53_zone_id == "" ? 0 : 1
-  certificate_arn         = aws_acm_certificate.ext_rpc[0].arn
-  validation_record_fqdns = [for record in aws_route53_record.validation : record.fqdn]
+resource "aws_route53_record" "public_explorer" {
+  count   = var.explorer_count > 0 ? var.explorer_count : 0
+  zone_id = data.aws_route53_zone.public_zone.id
+  name    = "explorer"
+  type    = "CNAME"
+  ttl     = "60"
+  records = [var.aws_lb_explorer_domain]
 }
 
-
+resource "aws_route53_record" "public_p2p" {
+  zone_id = data.aws_route53_zone.public_zone.id
+  name    = "p2p"
+  type    = "CNAME"
+  ttl     = "60"
+  records = [var.aws_lb_p2p_domain]
+}

@@ -35,3 +35,12 @@ output "fullnode_primary_network_interface_ids" {
 output "geth_primary_network_interface_ids" {
   value = aws_instance.geth.*.primary_network_interface_id
 }
+output "explorer_primary_network_interface_ids" {
+  value = aws_instance.explorer.*.primary_network_interface_id
+}
+output "explorer_private_ips" {
+  value = aws_network_interface.explorer_private.*.private_ip
+}
+output "explorer_instance_ids" {
+  value = aws_instance.explorer.*.id
+}

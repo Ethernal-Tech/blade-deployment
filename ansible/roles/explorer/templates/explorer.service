@@ -1,0 +1,88 @@
+[Unit]
+Description=Polygon Blockscout
+Documentation=https://docs.blockscout.com/
+
+# Bring this up after the network is online
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+WorkingDirectory=/opt/blockscout
+EnvironmentFile=/opt/blockscout/variables.env
+ExecStart=mix phx.server
+MemoryHigh={{ (ansible_memtotal_mb * 0.7) | round | int }}M
+MemoryMax={{ (ansible_memtotal_mb * 0.8) | round | int }}M
+MemorySwapMax=0
+
+Restart=on-failure
+RestartSec=5s
+
+Type=simple
+
+User={{ blockscout_user }}
+Group={{ blockscout_user }}-group
+
+TimeoutStartSec=infinity
+TimeoutStopSec=600
+
+RuntimeDirectory=explorer
+RuntimeDirectoryMode=0750
+
+ConfigurationDirectory=explorer
+ConfigurationDirectoryMode=0750
+
+StateDirectory=explorer
+StateDirectoryMode=0750
+
+# Hardening measures
+# https://www.linuxjournal.com/content/systemd-service-strengthening
+# sudo systemd-analyze security
+# systemd-analyze syscall-filter
+####################
+
+# Provide a private /tmp and /var/tmp.
+PrivateTmp=true
+
+# Mount /usr, /boot/ and /etc read-only for the process.
+ProtectSystem=full
+
+# We can't protect home because of the installation process of cargo/rust
+ProtectHome=false
+
+# Disallow the process and all of its children to gain
+# new privileges through execve().
+NoNewPrivileges=true
+
+# Use a new /dev namespace only populated with API pseudo devices
+# such as /dev/null, /dev/zero and /dev/random.
+PrivateDevices=true
+
+# rustc: error while loading shared libraries:
+# libLLVM-15-rust-1.66.1-stable.so: cannot enable executable stack as
+# shared object requires: Operation not permitted
+MemoryDenyWriteExecute=false
+
+# Deny any ability to create namespaces. Should not be needed
+RestrictNamespaces=true
+
+# Restrict any kind of special capabilities
+CapabilityBoundingSet=
+
+# Allow minimal system calls for IO (filesystem network) and basic systemctl operations
+SystemCallFilter=@signal @network-io @ipc @file-system @chown @system-service
+
+# Access to  /sys/fs/cgroup/ should not be needed
+ProtectControlGroups=true
+
+# We don't need access to special file systems or extra kernel modules to work
+ProtectKernelModules=true
+
+# Access to proc/sys/, /sys/, /proc/sysrq-trigger, /proc/latency_stats, /proc/acpi, /proc/timer_stats, /proc/fs and /proc/irq is not needed
+ProtectKernelTunables=true
+
+# From the docs "As the SUID/SGID bits are mechanisms to elevate privileges, and allow users to acquire the identity of other users, it is recommended to restrict creation of SUID/SGID files to the few programs that actually require them"
+RestrictSUIDSGID=true
+
+[Install]
+WantedBy=multi-user.target
+

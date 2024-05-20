@@ -114,3 +114,43 @@ resource "aws_instance" "geth" {
     Role     = "geth"
   }
 }
+
+resource "aws_network_interface" "explorer_private" {
+  count     = var.explorer_count
+  subnet_id = element(var.private_network_mode ? var.devnet_private_subnet_ids : var.devnet_public_subnet_ids, count.index)
+  tags = {
+    Name = format("explorer-private-%03d.%s", count.index + 1, var.base_dn)
+  }
+}
+
+resource "aws_instance" "explorer" {
+  ami                  = var.base_ami
+  instance_type        = var.explorer_instance_type
+  count                = var.explorer_count
+  key_name             = aws_key_pair.devnet.key_name
+  iam_instance_profile = var.ec2_profile_name
+
+  root_block_device {
+    delete_on_termination = true
+    volume_size           = 30
+    volume_type           = "gp2"
+    tags = {
+      "nx-servicename" = "732"
+    }
+  }
+
+  network_interface {
+    network_interface_id = element(aws_network_interface.explorer_private, count.index).id
+    device_index         = 0
+  }
+
+  tags = {
+    Name              = format("explorer-%03d.%s", count.index + 1, var.base_dn)
+    Hostname          = format("explorer-%03d", count.index + 1)
+    Role              = "explorer"
+    "nx-filter"       = ""
+    "nx-servergroup"  = ""
+    "nx-servicename"  = "732"
+    "nx-settinggroup" = ""
+  }
+}

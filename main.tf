@@ -25,13 +25,19 @@ module "dns" {
   geth_count      = var.geth_count
   route53_zone_id = var.route53_zone_id
   deployment_name = var.deployment_name
+  explorer_count  = var.explorer_count
 
   devnet_id                  = module.networking.devnet_id
   aws_lb_int_rpc_domain      = module.elb.aws_lb_int_rpc_domain
   aws_lb_ext_rpc_geth_domain = module.elb.aws_lb_ext_rpc_geth_domain
+  aws_lb_explorer_domain     = module.elb.aws_lb_explorer_domain
+  aws_lb_ext_rpc_domain      = module.elb.aws_lb_ext_rpc_domain
+  aws_lb_p2p_domain          = module.elb.aws_lb_p2p_domain
   validator_private_ips      = module.ec2.validator_private_ips
   fullnode_private_ips       = module.ec2.fullnode_private_ips
   geth_private_ips           = module.ec2.geth_private_ips
+  explorer_private_ips       = module.ec2.explorer_private_ips
+  aws_rds_cluster_explorer   = module.rds.aws_rds_cluster_explorer
 }
 
 module "ebs" {
@@ -46,13 +52,16 @@ module "ebs" {
 }
 
 module "ec2" {
-  source               = "./modules/ec2"
-  base_dn              = local.base_dn
-  base_instance_type   = var.base_instance_type
-  base_ami             = local.base_ami
-  fullnode_count       = var.fullnode_count
-  geth_count           = var.geth_count
-  validator_count      = var.validator_count
+  source                 = "./modules/ec2"
+  base_dn                = local.base_dn
+  base_instance_type     = var.base_instance_type
+  base_ami               = local.base_ami
+  fullnode_count         = var.fullnode_count
+  geth_count             = var.geth_count
+  validator_count        = var.validator_count
+  explorer_count         = var.explorer_count
+  explorer_instance_type = var.explorer_instance_type
+
   base_devnet_key_name = format("%s_ssh_key", var.deployment_name)
   private_network_mode = var.private_network_mode
   network_type         = local.network_type
@@ -74,16 +83,18 @@ module "elb" {
   geth_count         = var.geth_count
   route53_zone_id    = var.route53_zone_id
   base_id            = local.base_id
+  explorer_count     = var.explorer_count
 
   devnet_private_subnet_ids   = module.networking.devnet_private_subnet_ids
   devnet_public_subnet_ids    = module.networking.devnet_public_subnet_ids
   fullnode_instance_ids       = module.ec2.fullnode_instance_ids
   validator_instance_ids      = module.ec2.validator_instance_ids
   geth_instance_ids           = module.ec2.geth_instance_ids
+  explorer_instance_ids       = module.ec2.explorer_instance_ids
   devnet_id                   = module.networking.devnet_id
   security_group_open_http_id = module.securitygroups.security_group_open_http_id
   security_group_default_id   = module.securitygroups.security_group_default_id
-  certificate_arn             = module.dns.certificate_arn
+  # certificate_arn             = module.dns.certificate_arn
 }
 
 module "networking" {
@@ -100,16 +111,17 @@ module "securitygroups" {
   depends_on = [
     module.networking
   ]
-  network_type       = local.network_type
-  deployment_name    = var.deployment_name
-  network_acl        = var.network_acl
-  http_rpc_port      = var.http_rpc_port
-  rootchain_rpc_port = var.rootchain_rpc_port
-
+  network_type                            = local.network_type
+  deployment_name                         = var.deployment_name
+  network_acl                             = var.network_acl
+  http_rpc_port                           = var.http_rpc_port
+  rootchain_rpc_port                      = var.rootchain_rpc_port
+  fullnode_count                          = var.fullnode_count
   devnet_id                               = module.networking.devnet_id
   validator_primary_network_interface_ids = module.ec2.validator_primary_network_interface_ids
   fullnode_primary_network_interface_ids  = module.ec2.fullnode_primary_network_interface_ids
   geth_primary_network_interface_ids      = module.ec2.geth_primary_network_interface_ids
+  explorer_primary_network_interface_ids  = module.ec2.explorer_primary_network_interface_ids
   geth_count                              = var.geth_count
 }
 
@@ -118,6 +130,15 @@ module "ssm" {
   base_dn         = local.base_dn
   deployment_name = var.deployment_name
   network_type    = local.network_type
+}
+
+module "rds" {
+  source                       = "./modules/rds"
+  explorer_count               = var.explorer_count
+  zones                        = var.zones
+  devnet_private_subnet_ids    = module.networking.devnet_private_subnet_ids
+  base_id                      = local.base_id
+  explorer_rds_master_password = var.explorer_rds_master_password
 }
 
 provider "aws" {

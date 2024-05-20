@@ -1,0 +1,269 @@
+---
+- name: Create the explorer group
+  ansible.builtin.group:
+    name: "{{ blockscout_user }}-group"
+    state: present
+
+- name: Add the explore user to the explore group
+  ansible.builtin.user:
+    name: "{{ blockscout_user }}"
+    groups: "{{ blockscout_user }}-group"
+    comment: Explorer Application user
+
+- name: Create keyring directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    mode: "0755"
+
+- name: Blockscout Dependency - NodeJS Key # noqa command-instead-of-module
+  ansible.builtin.shell: |
+    apt-get update
+    apt-get install -y ca-certificates curl gnupg
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+    NODE_MAJOR=20
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list > /dev/null
+    apt-get update
+    apt-get install nodejs -y
+  args:
+    executable: /bin/bash
+    creates: /etc/apt/sources.list.d/nodesource.list
+
+- name: Blockscout Dependency - Erlang/OTP
+  ansible.builtin.apt:
+    pkg:
+      - erlang
+    state: present
+    update_cache: true
+
+- name: Blockscout Dependency - Unzip
+  ansible.builtin.apt:
+    pkg:
+      - unzip
+    state: present
+
+- name: Blockscout Dependency - Elixir
+  ansible.builtin.shell: |
+    pushd /opt
+    mkdir elixir
+    pushd elixir
+    wget https://repo.hex.pm/builds/elixir/v1.13.4-otp-24.zip
+    unzip v1.13.4-otp-24.zip
+    popd
+    popd
+
+    pushd /usr/local/bin
+    ln -s /opt/elixir/bin/elixir .
+    ln -s /opt/elixir/bin/elixirc .
+    ln -s /opt/elixir/bin/iex .
+    ln -s /opt/elixir/bin/mix .
+    popd
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/mix
+
+- name: Blockscout Dependency - Node JS 16
+  ansible.builtin.apt:
+    pkg:
+      - nodejs
+    state: present
+
+- name: Blockscout Dependency - Automake
+  ansible.builtin.apt:
+    pkg:
+      - automake
+    state: present
+
+- name: Blockscout Dependency - Libtool
+  ansible.builtin.apt:
+    pkg:
+      - libtool
+    state: present
+
+- name: Blockscout Dependency - Inotify-tools
+  ansible.builtin.apt:
+    pkg:
+      - inotify-tools
+    state: present
+
+- name: Blockscout Dependency - GCC
+  ansible.builtin.apt:
+    pkg:
+      - gcc
+    state: present
+
+- name: Blockscout Dependency - GMP
+  ansible.builtin.apt:
+    pkg:
+      - libgmp-dev
+    state: present
+
+- name: Blockscout Dependency - Make
+  ansible.builtin.apt:
+    pkg:
+      - make
+    state: present
+
+- name: Blockscout Dependency - G++ Compiler
+  ansible.builtin.apt:
+    pkg:
+      - g++
+    state: present
+
+- name: Smart Contract Verifier Dependency - Openssl
+  ansible.builtin.apt:
+    pkg:
+      - openssl
+      - libssl-dev
+      - pkg-config
+    state: present
+
+- name: Install ACL Package to support becoming unprivileged user
+  ansible.builtin.apt:
+    pkg:
+      - acl
+    state: present
+
+- name: Blockscout Dependency - Rust & Cargo # noqa command-instead-of-module
+  ansible.builtin.shell: |
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    pushd /usr/local/bin
+    cp $HOME/.cargo/bin/* .
+    popd
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/cargo
+
+- name: Build and install smart contract verifier
+  ansible.builtin.shell: |
+    cargo install --git https://github.com/blockscout/blockscout-rs smart-contract-verifier-http
+    pushd /usr/local/bin
+    cp $HOME/.cargo/bin/smart-contract-verifier-http .
+    popd
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/smart-contract-verifier-http
+
+- name: Download the latest stable release of Rust and set it as default toolchain.
+  ansible.builtin.command: rustup default stable
+  become: true
+  become_user: "{{ blockscout_user }}"
+  changed_when: true
+
+- name: Create an systemd service file for explorer
+  ansible.builtin.template:
+    src: explorer.service
+    dest: /etc/systemd/system/explorer.service
+    mode: "0644"
+
+- name: Create an systemd service file for the smart contract verifier
+  ansible.builtin.template:
+    src: contract-verifier.service
+    dest: /etc/systemd/system/contract-verifier.service
+    mode: "0644"
+
+- name: Add /opt/blockscout as git safe directory # noqa command-instead-of-module
+  ansible.builtin.shell: |
+    git config --global --add safe.directory /opt/blockscout
+    touch /opt/.gitsafedir
+  args:
+    executable: /bin/bash
+    creates: /opt/.gitsafedir
+
+
+- name: Clone Blockscout Repo
+  ansible.builtin.git:
+    repo: https://github.com/blockscout/blockscout
+    dest: /opt/blockscout
+    version: "{{ blockscout_version }}"
+    force: true
+
+- name: Set Blockscout Repo ownership
+  ansible.builtin.file:
+    path: /opt/blockscout
+    state: directory
+    owner: "{{ blockscout_user }}"
+    group: "{{ blockscout_user }}-group"
+    recurse: true
+    mode: o-rwx,u+rwx,g+rx
+
+- name: Create an environment variable file
+  ansible.builtin.template:
+    src: variables.env
+    dest: /opt/blockscout/variables.env
+    owner: "{{ blockscout_user }}"
+    group: "{{ blockscout_user }}-group"
+    mode: "0400"
+
+- name: Blockscout compilation
+  ansible.builtin.shell: |
+    pushd /opt/blockscout
+    set -a
+    source /opt/blockscout/variables.env
+    set +a
+    mix local.hex --force
+    mix do deps.get, local.rebar --force, deps.compile
+    mix compile
+    popd
+  args:
+    executable: /bin/bash
+    creates: /opt/blockscout/_build
+  become: true
+  become_user: "{{ blockscout_user }}"
+
+- name: Blockscout database migration
+  ansible.builtin.shell: |
+    pushd /opt/blockscout
+    set -a
+    source /opt/blockscout/variables.env
+    set +a
+    # drop is needed when doing a reset of an existing environment
+    # mix do ecto.drop, ecto.create, ecto.migrate
+    mix do ecto.create, ecto.migrate
+    touch /opt/blockscout/.initial-blockscout-db-migration
+    popd
+  args:
+    executable: /bin/bash
+    creates: /opt/blockscout/.initial-blockscout-db-migration
+  when: hostvars[inventory_hostname].tags["Hostname"] == "explorer-001"
+  become: true
+  become_user: "{{ blockscout_user }}"
+
+- name: Blockscout npm setup
+  ansible.builtin.shell: |
+    set -a
+    source /opt/blockscout/variables.env
+    set +a
+
+    pushd /opt/blockscout/apps/block_scout_web/assets
+    npm install
+    node_modules/webpack/bin/webpack.js --mode production
+    popd
+
+    pushd /opt/blockscout/apps/explorer
+    npm install
+    popd
+
+    mix phx.digest
+
+    pushd /opt/blockscout/apps/block_scout_web
+    mix phx.gen.cert blockscout blockscout.local
+    popd
+  args:
+    executable: /bin/bash
+    creates: /opt/blockscout/apps/block_scout_web/priv/cert/selfsigned.pem
+  become: true
+  become_user: "{{ blockscout_user }}"
+
+- name: Restart Verifier Service
+  ansible.builtin.systemd:
+    state: started
+    name: contract-verifier
+    enabled: true
+    daemon_reload: true
+
+- name: Restart Explorer Service
+  ansible.builtin.systemd:
+    state: started
+    name: explorer
+    enabled: true
+    daemon_reload: true

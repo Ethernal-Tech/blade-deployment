@@ -49,11 +49,19 @@ variable "security_group_default_id" {
   type = string
 }
 
-variable "certificate_arn" {
-  type = string
-}
+# variable "certificate_arn" {
+#   type = string
+# }
 
 variable "route53_zone_id" {
   description = "The ID for external DNS"
   type        = string
+}
+
+variable "explorer_count" {
+  description = "The number of nodes to run as a blockchain explorer"
+  type        = number
+}
+variable "explorer_instance_ids" {
+  type = list(string)
 }

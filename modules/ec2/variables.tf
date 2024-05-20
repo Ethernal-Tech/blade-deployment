@@ -58,3 +58,12 @@ variable "geth_count" {
   description = "The number of geth nodes that we're going to deploy"
   type        = number
 }
+
+variable "explorer_count" {
+  description = "The number of nodes to run as a blockchain explorer"
+  type        = number
+}
+variable "explorer_instance_type" {
+  description = "The type of instance that we're going to use"
+  type        = string
+}

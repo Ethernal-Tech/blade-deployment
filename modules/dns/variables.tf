@@ -51,3 +51,23 @@ variable "route53_zone_id" {
   description = "The ID for external DNS"
   type        = string
 }
+
+variable "aws_lb_ext_rpc_domain" {
+  type = string
+}
+variable "explorer_count" {
+  description = "The number of nodes to run as a blockchain explorer"
+  type        = number
+}
+variable "explorer_private_ips" {
+  type = list(string)
+}
+variable "aws_lb_explorer_domain" {
+  type = string
+}
+variable "aws_lb_p2p_domain" {
+  type = string
+}
+variable "aws_rds_cluster_explorer" {
+  type = list(string)
+}

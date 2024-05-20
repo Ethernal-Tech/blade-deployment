@@ -41,6 +41,13 @@
     - mounted-storage
     - blade
 
+- hosts: explorer
+  become: true
+  tags:
+    - explorer
+  roles:
+    - explorer
+
 - hosts: fullnode:validator:explorer
   become: true
   tags:
