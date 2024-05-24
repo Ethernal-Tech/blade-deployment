@@ -26,31 +26,32 @@
   roles:
     - common
 
-- hosts: geth
-  become: true
-  tags:
-    - geth
-  roles:
-    - rootchain-server
+#  not required for apex project
+# - hosts: geth
+#   become: true
+#   tags:
+#     - geth
+#   roles:
+#     - rootchain-server
 
 - hosts: fullnode:validator
   become: true
   tags:
     - blade
   roles:
-    - mounted-storage
+#    - mounted-storage
     - blade
 
-- hosts: validator
-  become: true
-  tags:
-    - apex
-  roles:
-    - apex
+# - hosts: validator
+#   become: true
+#   tags:
+#     - apex
+#   roles:
+#     - apex
 
-- hosts: fullnode:validator:explorer
-  become: true
-  tags:
-    - logrotate
-  roles:
-    - logrotate
+# - hosts: fullnode:validator:explorer
+#   become: true
+#   tags:
+#     - logrotate
+#   roles:
+#     - logrotate

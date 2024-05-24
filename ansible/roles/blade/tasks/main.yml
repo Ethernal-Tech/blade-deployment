@@ -10,6 +10,13 @@
         name: "{{ blade_user }}"
         groups: "{{ blade_user }}-group"
         comment: Blade Application user
+    - name: Copy aws credentials from root
+      copy:
+        src: "/root/.aws"
+        dest: "/home/{{ blade_user }}"
+        owner: "{{ blade_user }}"
+        group: "{{ blade_user }}-group"
+        remote_src: yes
 
 - name: Create blade folders
   block:

@@ -19,7 +19,7 @@ main() {
     blade genesis \
         --consensus polybft \
         --chain-id {{ chain_id }} \
-        {% for item in hostvars %}{% if (hostvars[item].tags.Role == "validator") %} --validators /dns4/{{ hostvars[item].tags["Name"] }}/tcp/{{ blade_p2p_port }}/p2p/$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].node_id'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].address' | sed 's/^0x//'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].bls_pubkey') {% endif %}{% endfor %} \
+        {% for item in hostvars %}{% if (hostvars[item].tags.Role == "validator") %} --validators /dns4/{{ hostvars[item].private_ip_address }}/tcp/{{ blade_p2p_port }}/p2p/$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].node_id'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].address' | sed 's/^0x//'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].bls_pubkey') {% endif %}{% endfor %} \
         {% for item in hostvars %}{% if (hostvars[item].tags.Role == "fullnode") %} --premine $(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].address'):$AMT_24 {% endif %}{% endfor %} \
         --block-gas-limit {{ block_gas_limit }} \
         --premine {{ loadtest_account }}:$AMT_24 \
@@ -29,7 +29,7 @@ main() {
         --reward-wallet 0xDEADBEEF:1000000 \
         --block-time {{ block_time }}s \
         --native-token-config {{ native_token_config }} \
-        --blade-admin $(cat validator-001.{{ base_dn }}.json | jq -r '.[0].address') \
+        --blade-admin $(cat `ls *-validator-* | head -1` | jq -r '.[0].address') \
         --proxy-contracts-admin $PROXY_CONTRACTS_ADMIN \
         --base-fee-config 1000000000
 

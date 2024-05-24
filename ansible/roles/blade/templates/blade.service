@@ -20,7 +20,7 @@ ExecStart=blade server --data-dir {{ blade_home_dir }} \
     --log-level {{ log_level }} \
     --block-gas-target {{ block_gas_limit }} \
     --num-block-confirmations 2 \
-    --secrets-config {{ blade_home_dir }}/bootstrap/secrets/{{ hostvars[inventory_hostname].tags.Hostname }}.{{ base_dn }}_config.json \
+    --secrets-config {{ blade_home_dir }}/bootstrap/secrets/{{ hostvars[inventory_hostname].tags.Name }}_config.json \
     {% if (hostvars[inventory_hostname].tags.Hostname == "validator-001") %}
     --relayer \
     {% endif %}
@@ -62,7 +62,7 @@ PrivateTmp=true
 ProtectSystem=full
 
 # Deny access to /home, /root and /run/user
-ProtectHome=true
+ProtectHome=false
 
 # Disallow the process and all of its children to gain
 # new privileges through execve().
