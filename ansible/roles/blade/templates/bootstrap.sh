@@ -15,6 +15,7 @@ main() {
     PROXY_CONTRACTS_ADMIN=0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed
 
     AMT_24=1000000000000000000000000
+    AMT_70=10000000000000000000000000000000000000000000000000000000000000000000000
 
     blade genesis \
         --consensus polybft \
@@ -22,7 +23,7 @@ main() {
         {% for item in hostvars %}{% if (hostvars[item].tags.Role == "validator") %} --validators /dns4/{{ hostvars[item].tags["Name"] }}/tcp/{{ blade_p2p_port }}/p2p/$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].node_id'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].address' | sed 's/^0x//'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].bls_pubkey') {% endif %}{% endfor %} \
         {% for item in hostvars %}{% if (hostvars[item].tags.Role == "fullnode") %} --premine $(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].address'):$AMT_24 {% endif %}{% endfor %} \
         --block-gas-limit {{ block_gas_limit }} \
-        --premine {{ loadtest_account }}:$AMT_24 \
+        --premine {{ faucet_account }}:$AMT_70 \
         --premine $ZERO_ADDRESS \
         {% if (is_london_fork_active) %} --burn-contract 0:$ZERO_ADDRESS \ {% endif %}
         --epoch-size 10 \

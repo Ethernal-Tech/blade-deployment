@@ -3,32 +3,35 @@
   ansible.builtin.file:
     path: /tmp/logs
     state: directory
+    mode: '0755'
 
 - name: Create validator-001 archive
   community.general.archive:
-    path: 
-    - /var/log/syslog*
-    - "{{ blade_home_dir }}/logs"
-    - "{{ blade_home_dir }}/init.sh"
-    - "{{ blade_home_dir }}/bootstrap_output.txt"
-    - "{{ blade_home_dir }}/bootstrap"
+    path:
+      - /var/log/syslog*
+      - "{{ blade_home_dir }}/logs"
+      - "{{ blade_home_dir }}/init.sh"
+      - "{{ blade_home_dir }}/bootstrap_output.txt"
+      - "{{ blade_home_dir }}/bootstrap"
     dest: "/tmp/logs/{{ hostvars[inventory_hostname].tags.Hostname }}.tar.gz"
     format: gz
+    mode: '0755'
   when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"
 
 - name: Create other archives
   community.general.archive:
-    path: 
-    - /var/log/syslog*
-    - "{{ blade_home_dir }}/logs"
-    - /var/lib/geth/geth/nodekey
+    path:
+      - /var/log/syslog*
+      - "{{ blade_home_dir }}/logs"
+      - /var/lib/geth/geth/nodekey
     dest: "/tmp/logs/{{ hostvars[inventory_hostname].tags.Hostname }}.tar.gz"
     format: gz
     force_archive: true
+    mode: '0755'
   when: hostvars[inventory_hostname].tags["Hostname"] != "validator-001"
 
 - name: Get current datetime
-  ansible.builtin.shell: "date +%Y-%m-%d-%H-%M"
+  ansible.builtin.command: "date +%Y-%m-%d-%H-%M"
   register: current_datetime
 
 - name: Upload logs to S3 Bucket

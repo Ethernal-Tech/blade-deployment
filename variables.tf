@@ -7,7 +7,7 @@ variable "aws_profile" {
 variable "base_instance_type" {
   description = "The type of instance that we're going to use"
   type        = string
-  default     = "c6a.large"
+  default     = "c6a.xlarge"
 }
 
 variable "company_name" {
@@ -139,7 +139,7 @@ variable "validator_count" {
 variable "zones" {
   description = "The availability zones for deployment"
   type        = list(string)
-  default     = ["us-west-2a", "us-west-2b", "us-west-2c", "us-west-2d"]
+  default     = ["us-west-2a", "us-west-2b", "us-west-2c"]
 }
 
 variable "explorer_count" {
@@ -151,7 +151,7 @@ variable "explorer_count" {
 variable "explorer_instance_type" {
   description = "The type of instance that we're going to use"
   type        = string
-  default     = "c6a.2large"
+  default     = "c6a.2xlarge"
 }
 
 variable "explorer_rds_master_password" {

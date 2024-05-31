@@ -5,7 +5,7 @@
   ansible.builtin.get_url:
     url: "https://go.dev/dl/go{{ go_tag }}.tar.gz"
     dest: "/opt/go{{ go_tag }}.tar.gz"
-    mode: 0755
+    mode: '0755'
     force: false
 
 - name: Extract go binary

@@ -1,0 +1,9 @@
+---
+# .ansible-lint
+
+skip_list:
+  - risky-shell-pipe # Shells that use pipes should set the pipefail option.
+  - var-naming[no-role-prefix] # Variables names from within roles should use role_name_ as a prefix.
+  
+  # TODO: don't skip this rule and fix the issues instead
+  - no-changed-when # Commands should not change things if nothing needs doing.

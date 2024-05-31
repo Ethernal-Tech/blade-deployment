@@ -1,17 +1,18 @@
 ---
 # Bootstrap blade
+
 - name: Produce blade bootstrap script on the first validator
   ansible.builtin.template:
     src: bootstrap.sh
     dest: "{{ blade_home_dir }}/init.sh"
-    mode: 0700
+    mode: '0700'
   when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"
 
 - name: Produce blade secrets config file on the first validator
   ansible.builtin.template:
     src: config.json
     dest: "{{ blade_home_dir }}/config.json"
-    mode: 0700
+    mode: '0700'
   when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"
 
 - name: Execute bootstrap on the first validator
@@ -35,19 +36,19 @@
         state: directory
         owner: "{{ blade_user }}"
         group: "{{ blade_user }}-group"
-        mode: 0755
+        mode: '0755'
     - name: Copy the bootstrap archive to a remote system temp folder
       ansible.builtin.copy:
         src: "/tmp/{{ base_dn }}.tar.gz"
         dest: "/tmp/{{ base_dn }}.tar.gz"
         owner: "{{ blade_user }}"
         group: "{{ blade_user }}-group"
-        mode: 0755
+        mode: '0755'
     - name: Extract bootstrap files
       ansible.builtin.unarchive:
         src: "/tmp/{{ base_dn }}.tar.gz"
         dest: "{{ blade_home_dir }}/bootstrap/"
-        mode: 0755
+        mode: '0755'
         remote_src: true
 
 - name: Change genesis permissions
@@ -55,4 +56,4 @@
     path: "{{ blade_home_dir }}/bootstrap/genesis.json"
     owner: "{{ blade_user }}"
     group: "{{ blade_user }}-group"
-    mode: 0644
+    mode: '0644'

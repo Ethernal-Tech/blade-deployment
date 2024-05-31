@@ -1,6 +1,13 @@
 .DS_Store
-private.env
+*.env
 *.key
 *.pem
-Makefile
+*.pub
+*sk*
+ssh*
+backend.hcl.s3
 local.tfvars
+local.yml
+password.txt
+ansible/roles/explorer/changes
+ansible/roles/faucet/changes

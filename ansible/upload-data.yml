@@ -1,4 +1,5 @@
-- hosts: validator_001
+- name: Upload data
+  hosts: validator_001
   become: true
   tags:
     - upload-data

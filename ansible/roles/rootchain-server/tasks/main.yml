@@ -17,7 +17,7 @@
     owner: geth
     group: geth-group
     recurse: true
-    mode: 0750
+    mode: '0750'
 
 - name: Create the state directory
   ansible.builtin.file:
@@ -26,7 +26,7 @@
     owner: geth
     group: geth-group
     recurse: true
-    mode: 0750
+    mode: '0750'
 
 - name: Install go
   ansible.builtin.include_tasks: go.yml
@@ -52,7 +52,7 @@
     src: /opt/go-ethereum/build/bin/geth
     dest: /usr/local/bin/geth
     remote_src: true
-    mode: 0755
+    mode: '0755'
 
 - name: Create the clique genesis
   ansible.builtin.template:
@@ -105,7 +105,7 @@
   ansible.builtin.template:
     src: geth.service
     dest: /etc/systemd/system/geth.service
-    mode: 0644
+    mode: '0644'
 
 # something is wonky here with the peering. Ideally these could be spaced out in some way?
 - name: Restart Geth Service to do initialization
@@ -127,4 +127,3 @@
     name: geth
     enabled: true
     daemon_reload: true
-

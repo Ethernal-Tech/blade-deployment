@@ -3,16 +3,18 @@
   ansible.builtin.file:
     path: /tmp/blade_data
     state: directory
+    mode: '0755'
 
 - name: Create archive
   community.general.archive:
-    path: 
-    - "{{ blade_home_dir }}/blockchain"
-    - "{{ blade_home_dir }}/bootstrap"
-    - "{{ blade_home_dir }}/consensus"
-    - "{{ blade_home_dir }}/trie"
+    path:
+      - "{{ blade_home_dir }}/blockchain"
+      - "{{ blade_home_dir }}/bootstrap"
+      - "{{ blade_home_dir }}/consensus"
+      - "{{ blade_home_dir }}/trie"
     dest: "/tmp/blade_data/{{ deployment_name }}.data.tar.gz"
     format: gz
+    mode: '0755'
 
 - name: Upload data to S3 Bucket
   ansible.builtin.shell: |

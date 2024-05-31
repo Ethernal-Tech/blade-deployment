@@ -24,6 +24,7 @@ resource "aws_network_interface" "validator_private" {
     Name = format("validator-private-%03d.%s", count.index + 1, var.base_dn)
   }
 }
+
 resource "aws_network_interface" "fullnode_private" {
   count     = var.fullnode_count
   subnet_id = element(var.private_network_mode ? var.devnet_private_subnet_ids : var.devnet_public_subnet_ids, count.index)
@@ -32,6 +33,7 @@ resource "aws_network_interface" "fullnode_private" {
     Name = format("fullnode-private-%03d.%s", count.index + 1, var.base_dn)
   }
 }
+
 resource "aws_network_interface" "geth_private" {
   count     = var.geth_count
   subnet_id = element(var.private_network_mode ? var.devnet_private_subnet_ids : var.devnet_public_subnet_ids, count.index)
@@ -60,9 +62,10 @@ resource "aws_instance" "validator" {
   }
 
   tags = {
-    Name     = format("validator-%03d.%s", count.index + 1, var.base_dn)
-    Hostname = format("validator-%03d", count.index + 1)
-    Role     = "validator"
+    Name           = format("validator-%03d.%s", count.index + 1, var.base_dn)
+    Hostname       = format("validator-%03d", count.index + 1)
+    Role           = "validator",
+    "service_name" = "node_exporter"
   }
 }
 
@@ -84,9 +87,10 @@ resource "aws_instance" "fullnode" {
   }
 
   tags = {
-    Name     = format("fullnode-%03d.%s", count.index + 1, var.base_dn)
-    Hostname = format("fullnode-%03d", count.index + 1)
-    Role     = "fullnode"
+    Name           = format("fullnode-%03d.%s", count.index + 1, var.base_dn)
+    Hostname       = format("fullnode-%03d", count.index + 1)
+    Role           = "fullnode"
+    "service_name" = "node_exporter"
   }
 }
 
@@ -109,9 +113,10 @@ resource "aws_instance" "geth" {
   }
 
   tags = {
-    Name     = format("geth-%03d.%s", count.index + 1, var.base_dn)
-    Hostname = format("geth-%03d", count.index + 1)
-    Role     = "geth"
+    Name           = format("geth-%03d.%s", count.index + 1, var.base_dn)
+    Hostname       = format("geth-%03d", count.index + 1)
+    Role           = "geth"
+    "service_name" = "node_exporter"
   }
 }
 
@@ -152,5 +157,6 @@ resource "aws_instance" "explorer" {
     "nx-servergroup"  = ""
     "nx-servicename"  = "732"
     "nx-settinggroup" = ""
+    "service_name"    = "node_exporter"
   }
 }

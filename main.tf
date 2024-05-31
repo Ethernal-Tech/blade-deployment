@@ -1,8 +1,9 @@
 locals {
-  network_type = "blade"
-  base_ami     = "ami-0ecc74eca1d66d8a6"
-  base_dn      = format("%s.%s.%s.private", var.deployment_name, local.network_type, var.company_name)
-  base_id      = format("%s-%s", var.deployment_name, local.network_type)
+  network_type     = "blade"
+  base_ami         = "ami-0ecc74eca1d66d8a6"
+  base_dn          = format("%s.%s.%s.private", var.deployment_name, local.network_type, var.company_name)
+  base_id          = format("%s-%s", var.deployment_name, local.network_type)
+  devnet_key_value = file(var.devnet_key_value)
 }
 
 terraform {
@@ -17,20 +18,20 @@ terraform {
 }
 
 module "dns" {
-  source          = "./modules/dns"
-  base_dn         = local.base_dn
-  region          = var.region
-  fullnode_count  = var.fullnode_count
-  validator_count = var.validator_count
-  geth_count      = var.geth_count
-  route53_zone_id = var.route53_zone_id
-  deployment_name = var.deployment_name
-  explorer_count  = var.explorer_count
-
+  source                     = "./modules/dns"
+  base_dn                    = local.base_dn
+  region                     = var.region
+  fullnode_count             = var.fullnode_count
+  validator_count            = var.validator_count
+  geth_count                 = var.geth_count
+  route53_zone_id            = var.route53_zone_id
+  deployment_name            = var.deployment_name
+  explorer_count             = var.explorer_count
   devnet_id                  = module.networking.devnet_id
   aws_lb_int_rpc_domain      = module.elb.aws_lb_int_rpc_domain
   aws_lb_ext_rpc_geth_domain = module.elb.aws_lb_ext_rpc_geth_domain
   aws_lb_explorer_domain     = module.elb.aws_lb_explorer_domain
+  aws_lb_faucet_domain       = module.elb.aws_lb_faucet_domain
   aws_lb_ext_rpc_domain      = module.elb.aws_lb_ext_rpc_domain
   aws_lb_p2p_domain          = module.elb.aws_lb_p2p_domain
   validator_private_ips      = module.ec2.validator_private_ips
@@ -41,50 +42,46 @@ module "dns" {
 }
 
 module "ebs" {
-  source          = "./modules/ebs"
-  zones           = var.zones
-  node_storage    = var.node_storage
-  validator_count = var.validator_count
-  fullnode_count  = var.fullnode_count
-
+  source                 = "./modules/ebs"
+  zones                  = var.zones
+  node_storage           = var.node_storage
+  validator_count        = var.validator_count
+  fullnode_count         = var.fullnode_count
   validator_instance_ids = module.ec2.validator_instance_ids
   fullnode_instance_ids  = module.ec2.fullnode_instance_ids
 }
 
 module "ec2" {
-  source                 = "./modules/ec2"
-  base_dn                = local.base_dn
-  base_instance_type     = var.base_instance_type
-  base_ami               = local.base_ami
-  fullnode_count         = var.fullnode_count
-  geth_count             = var.geth_count
-  validator_count        = var.validator_count
-  explorer_count         = var.explorer_count
-  explorer_instance_type = var.explorer_instance_type
-
-  base_devnet_key_name = format("%s_ssh_key", var.deployment_name)
-  private_network_mode = var.private_network_mode
-  network_type         = local.network_type
-  deployment_name      = var.deployment_name
-  create_ssh_key       = var.create_ssh_key
-  devnet_key_value     = var.devnet_key_value
-
+  source                    = "./modules/ec2"
+  base_dn                   = local.base_dn
+  base_instance_type        = var.base_instance_type
+  base_ami                  = local.base_ami
+  fullnode_count            = var.fullnode_count
+  geth_count                = var.geth_count
+  validator_count           = var.validator_count
+  explorer_count            = var.explorer_count
+  explorer_instance_type    = var.explorer_instance_type
+  base_devnet_key_name      = format("%s_ssh_key", var.deployment_name)
+  private_network_mode      = var.private_network_mode
+  network_type              = local.network_type
+  deployment_name           = var.deployment_name
+  create_ssh_key            = var.create_ssh_key
+  devnet_key_value          = local.devnet_key_value
   devnet_private_subnet_ids = module.networking.devnet_private_subnet_ids
   devnet_public_subnet_ids  = module.networking.devnet_public_subnet_ids
   ec2_profile_name          = module.ssm.ec2_profile_name
 }
 
 module "elb" {
-  source             = "./modules/elb"
-  http_rpc_port      = var.http_rpc_port
-  rootchain_rpc_port = var.rootchain_rpc_port
-  fullnode_count     = var.fullnode_count
-  validator_count    = var.validator_count
-  geth_count         = var.geth_count
-  route53_zone_id    = var.route53_zone_id
-  base_id            = local.base_id
-  explorer_count     = var.explorer_count
-
+  source                      = "./modules/elb"
+  http_rpc_port               = var.http_rpc_port
+  rootchain_rpc_port          = var.rootchain_rpc_port
+  fullnode_count              = var.fullnode_count
+  validator_count             = var.validator_count
+  geth_count                  = var.geth_count
+  route53_zone_id             = var.route53_zone_id
+  base_id                     = local.base_id
+  explorer_count              = var.explorer_count
   devnet_private_subnet_ids   = module.networking.devnet_private_subnet_ids
   devnet_public_subnet_ids    = module.networking.devnet_public_subnet_ids
   fullnode_instance_ids       = module.ec2.fullnode_instance_ids
@@ -94,7 +91,9 @@ module "elb" {
   devnet_id                   = module.networking.devnet_id
   security_group_open_http_id = module.securitygroups.security_group_open_http_id
   security_group_default_id   = module.securitygroups.security_group_default_id
-  # certificate_arn             = module.dns.certificate_arn
+  certificate_arn             = module.dns.certificate_arn
+  certificate_explorer_arn    = module.dns.certificate_explorer_arn
+  certificate_faucet_arn      = module.dns.certificate_faucet_arn
 }
 
 module "networking" {
@@ -139,6 +138,22 @@ module "rds" {
   devnet_private_subnet_ids    = module.networking.devnet_private_subnet_ids
   base_id                      = local.base_id
   explorer_rds_master_password = var.explorer_rds_master_password
+}
+
+module "monitoring" {
+  source                    = "./modules/monitoring"
+  base_dn                   = local.base_dn
+  sg_all_node_id            = module.securitygroups.security_group_all_node_instances_id
+  sg_open_rpc_id            = module.securitygroups.security_group_open_rpc_id
+  sg_open_rpc_geth_id       = module.securitygroups.security_group_open_rpc_geth_id
+  security_group_default_id = module.securitygroups.security_group_default_id
+  default_tags              = {}
+  devnet_id                 = module.networking.devnet_id
+  devnet_private_subnet_ids = module.networking.devnet_private_subnet_ids
+  devnet_public_subnet_ids  = module.networking.devnet_public_subnet_ids
+  network_type              = local.network_type
+  deployment_name           = var.deployment_name
+  devnet_key_pair_name      = module.ec2.aws_key_pair_devnet_key_name
 }
 
 provider "aws" {

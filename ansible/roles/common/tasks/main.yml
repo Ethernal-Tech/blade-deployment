@@ -9,7 +9,7 @@
       ansible.builtin.template:
         src: ./templates/blade-deployment-id
         dest: /etc/blade-deployment-id
-        mode: 0755
+        mode: '0755'
         force: false
       when: not deployment_id_file.stat.exists
     - name: "Check wether /etc/blade-deployment-id contains {{ deployment_name }}"
@@ -65,7 +65,7 @@
 - name: Install polycli
   ansible.builtin.include_tasks: polycli.yml
 
-- name: Install foundryup
+- name: Install foundryup # noqa command-instead-of-module
   ansible.builtin.shell: |
     curl -L https://foundry.paradigm.xyz | bash
   args:
@@ -77,5 +77,3 @@
     cp /root/.foundry/bin/* /usr/local/bin
   args:
     creates: /usr/local/bin/cast
-
-

@@ -1,4 +1,5 @@
 #!/bin/bash
+
 sudo chown root:root /var/log
 
 echo "/var/log/syslog {

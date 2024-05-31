@@ -1,0 +1,7 @@
+---
+- name: Restart faucet service
+  ansible.builtin.systemd:
+    state: restarted
+    name: faucet
+    enabled: true
+    daemon_reload: true

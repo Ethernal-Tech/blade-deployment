@@ -64,6 +64,7 @@ resource "aws_subnet" "devnet_private" {
 resource "aws_route_table" "devnet_public" {
   vpc_id = aws_vpc.devnet.id
 }
+
 resource "aws_route_table" "devnet_private" {
   count  = length(var.zones)
   vpc_id = aws_vpc.devnet.id
@@ -77,20 +78,22 @@ resource "aws_route" "public_internet_gateway" {
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.devnet.id
 }
+
 resource "aws_route" "private_nat_gateway" {
   count                  = length(var.zones)
   route_table_id         = element(aws_route_table.devnet_private, count.index).id
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = element(aws_nat_gateway.nat, count.index).id
 }
+
 resource "aws_route_table_association" "public" {
   count          = length(var.zones)
   subnet_id      = element(aws_subnet.devnet_public, count.index).id
   route_table_id = aws_route_table.devnet_public.id
 }
+
 resource "aws_route_table_association" "private" {
   count          = length(var.zones)
   subnet_id      = element(aws_subnet.devnet_private, count.index).id
   route_table_id = element(aws_route_table.devnet_private, count.index).id
 }
-

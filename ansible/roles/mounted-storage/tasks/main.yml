@@ -24,7 +24,7 @@
   ansible.builtin.file:
     path: "{{ storage_mount_point }}"
     state: directory
-    mode: 0750
+    mode: '0750'
 
 - name: Mount {{ storage_device_location }}
   ansible.posix.mount:

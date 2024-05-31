@@ -4,14 +4,14 @@ clean_deploy_title: testnet
 #### Genesis Flags ###
 block_gas_limit: 200_000_000
 block_time: 2
-gossip_msg_size: 4_194_304
-json_rpc_batch_request_limit: 0
+gossip_msg_size: 1_048_576
+json_rpc_batch_request_limit: 999
 log_level: INFO
 chain_id: 100
 
 ### Blade Service Flags ###
-max_slots: 20000000
-max_enqueued: 20000000
+max_slots: 276480
+max_enqueued: 276480
 
 ### Version Flags ###
 polycli_tag: 0.1.30 # https://github.com/maticnetwork/polygon-cli/releases
@@ -78,3 +78,10 @@ blockscout_user: explorer
 blockscout_version: v5.1.5-beta
 blockscout_db_password: ""
 blockscout_db_key_base: ""
+
+### Faucet ###
+faucet_account: ""
+faucet_privkey: ""
+faucet_port: 8888
+faucet_amount: 5
+faucet_minutes: 1440

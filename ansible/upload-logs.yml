@@ -1,4 +1,5 @@
-- hosts: all
+- name: Upload logs
+  hosts: all
   become: true
   tags:
     - upload-logs

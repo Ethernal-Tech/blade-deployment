@@ -19,12 +19,12 @@
         state: directory
         owner: "{{ blade_user }}"
         group: "{{ blade_user }}-group"
-        mode: 0750
+        mode: '0750'
     - name: Create folder for blade configs
       ansible.builtin.file:
         path: /etc/blade
         state: directory
-        mode: 0700
+        mode: '0700'
         owner: "{{ blade_user }}"
         group: "{{ blade_user }}-group"
 
@@ -34,12 +34,12 @@
       ansible.builtin.template:
         src: fullnodelist.txt
         dest: /etc/blade/fullnodelist.txt
-        mode: 0700
+        mode: '0700'
     - name: Produce blade validator list
       ansible.builtin.template:
         src: validatorlist.txt
         dest: /etc/blade/validatorlist.txt
-        mode: 0700
+        mode: '0700'
 
 - name: Build blade binary
   block:
@@ -60,7 +60,7 @@
   ansible.builtin.template:
     src: blade.service
     dest: /etc/systemd/system/blade.service
-    mode: 0644
+    mode: '0644'
   notify:
     - Restart Blade Service
 

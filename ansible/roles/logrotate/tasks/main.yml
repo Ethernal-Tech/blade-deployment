@@ -5,13 +5,13 @@
       ansible.builtin.template:
         src: node.sh
         dest: /tmp/logrotate.sh
-        mode: 0755
+        mode: '0755'
       when: "'fullnode' in hostvars[inventory_hostname].tags['Hostname'] or 'validator' in hostvars[inventory_hostname].tags['Hostname']"
     - name: Produce explorer.sh on explorer
       ansible.builtin.template:
         src: explorer.sh
         dest: /tmp/logrotate.sh
-        mode: 0755
+        mode: '0755'
       when: "'explorer' in hostvars[inventory_hostname].tags['Hostname']"
 
 - name: Execute logrotate.sh

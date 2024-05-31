@@ -86,4 +86,3 @@ IdleTimeout = 120000000000
 [Metrics]
 HTTP = "127.0.0.1"
 Port = 9091
-

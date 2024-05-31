@@ -135,4 +135,3 @@ resource "aws_iam_instance_profile" "ec2_profile" {
   name = "ssm-profile.${var.base_dn}"
   role = aws_iam_role.ec2_role.name
 }
-

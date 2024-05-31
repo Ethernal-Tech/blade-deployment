@@ -21,7 +21,8 @@
     apt-get install -y ca-certificates curl gnupg
     curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
     NODE_MAJOR=20
-    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list > /dev/null
+    NODE_URL=https://deb.nodesource.com/node_$NODE_MAJOR.x
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] $NODE_URL nodistro main" | tee /etc/apt/sources.list.d/nodesource.list > /dev/null
     apt-get update
     apt-get install nodejs -y
   args:
@@ -169,7 +170,6 @@
     executable: /bin/bash
     creates: /opt/.gitsafedir
 
-
 - name: Clone Blockscout Repo
   ansible.builtin.git:
     repo: https://github.com/blockscout/blockscout
@@ -193,6 +193,23 @@
     owner: "{{ blockscout_user }}"
     group: "{{ blockscout_user }}-group"
     mode: "0400"
+
+- name: Make visual changes
+  block:
+    - name: File changes
+      ansible.builtin.copy:
+        src: "{{ role_path }}/changes/layout/"
+        dest: /opt/blockscout/apps/block_scout_web/lib/block_scout_web/templates/layout/
+        owner: "{{ blockscout_user }}"
+        group: "{{ blockscout_user }}-group"
+        mode: '750'
+    - name: Upload images
+      ansible.builtin.copy:
+        src: "{{ role_path }}/changes/images/"
+        dest: /opt/blockscout/apps/block_scout_web/priv/static/images/
+        owner: "{{ blockscout_user }}"
+        group: "{{ blockscout_user }}-group"
+        mode: '750'
 
 - name: Blockscout compilation
   ansible.builtin.shell: |

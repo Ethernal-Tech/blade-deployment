@@ -2,6 +2,7 @@ resource "aws_secretsmanager_secret" "blockscout_rds_password" {
   name                    = "blockscout-rds-password-${var.base_id}"
   recovery_window_in_days = 0
 }
+
 resource "aws_secretsmanager_secret_version" "blockscout_rds_password" {
   secret_id     = aws_secretsmanager_secret.blockscout_rds_password.id
   secret_string = var.explorer_rds_master_password

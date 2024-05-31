@@ -1,13 +1,15 @@
-- hosts: all
+- name: Wait for all hosts to be reachable
+  hosts: all:!adot
   become: true
   gather_facts: false
   tags:
     - always
   tasks:
-    - name: Wait for all hosts to be reachable
+    - name: Wait for connection
       ansible.builtin.wait_for_connection:
 
-- hosts: all
+- name: Gather facts
+  hosts: all:!adot
   become: true
   tags:
     - always
@@ -19,21 +21,24 @@
       register: result
       until: result is not failed
 
-- hosts: all
+- name: Provision servers and configure monitoring
+  hosts: all:!adot
   become: true
   tags:
     - init
   roles:
     - common
 
-- hosts: geth
+- name: Provision rootchain server
+  hosts: geth
   become: true
   tags:
     - geth
   roles:
     - rootchain-server
 
-- hosts: fullnode:validator
+- name: Provision blade
+  hosts: fullnode:validator
   become: true
   tags:
     - blade
@@ -41,14 +46,32 @@
     - mounted-storage
     - blade
 
-- hosts: explorer
+- name: Configure monitoring (node-exporter)
+  hosts: all:!adot
+  become: true
+  tags:
+    - metrics
+  roles:
+    - node-exporter
+
+- name: Provision explorer
+  hosts: explorer
   become: true
   tags:
     - explorer
   roles:
     - explorer
 
-- hosts: fullnode:validator:explorer
+- name: Provision faucet
+  hosts: explorer
+  become: true
+  tags:
+    - faucet
+  roles:
+    - faucet
+
+- name: Install logrotate
+  hosts: all:!adot
   become: true
   tags:
     - logrotate

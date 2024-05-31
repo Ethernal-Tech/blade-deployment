@@ -22,6 +22,7 @@ resource "aws_security_group" "all_node_instances" {
   description = format("Configuration for the %s %s collection of instances", var.network_type, var.deployment_name)
   vpc_id      = var.devnet_id
 }
+
 resource "aws_security_group_rule" "all_node_instances" {
   type              = "egress"
   from_port         = 0
@@ -47,6 +48,7 @@ resource "aws_security_group" "open_rpc" {
   description = "Allowing internal rpc"
   vpc_id      = var.devnet_id
 }
+
 resource "aws_security_group_rule" "open_rpc" {
   type              = "ingress"
   from_port         = var.http_rpc_port
@@ -55,11 +57,13 @@ resource "aws_security_group_rule" "open_rpc" {
   cidr_blocks       = var.network_acl
   security_group_id = aws_security_group.open_rpc.id
 }
+
 resource "aws_network_interface_sg_attachment" "open_rpc" {
   count                = length(local.p2p_primary_network_interface_ids)
   security_group_id    = aws_security_group.open_rpc.id
   network_interface_id = local.p2p_primary_network_interface_ids[count.index]
 }
+
 resource "aws_security_group" "open_http" {
   name        = "external-explorer-access"
   description = "Allowing explorer acccess"
@@ -84,6 +88,15 @@ resource "aws_security_group_rule" "fullnode_access_jsonrpc" {
   security_group_id = aws_security_group.open_http.id
 }
 
+resource "aws_security_group_rule" "fullnode_access_https" {
+  type              = "ingress"
+  from_port         = 8801
+  to_port           = 8801 + var.fullnode_count
+  protocol          = "TCP"
+  cidr_blocks       = var.network_acl
+  security_group_id = aws_security_group.open_http.id
+}
+
 resource "aws_security_group_rule" "fullnode_access_p2p" {
   type              = "ingress"
   from_port         = 9001
@@ -102,11 +115,21 @@ resource "aws_security_group_rule" "open_http" {
   security_group_id = aws_security_group.open_http.id
 }
 
+resource "aws_security_group_rule" "open_https" {
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "TCP"
+  cidr_blocks       = var.network_acl
+  security_group_id = aws_security_group.open_http.id
+}
+
 resource "aws_security_group" "open_rpc_geth" {
   name        = "internal-geth-access"
   description = "configuration for geth access"
   vpc_id      = var.devnet_id
 }
+
 resource "aws_security_group_rule" "open_rpc_geth" {
   type              = "ingress"
   from_port         = var.rootchain_rpc_port
@@ -115,8 +138,27 @@ resource "aws_security_group_rule" "open_rpc_geth" {
   cidr_blocks       = var.network_acl
   security_group_id = aws_security_group.open_rpc_geth.id
 }
+
 resource "aws_network_interface_sg_attachment" "open_rpc_geth" {
   count                = var.geth_count
   security_group_id    = aws_security_group.open_rpc_geth.id
   network_interface_id = element(var.geth_primary_network_interface_ids, count.index)
+}
+
+resource "aws_security_group_rule" "open_node_exporter" {
+  type              = "ingress"
+  from_port         = 9100
+  to_port           = 9100
+  protocol          = "TCP"
+  cidr_blocks       = var.network_acl
+  security_group_id = aws_security_group.open_rpc.id
+}
+
+resource "aws_security_group_rule" "open_prometheys" {
+  type              = "ingress"
+  from_port         = 9091
+  to_port           = 9091
+  protocol          = "TCP"
+  cidr_blocks       = var.network_acl
+  security_group_id = aws_security_group.open_rpc.id
 }
