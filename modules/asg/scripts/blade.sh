@@ -18,36 +18,20 @@ then
     sleep 30
 fi
 
-TOKEN=`curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"` \
-&& curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/tags/instance/Hostname
-
-
-if [ ! -f /etc/blade/.bootstrap ];
-then
-%{ if is_bootstrap_node }
-    aws ssm get-parameter --region ${region} --name /${deployment_name}/bootstrap.sh --query Parameter.Value --output text > ${ blade_home_dir }/bootstrap.sh && \
-    aws ssm get-parameter --region ${region} --name /${deployment_name}/config.json  --query Parameter.Value --output text > ${ blade_home_dir }/config.json && \ 
-    chmod +x ${ blade_home_dir }/bootstrap.sh && \
-    ${ blade_home_dir }/bootstrap.sh && \
-    touch /etc/blade/.bootstrap
-%{ else }
-    aws s3api wait object-exists \
-    --bucket ${deployment_name}-state-bucket \
-    --key ${ base_dn }.tar.gz
-
-%{ endif }
-fi
-
 
 aws s3 cp s3://${deployment_name}-state-bucket/${ base_dn }.tar.gz /tmp/${ base_dn }.tar.gz && \
 mkdir ${ blade_home_dir }/bootstrap && chown blade ${ blade_home_dir }/bootstrap && chgrp blade-group ${ blade_home_dir }/bootstrap && \
 tar -xf /tmp/${ base_dn }.tar.gz --directory ${ blade_home_dir }/bootstrap 
 
-aws ssm get-parameter --region ${region} --name /${deployment_name}/${hostname}.${base_dn}.service --query Parameter.Value --output text > /etc/systemd/system/blade.service && \
-chmod 0644 /etc/systemd/system/blade.service && \
-systemctl enable blade && \
-systemctl start blade
+chown -R blade:blade-group ${ blade_home_dir }/bootstrap
+
+# aws ssm get-parameter --region ${region} --name /${deployment_name}/${hostname}.${base_dn}.service --query Parameter.Value --output text > /etc/systemd/system/blade.service && \
+# chmod 0644 /etc/systemd/system/blade.service && \
+# systemctl enable blade && \
+# systemctl start blade
 
 
-sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c ssm:/${deployment_name}/${hostname}/cw_agent_config
-systemctl status amazon-cloudwatch-agent.service
+# sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c ssm:/${deployment_name}/${hostname}/cw_agent_config
+# systemctl status amazon-cloudwatch-agent.service
+
+# sudo systemctl status amazon-ssm-agent

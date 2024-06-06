@@ -1,10 +1,10 @@
 resource "aws_ssm_parameter" "cw_agent_config" {
-  count = var.validator_count
-  name  = format("/%s/validator-%03d/cw_agent_config", var.deployment_name, count.index + 1)
+  for_each = toset(local.hostvars)
+  name  = format("/%s/%s/cw_agent_config", var.deployment_name, each.value)
   type  = "String"
   value = templatefile("${path.module}/scripts/cw_agent.json.tftpl", {
     role     = "validator",
-    hostname = format("validator-%03d.%s", count.index + 1, var.base_dn)
+    hostname = each.value
   })
 }
 
@@ -27,6 +27,7 @@ resource "aws_ssm_parameter" "validator_bootstrap" {
     is_bridge_active      = local.is_bridge_active
     is_london_fork_active = local.is_london_fork_active
     docker_image          = local.docker_image
+    bootstrap_dir         = local.bootstrap_dir
 
   })
 

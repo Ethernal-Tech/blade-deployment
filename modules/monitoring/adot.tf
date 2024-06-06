@@ -1,3 +1,13 @@
+resource "tls_private_key" "pk" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+resource "aws_key_pair" "devnet" {
+  key_name   = "${var.deployment_name}_aodt_ssh_key"
+  public_key = tls_private_key.pk.public_key_openssh
+}
+
+
 resource "aws_security_group" "aodt" {
   description = "Allow traffic from AODT ec2 for scraping metrics"
 
@@ -43,7 +53,7 @@ resource "aws_instance" "adot_collector" {
   vpc_security_group_ids = [aws_security_group.aodt.id]
   iam_instance_profile   = aws_iam_instance_profile.aodt_profile.name
   subnet_id              = var.devnet_private_subnet_ids[0]
-  key_name               = var.devnet_key_pair_name
+  key_name               = aws_key_pair.devnet.key_name
 
   user_data = base64encode(templatefile("${path.module}/scripts/adot.sh", {
     region               = "us-west-2",
@@ -102,26 +112,26 @@ resource "aws_iam_policy" "aodt_policy" {
 BLADE
 }
 
-resource "aws_iam_policy_attachment" "aodt_policy_role" {
-  name       = "aodt.${var.base_dn}"
-  roles      = [aws_iam_role.aodt_role.name]
+resource "aws_iam_role_policy_attachment" "aodt_policy_role" {
+  # name       = "aodt.${var.base_dn}"
+  role       = aws_iam_role.aodt_role.name
   policy_arn = aws_iam_policy.aodt_policy.arn
 }
 
 
-resource "aws_iam_policy_attachment" "ssm_aodt_role" {
-  name       = "ssm.aodt.${var.base_dn}"
-  roles      = [aws_iam_role.aodt_role.name]
+resource "aws_iam_role_policy_attachment" "ssm_aodt_role" {
+  # name       = "ssm.aodt.${var.base_dn}"
+  role       = aws_iam_role.aodt_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
-resource "aws_iam_policy_attachment" "cwa_aodt_role" {
-  name       = "cwa.aodt.${var.base_dn}"
-  roles      = [aws_iam_role.aodt_role.name]
+resource "aws_iam_role_policy_attachment" "cwa_aodt_role" {
+  # name       = "cwa.aodt.${var.base_dn}"
+  role       = aws_iam_role.aodt_role.name
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
 }
-resource "aws_iam_policy_attachment" "prometheus_rw_aodt_role" {
-  name       = "prometheus.${var.base_dn}"
-  roles      = [aws_iam_role.aodt_role.name]
+resource "aws_iam_role_policy_attachment" "prometheus_rw_aodt_role" {
+  # name       = "prometheus.${var.base_dn}"
+  role       = aws_iam_role.aodt_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonPrometheusRemoteWriteAccess"
 }
 

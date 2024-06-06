@@ -14,7 +14,7 @@ Restart=always
 ExecStartPre=-/usr/bin/docker stop %n
 ExecStartPre=-/usr/bin/docker rm %n
 ExecStartPre=/usr/bin/docker pull ${ docker_image }
-ExecStart=/usr/bin/docker run --rm --log-driver=awslogs --log-opt awslogs-group=docker-logs --name %n -u 1001:1001 --net host -w /blade -v /etc/blade:/etc/blade -v ${blade_home_dir}:/blade:z ${ docker_image } server --data-dir /blade \
+ExecStart=/usr/bin/docker run --rm --log-driver=awslogs --log-opt awslogs-group=docker-logs-${deployment_name} --name %n -u 1001:1001 --net host -w /blade -v /etc/blade:/etc/blade -v ${blade_home_dir}:/blade:z ${ docker_image } server --data-dir /blade \
     --chain /blade/bootstrap/genesis.json \
     --grpc-address 0.0.0.0:${ blade_grpc_port } \
     --json-rpc-batch-request-limit 999 \

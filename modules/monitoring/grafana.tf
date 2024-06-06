@@ -14,10 +14,13 @@ resource "aws_grafana_workspace" "monitoring" {
     security_group_ids = [var.security_group_default_id, var.sg_all_node_id, var.sg_open_rpc_id]
     subnet_ids         = var.devnet_private_subnet_ids
   }
+  lifecycle {
+    ignore_changes = [ vpc_configuration["subnet_ids"] ]
+  }
 }
 
 resource "aws_iam_role" "assume" {
-  name = "grafana-assume"
+  name = "grafana-assume-${var.base_dn}"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -100,9 +103,8 @@ resource "aws_iam_policy" "grafana_policy" {
 BLADE
 }
 
-resource "aws_iam_policy_attachment" "grafana_policy_role" {
-  name       = "grafana.${var.base_dn}"
-  roles      = [aws_iam_role.assume.name]
+resource "aws_iam_role_policy_attachment" "grafana_policy_role" {
+  role       = aws_iam_role.assume.name
   policy_arn = aws_iam_policy.grafana_policy.arn
 }
 

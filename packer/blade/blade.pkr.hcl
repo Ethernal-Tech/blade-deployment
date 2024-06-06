@@ -46,18 +46,14 @@ build {
     destination = "/tmp/node_exporter.service"
   }
 
-  provisioner "file" {
-    source = "conf/cw_agent_config.json"
-    destination = "/tmp/cw_agent_config.json"
-  }
-  provisioner "file" {
-    source = "conf/prometheus.yml"
-    destination = "/tmp/prometheus.yml"
+   provisioner "file" {
+    source = "scripts/run.sh"
+    destination = "/tmp/run.sh"
   }
 
   provisioner "file" {
-    source = "conf/prometheus_sd.yml"
-    destination = "/tmp/prometheus_sd.yml"
+    source = "conf/cw_agent_config.json"
+    destination = "/tmp/cw_agent_config.json"
   }
 
   provisioner "shell" {
@@ -124,7 +120,8 @@ build {
     "sudo groupadd blade-group -g 1001",
     "sudo useradd -g blade-group -u 1001 blade",
     "sudo usermod -a -G docker blade",
-    "sudo mkdir /etc/blade && sudo chown -R blade:blade-group /etc/blade && sudo chmod 0750 /etc/blade"
+    "sudo mkdir /etc/blade && sudo chown -R blade:blade-group /etc/blade && sudo chmod 0750 /etc/blade",
+    "sudo cp /tmp/run.sh /etc/blade/run.sh && sudo chmod +x /etc/blade/run.sh"
   ]
 }
 

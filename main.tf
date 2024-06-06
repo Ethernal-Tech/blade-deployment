@@ -1,6 +1,6 @@
 locals {
   network_type = "blade"
-  base_ami     = "ami-0add1526ed372f405"
+  base_ami     = "ami-0e67434fde90367e5"
   geth_ami     = "ami-06d59880babda767d"
   base_dn      = format("%s.%s.%s.private", var.deployment_name, local.network_type, var.company_name)
   base_id      = format("%s-%s", var.deployment_name, local.network_type)
@@ -104,7 +104,6 @@ module "monitoring" {
   devnet_public_subnet_ids  = module.networking.devnet_public_subnet_ids
   network_type              = local.network_type
   deployment_name           = var.deployment_name
-  devnet_key_pair_name      = module.asg.key_pair_name 
 }
 
 module "elb" {

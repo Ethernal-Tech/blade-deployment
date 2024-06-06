@@ -13,11 +13,11 @@ variable "network_type" {
 
 variable "devnet_private_subnet_ids" {
   description = "Subnet IDs used in the private network"
-  type = list(string)
+  type        = list(string)
 }
 variable "devnet_public_subnet_ids" {
-   description = "Subnet IDs used in the public network"
-  type = list(string)
+  description = "Subnet IDs used in the public network"
+  type        = list(string)
 }
 
 
@@ -52,18 +52,13 @@ variable "devnet_id" {
 }
 
 variable "node_exporter_port" {
-    description = "Node Exporter service port"
-    default = 9100
-  
+  description = "Node Exporter service port"
+  default     = 9100
+
 }
 
 variable "prometheus_port" {
-    description = "Prometheus port"
-    default = 9091
-  
-}
+  description = "Prometheus port"
+  default     = 9091
 
-variable "devnet_key_pair_name" {
-  description = "The public key value to use for the ssh key"
-  type        = string
 }

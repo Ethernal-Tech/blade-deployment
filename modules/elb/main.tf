@@ -32,7 +32,7 @@ resource "aws_lb" "ext_rpc" {
 }
 resource "aws_lb_target_group" "ext_rpc" {
   name        = "ext-rpc-${var.base_id}"
-  protocol    = "HTTPS"
+  protocol    = "HTTP"
   target_type = "instance"
   vpc_id      = var.devnet_id
   port        = var.http_rpc_port

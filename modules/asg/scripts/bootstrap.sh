@@ -1,15 +1,15 @@
 #!/bin/bash -x
 
 main() {
-    mkdir /var/lib/bootstrap /var/lib/bootstrap/secrets
-    pushd /var/lib/bootstrap
+    mkdir ${ bootstrap_dir } ${ bootstrap_dir }/secrets
+    pushd ${ bootstrap_dir }
     docker pull ${ docker_image }
-    blade='docker run --rm --net host -u root -w /data -v /var/lib/bootstrap:/data ${ docker_image }'
+    blade='docker run --rm --net host -v '$HOME'/.aws/credentials:/root/.aws/credentials -u root -w /data -v ${ bootstrap_dir }:/data ${ docker_image }'
 
 
     %{ for item in hostvars }
         
-        sed 's/host/${item}/g' ${ blade_home_dir }/config.json > secrets/${item}_config.json
+        sed 's/host/${item}/g' /tmp/config.json > secrets/${item}_config.json
         $blade secrets init --config secrets/${item}_config.json --json > ${item}.json
     
     %{ endfor }
@@ -31,7 +31,7 @@ main() {
         --reward-wallet 0xDEADBEEF:1000000 \
         --block-time ${ block_time }s \
         --native-token-config ${ native_token_config } \
-        --blade-admin $(cat validator-001.${ base_dn }.json | jq -r '.[0].address') \
+        --blade-admin $(cat ${validators[0]}.json | jq -r '.[0].address') \
         --proxy-contracts-admin $PROXY_CONTRACTS_ADMIN \
         --base-fee-config 1000000000
 

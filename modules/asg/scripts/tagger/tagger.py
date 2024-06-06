@@ -10,13 +10,15 @@ logger.setLevel(logging.INFO)
 autoscaling = boto3.client('autoscaling')
 ec2 = boto3.client('ec2')
 route53 = boto3.client('route53')
+dynamodb = boto3.client('dynamodb')
+ssm = boto3.client('ssm')
 
 HOSTNAME_TAG_NAME = "asg:hostname_pattern"
 
 LIFECYCLE_KEY = "LifecycleHookName"
 ASG_KEY = "AutoScalingGroupName"
 
-# Fetches IP of an instance via EC2 API
+
 def fetch_ip_from_ec2(instance_id):
     logger.info("Fetching IP for instance-id: %s", instance_id)
     ec2_response = ec2.describe_instances(InstanceIds=[instance_id])
@@ -30,23 +32,6 @@ def fetch_ip_from_ec2(instance_id):
 
     return ip_address
 
-# Fetches IP of an instance via route53 API
-def fetch_ip_from_route53(hostname, zone_id):
-    logger.info("Fetching IP for hostname: %s", hostname)
-
-    ip_address = route53.list_resource_record_sets(
-        HostedZoneId=zone_id,
-        StartRecordName=hostname,
-        StartRecordType='A',
-        MaxItems='1'
-    )['ResourceRecordSets'][0]['ResourceRecords'][0]['Value']
-
-    logger.info("Found IP for hostname %s: %s", hostname, ip_address)
-
-    return ip_address
-
-# Fetches relevant tags from ASG
-# Returns tuple of hostname_pattern, zone_id
 def fetch_tag_metadata(asg_name):
     logger.info("Fetching tags for ASG: %s", asg_name)
 
@@ -84,41 +69,47 @@ def update_record(zone_id, ip, hostname, operation, reverse=False):
         }
     )
 
-def find_value_not_in_use(asg_name):
-    asg = autoscaling.describe_auto_scaling_groups(
-        AutoScalingGroupNames=[asg_name],
-    )
-    instances = asg['AutoScalingGroups'][0]['Instances']
+def find_value_not_in_use(message):
+    instance = message['EC2InstanceId']
+    updating = True
+    while updating:
+        for i in range(1,5):
+            try: 
+                query = dynamodb.update_item( TableName='Hostnames', ConditionExpression="#EX = :unused",
+                                    ExpressionAttributeValues={':used': {'BOOL': True}, ':unused': {'BOOL': False}},
+                                    ExpressionAttributeNames={'#EX': 'Exists'},
+                                    Key={
+                                        'Hostname' : {
+                                            'S': "validator-00{}".format(i),
+                                            },
+                                                        },
+                                    UpdateExpression="SET #EX = :used"
+                
+                                )
+            except dynamodb.exceptions.ConditionalCheckFailedException:
+                print('key in use')
+                continue
+            else:
+                ip = fetch_ip_from_ec2(instance)
+                asg_name = message['AutoScalingGroupName']
+                hostname_pattern, zone_id, reverse_zone_id= fetch_tag_metadata(asg_name)
+                hostname = "validator-00{}.{}".format(i,hostname_pattern)
+                ec2.create_tags(Resources=[instance], Tags=[{'Key': 'Name', 'Value': hostname},{'Key': 'Hostname', 'Value': hostname}])
+                update_record(zone_id, ip, hostname, 'UPSERT')
+                update_record(reverse_zone_id, ip, hostname, 'UPSERT', reverse=True)
+                    
+                updating = False
+                print(query)
+                break
+         
+
 
 
 # Processes a scaling event
 # Builds a hostname from tag metadata, fetches a IP, and updates records accordingly
 def process_message(message):
-    if 'LifecycleTransition' not in message:
-        logger.info("Processing %s event", message['Event'])
-        return
-    logger.info("Processing %s event", message['LifecycleTransition'])
-
-    if message['LifecycleTransition'] == "autoscaling:EC2_INSTANCE_LAUNCHING":
-        operation = "UPSERT"
-    elif message['LifecycleTransition'] == "autoscaling:EC2_INSTANCE_TERMINATING" or message['LifecycleTransition'] == "autoscaling:EC2_INSTANCE_LAUNCH_ERROR":
-        operation = "DELETE"
-    else:
-        logger.error("Encountered unknown event type: %s", message['LifecycleTransition'])
-
-    asg_name = message['AutoScalingGroupName']
-    instance_id =  message['EC2InstanceId']
-
-    hostname_pattern, zone_id, reverse_zone_id= fetch_tag_metadata(asg_name)
-    hostname = hostname_pattern
-
-    if operation == "UPSERT":
-        ip = fetch_ip_from_ec2(instance_id)
-    else:
-        ip = fetch_ip_from_route53(hostname, zone_id)
     if message['Destination'] == "AutoScalingGroup":
-        update_record(zone_id, ip, hostname, operation)
-        update_record(reverse_zone_id, ip, hostname, operation, reverse=True)
+       find_value_not_in_use(message)
 
 # Picks out the message from a SNS message and deserializes it
 def process_record(record):
@@ -132,7 +123,6 @@ def lambda_handler(event, context):
     for record in event['Records']:
         process_record(record)
 
-# Finish the asg lifecycle operation by sending a continue result
     logger.info("Finishing ASG action")
     message =json.loads(record['Sns']['Message'])
     if LIFECYCLE_KEY in message and ASG_KEY in message :

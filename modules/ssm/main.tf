@@ -143,15 +143,15 @@ resource "aws_iam_policy" "ec2_policy" {
 BLADE
 }
 
-resource "aws_iam_policy_attachment" "ec2_policy_role" {
-  name       = "ssm.${var.base_dn}"
-  roles      = [aws_iam_role.ec2_role.name]
+resource "aws_iam_role_policy_attachment" "ec2_policy_role" {
+  #   name       = "ssm.${var.base_dn}"
+  role       = aws_iam_role.ec2_role.name
   policy_arn = aws_iam_policy.ec2_policy.arn
 }
 
-resource "aws_iam_policy_attachment" "cloudwatch_role" {
-  name       = "cloudwatch.${var.base_dn}"
-  roles      = [aws_iam_role.ec2_role.name]
+resource "aws_iam_role_policy_attachment" "cloudwatch_role" {
+  #   name       = "cloudwatch.${var.base_dn}"
+  role       = aws_iam_role.ec2_role.name
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
 }
 

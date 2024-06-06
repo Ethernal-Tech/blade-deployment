@@ -1,6 +1,6 @@
 locals {
-  devnet_key_name = "${var.base_devnet_key_name}-${var.deployment_name}-${var.network_type}"
-  region          = "us-west-2"
+  devnet_key_name       = "${var.base_devnet_key_name}-${var.deployment_name}-${var.network_type}"
+  region                = "us-west-2"
   validators            = [for i in range(var.validator_count) : format("validator-%03d.%s", i + 1, var.base_dn)]
   fullnodes             = [for i in range(var.fullnode_count) : format("fullnode-%03d.%s", i + 1, var.base_dn)]
   hostvars              = concat(local.validators, local.fullnodes)
@@ -23,4 +23,5 @@ locals {
   native_token_config   = "Blade:BLADE:18:true"
   docker_image          = "0xethernal/blade:0.0.4"
   node_exporter_port    = 9100
+  bootstrap_dir         = "/tmp/bootstrap"
 }

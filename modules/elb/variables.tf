@@ -22,11 +22,11 @@ variable "geth_count" {
 
 variable "devnet_private_subnet_ids" {
   description = "Subnet IDs used in the private network"
-  type = list(string)
+  type        = list(string)
 }
 variable "devnet_public_subnet_ids" {
-   description = "Subnet IDs used in the public network"
-  type = list(string)
+  description = "Subnet IDs used in the public network"
+  type        = list(string)
 }
 
 variable "devnet_id" {

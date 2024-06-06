@@ -10,11 +10,28 @@ logger.setLevel(logging.INFO)
 autoscaling = boto3.client('autoscaling')
 ec2 = boto3.client('ec2')
 route53 = boto3.client('route53')
+dynamodb = boto3.client('dynamodb')
 
 HOSTNAME_TAG_NAME = "asg:hostname_pattern"
 
 LIFECYCLE_KEY = "LifecycleHookName"
 ASG_KEY = "AutoScalingGroupName"
+
+def update_dynamodb(message):
+    instance = message['EC2InstanceId']
+    tags = ec2.describe_tags(Filters=[{'Name':'resource-id','Values': [instance] },{'Name': 'key', 'Values': ['Hostname']}])['Tags']
+    if len(tags) > 0 and tags[0].get('Value', None):
+        tag = tags[0].get('Value').split('.')[0]
+        dynamodb.update_item( TableName='Hostnames', ConditionExpression="#EX = :used",
+                                    ExpressionAttributeValues={':used': {'BOOL': True}, ':unused': {'BOOL': False}},
+                                    ExpressionAttributeNames={'#EX': 'Exists'},
+                                    Key={
+                                        'Hostname' : {
+                                            'S': tag,
+                                            },
+                                                        },
+                                    UpdateExpression="SET #EX = :unused"
+                                    )
 
 # Fetches IP of an instance via EC2 API
 def fetch_ip_from_ec2(instance_id):
@@ -92,26 +109,8 @@ def process_message(message):
         return
     logger.info("Processing %s event", message['LifecycleTransition'])
 
-    if message['LifecycleTransition'] == "autoscaling:EC2_INSTANCE_LAUNCHING":
-        operation = "UPSERT"
-    elif message['LifecycleTransition'] == "autoscaling:EC2_INSTANCE_TERMINATING" or message['LifecycleTransition'] == "autoscaling:EC2_INSTANCE_LAUNCH_ERROR":
-        operation = "DELETE"
-    else:
-        logger.error("Encountered unknown event type: %s", message['LifecycleTransition'])
-
-    asg_name = message['AutoScalingGroupName']
-    instance_id =  message['EC2InstanceId']
-
-    hostname_pattern, zone_id, reverse_zone_id= fetch_tag_metadata(asg_name)
-    hostname = hostname_pattern
-
-    if operation == "UPSERT":
-        ip = fetch_ip_from_ec2(instance_id)
-    else:
-        ip = fetch_ip_from_route53(hostname, zone_id)
-    if message['Destination'] == "AutoScalingGroup":
-        update_record(zone_id, ip, hostname, operation)
-        update_record(reverse_zone_id, ip, hostname, operation, reverse=True)
+    if message['LifecycleTransition'] == "autoscaling:EC2_INSTANCE_TERMINATING":
+        update_dynamodb(message)
 
 # Picks out the message from a SNS message and deserializes it
 def process_record(record):
