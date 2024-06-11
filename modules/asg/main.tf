@@ -25,6 +25,7 @@ resource "terraform_data" "cluster" {
 }
 
 resource "aws_launch_template" "validator" {
+  count = var.validator_count
   name_prefix   = "validator-${var.base_dn}"
   instance_type = var.base_instance_type
   key_name      = aws_key_pair.devnet.key_name
@@ -54,8 +55,11 @@ resource "aws_launch_template" "validator" {
     resource_type = "instance"
 
     tags = merge(
-      var.default_tags, {
-        Role = "validator"
+      var.default_tags,
+      {
+        Name     = format("validator-%03d.%s", count.index + 1, var.base_dn)
+        Hostname = format("validator-%03d", count.index + 1)
+        Role     = "validator"
       }
     )
 
@@ -72,7 +76,7 @@ resource "aws_launch_template" "validator" {
     base_dn           = var.base_dn
     region            = local.region
     is_bootstrap_node = false
-    hostname          = ""
+    hostname          =  format("validator-%03d.%s", count.index + 1, var.base_dn)
   }))
 
   lifecycle {
@@ -86,21 +90,21 @@ resource "aws_launch_template" "validator" {
 
 resource "aws_autoscaling_group" "validator" {
 
-
+  count = var.validator_count
   vpc_zone_identifier = var.devnet_private_subnet_ids
-  name                = "${var.deployment_name}-validator-asg"
+  name                = "${var.deployment_name}-validator-asg-${count.index}"
 
-  max_size                  = var.validator_count + 1
-  desired_capacity          = var.validator_count
-  min_size                  = var.validator_count - 1
+  max_size                  = 1
+  desired_capacity          = 1
+  min_size                  = 1
   health_check_grace_period = 300
   health_check_type         = "EC2"
   termination_policies      = ["OldestInstance"]
 
   # wait_for_capacity_timeout = "0"
   launch_template {
-    id      = aws_launch_template.validator.id
-    version = aws_launch_template.validator.latest_version
+    id      = aws_launch_template.validator[count.index].id
+    version = aws_launch_template.validator[count.index].latest_version
   }
 
   instance_refresh {
@@ -111,29 +115,26 @@ resource "aws_autoscaling_group" "validator" {
 
   }
   target_group_arns = [var.int_validator_alb_arn, var.ext_validator_alb_arn]
+
   initial_lifecycle_hook {
-    name                    = "${aws_launch_template.validator.id}-lifecycle-terminating"
+    name                    = "${aws_launch_template.validator[count.index].id}-lifecycle-launching"
     default_result          = "ABANDON"
     heartbeat_timeout       = 60
-    lifecycle_transition    = "autoscaling:EC2_INSTANCE_TERMINATING"
+    lifecycle_transition    = "autoscaling:EC2_INSTANCE_LAUNCHING"
     notification_target_arn = aws_sns_topic.autoscale_handling.arn
     role_arn                = aws_iam_role.lifecycle.arn
   }
 
-  initial_lifecycle_hook {
-    name                    = "${aws_launch_template.validator.id}-lifecycle-launching"
-    default_result          = "ABANDON"
-    heartbeat_timeout       = 60
-    lifecycle_transition    = "autoscaling:EC2_INSTANCE_LAUNCHING"
-    notification_target_arn = aws_sns_topic.tagger_handling.arn
-    role_arn                = aws_iam_role.lifecycle.arn
+ tag {
+    key                 = "Hostname"
+    value               = format("validator-%03d.%s", count.index + 1, var.base_dn)
+    propagate_at_launch = true
   }
-
-  warm_pool {
-    min_size   = 1
-    pool_state = "Running"
+  tag {
+    key                 = "Name"
+    value               = format("validator-%03d", count.index + 1)
+    propagate_at_launch = true
   }
-  force_delete_warm_pool = true
 
   tag {
     key                 = "Role"
@@ -144,7 +145,7 @@ resource "aws_autoscaling_group" "validator" {
   tag {
     key = "asg:hostname_pattern"
     # Ensure that the value you choose here contains a fully qualified domain name for the zone before the @ symbol
-    value               = format("%s@%s@%s", var.base_dn, var.private_zone_id, var.reverse_zone_id)
+    value               = format("validator-%03d.%s@%s@%s", count.index + 1,var.base_dn, var.private_zone_id, var.reverse_zone_id)
     propagate_at_launch = true
   }
 

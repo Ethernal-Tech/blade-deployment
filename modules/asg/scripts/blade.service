@@ -2,7 +2,7 @@
 Description=Blade Client
 Documentation=https://github.com/Ethernal-Tech/blade
 After=docker.service
-Requires=docker.service
+Wants=docker.service
 
 # Bring this up after the network is online
 After=network-online.target

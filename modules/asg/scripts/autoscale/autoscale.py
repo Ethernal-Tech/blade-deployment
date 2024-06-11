@@ -109,8 +109,14 @@ def process_message(message):
         return
     logger.info("Processing %s event", message['LifecycleTransition'])
 
-    if message['LifecycleTransition'] == "autoscaling:EC2_INSTANCE_TERMINATING":
-        update_dynamodb(message)
+    if message['LifecycleTransition'] == "autoscaling:EC2_INSTANCE_LAUNCHING":
+        instance = message['EC2InstanceId']
+        ip = fetch_ip_from_ec2(instance)
+        asg_name = message['AutoScalingGroupName']
+        hostname_pattern, zone_id, reverse_zone_id= fetch_tag_metadata(asg_name)
+        hostname = hostname_pattern
+        update_record(zone_id, ip, hostname, 'UPSERT')
+        update_record(reverse_zone_id, ip, hostname, 'UPSERT', reverse=True)
 
 # Picks out the message from a SNS message and deserializes it
 def process_record(record):

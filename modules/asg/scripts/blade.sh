@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 if [ ! -f /etc/blade/.disk_parted ];
 then
     parted /dev/nvme1n1 --script mklabel gpt mkpart primary ext4 0% 100%
@@ -25,13 +27,13 @@ tar -xf /tmp/${ base_dn }.tar.gz --directory ${ blade_home_dir }/bootstrap
 
 chown -R blade:blade-group ${ blade_home_dir }/bootstrap
 
-# aws ssm get-parameter --region ${region} --name /${deployment_name}/${hostname}.${base_dn}.service --query Parameter.Value --output text > /etc/systemd/system/blade.service && \
-# chmod 0644 /etc/systemd/system/blade.service && \
-# systemctl enable blade && \
-# systemctl start blade
+aws ssm get-parameter --region ${region} --name /${deployment_name}/${hostname}.service --query Parameter.Value --output text > /etc/systemd/system/blade.service && \
+chmod 0644 /etc/systemd/system/blade.service 
+sudo systemctl daemon-reload
+sudo systemctl enable blade && \
+sudo systemctl start blade
 
 
-# sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c ssm:/${deployment_name}/${hostname}/cw_agent_config
-# systemctl status amazon-cloudwatch-agent.service
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c ssm:/${deployment_name}/${hostname}/cw_agent_config
+systemctl status amazon-cloudwatch-agent.service
 
-# sudo systemctl status amazon-ssm-agent
