@@ -9,6 +9,7 @@ json_rpc_batch_request_limit: 999
 log_level: INFO
 chain_id: 100
 epoch_reward: 1
+reward_wallet_balance: 1000000
 
 ### Blade Service Flags ###
 max_slots: 276480

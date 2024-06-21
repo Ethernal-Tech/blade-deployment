@@ -26,7 +26,7 @@ main() {
         --premine $ZERO_ADDRESS \
         {% if (is_london_fork_active) %} --burn-contract 0:$ZERO_ADDRESS \ {% endif %}
         --epoch-size 10 \
-        --reward-wallet 0xDEADBEEF:1000000 \
+        --reward-wallet 0xDEADBEEF:{{ reward_wallet_balance }} \
         --block-time {{ block_time }}s \
         --native-token-config {{ native_token_config }} \
         --blade-admin $(cat validator-001.{{ base_dn }}.json | jq -r '.[0].address') \
