@@ -31,7 +31,8 @@ main() {
         --native-token-config {{ native_token_config }} \
         --blade-admin $(cat validator-001.{{ base_dn }}.json | jq -r '.[0].address') \
         --proxy-contracts-admin $PROXY_CONTRACTS_ADMIN \
-        --base-fee-config 1000000000
+        --base-fee-config 1000000000 \
+        --epoch-reward {{ epoch_reward }}
 
     {% if (is_bridge_active) %}
         blade bridge server 2>&1 | tee bridge-server.log &

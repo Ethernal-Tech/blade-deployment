@@ -8,6 +8,7 @@ gossip_msg_size: 1_048_576
 json_rpc_batch_request_limit: 999
 log_level: INFO
 chain_id: 100
+epoch_reward: 1
 
 ### Blade Service Flags ###
 max_slots: 276480
