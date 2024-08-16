@@ -8,7 +8,7 @@ Wants=network-online.target
 
 [Service]
 WorkingDirectory=/opt/blockscout
-EnvironmentFile=/opt/blockscout/variables.env
+EnvironmentFile=/opt/blockscout/explorer.env
 ExecStart=mix phx.server
 MemoryHigh={{ (ansible_memtotal_mb * 0.7) | round | int }}M
 MemoryMax={{ (ansible_memtotal_mb * 0.8) | round | int }}M

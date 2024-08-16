@@ -1,0 +1,35 @@
+[server.http]
+enabled = true
+addr = "0.0.0.0:8043"
+max_body_size = 2097152
+
+[solidity]
+enabled = true
+compilers_dir = "/tmp/solidity-compilers"
+refresh_versions_schedule = "0 0 * * * * *"
+
+[solidity.fetcher.list]
+list_url = "https://solc-bin.ethereum.org/linux-amd64/list.json"
+
+[vyper]
+enabled = true
+compilers_dir = "/tmp/vyper-compilers"
+refresh_versions_schedule = "0 0 * * * * *"
+
+[vyper.fetcher.list]
+list_url = "https://raw.githubusercontent.com/blockscout/solc-bin/main/vyper.list.json"
+
+[sourcify]
+enabled = true
+api_url = "https://sourcify.dev/server/"
+verification_attempts = 3
+request_timeout = 10
+
+[compilers]
+max_threads = 8
+
+[metrics]
+enabled = false
+
+[jaeger]
+enabled = false

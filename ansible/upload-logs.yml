@@ -1,5 +1,5 @@
 - name: Upload logs
-  hosts: all
+  hosts: fullnode:validator
   become: true
   tags:
     - upload-logs
