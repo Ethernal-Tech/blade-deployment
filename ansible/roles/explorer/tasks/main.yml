@@ -118,6 +118,28 @@
       - pkg-config
     state: present
 
+- name: Smart Contract Verifier Dependency - golang-go
+  ansible.builtin.apt:
+    pkg:
+      - golang-go
+    state: present
+
+- name: Smart Contract Verifier Dependency - protobuf-compiler
+  ansible.builtin.apt:
+    pkg:
+      - protobuf-compiler
+    state: present
+
+- name: "Smart Contract Verifier Dependency - protobuf {{ protobuf_version }}"
+  ansible.builtin.shell: |
+    cd /opt/
+    curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v{{ protobuf_version }}/protoc-{{ protobuf_version }}-linux-x86_64.zip
+    unzip protoc-{{ protobuf_version }}-linux-x86_64.zip -d protoc3
+    mv protoc3/bin/* /usr/local/bin/
+    mv protoc3/include/* /usr/local/include/
+    rm -rf protoc3 protoc-{{ protobuf_version }}-linux-x86_64.zip
+    go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
+
 - name: Install ACL Package to support becoming unprivileged user
   ansible.builtin.apt:
     pkg:
@@ -136,13 +158,14 @@
 
 - name: Build and install smart contract verifier
   ansible.builtin.shell: |
-    cargo install --git https://github.com/blockscout/blockscout-rs smart-contract-verifier-http
+    export PATH=$PATH:$(go env GOPATH)/bin
+    cargo install --git https://github.com/blockscout/blockscout-rs smart-contract-verifier-server
     pushd /usr/local/bin
-    cp $HOME/.cargo/bin/smart-contract-verifier-http .
+    cp $HOME/.cargo/bin/smart-contract-verifier-server .
     popd
   args:
     executable: /bin/bash
-    creates: /usr/local/bin/smart-contract-verifier-http
+    creates: /usr/local/bin/smart-contract-verifier-server
 
 - name: Download the latest stable release of Rust and set it as default toolchain.
   ansible.builtin.command: rustup default stable
@@ -154,6 +177,18 @@
   ansible.builtin.template:
     src: explorer.service
     dest: /etc/systemd/system/explorer.service
+    mode: "0644"
+
+- name: Create an configuration file for the smart contract verifier
+  ansible.builtin.template:
+    src: contract-verifier.toml
+    dest: /opt/contract-verifier.toml
+    mode: "0644"
+
+- name: Create an environment file for the smart contract verifier
+  ansible.builtin.template:
+    src: contract-verifier.env
+    dest: /opt/contract-verifier.env
     mode: "0644"
 
 - name: Create an systemd service file for the smart contract verifier
@@ -186,10 +221,10 @@
     recurse: true
     mode: o-rwx,u+rwx,g+rx
 
-- name: Create an environment variable file
+- name: Create an environment variable file for the explorer
   ansible.builtin.template:
-    src: variables.env
-    dest: /opt/blockscout/variables.env
+    src: explorer.env
+    dest: /opt/blockscout/explorer.env
     owner: "{{ blockscout_user }}"
     group: "{{ blockscout_user }}-group"
     mode: "0400"
@@ -215,7 +250,7 @@
   ansible.builtin.shell: |
     pushd /opt/blockscout
     set -a
-    source /opt/blockscout/variables.env
+    source /opt/blockscout/explorer.env
     set +a
     mix local.hex --force
     mix do deps.get, local.rebar --force, deps.compile
@@ -231,7 +266,7 @@
   ansible.builtin.shell: |
     pushd /opt/blockscout
     set -a
-    source /opt/blockscout/variables.env
+    source /opt/blockscout/explorer.env
     set +a
     # drop is needed when doing a reset of an existing environment
     # mix do ecto.drop, ecto.create, ecto.migrate
@@ -248,7 +283,7 @@
 - name: Blockscout npm setup
   ansible.builtin.shell: |
     set -a
-    source /opt/blockscout/variables.env
+    source /opt/blockscout/explorer.env
     set +a
 
     pushd /opt/blockscout/apps/block_scout_web/assets

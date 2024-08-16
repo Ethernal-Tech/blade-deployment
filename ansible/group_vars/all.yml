@@ -73,6 +73,7 @@ geth_chain_id: 1001
 geth_p2p_port: 30303
 
 ### Blockscout ###
+protobuf_version: 27.3
 blockscout_http_port: 4000
 blockscout_user: explorer
 blockscout_version: v5.1.5-beta

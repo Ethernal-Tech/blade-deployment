@@ -7,7 +7,8 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=smart-contract-verifier-http
+EnvironmentFile=/opt/contract-verifier.env
+ExecStart=smart-contract-verifier-server
 MemorySwapMax=0
 
 Restart=on-failure
