@@ -18,27 +18,28 @@ terraform {
 }
 
 module "dns" {
-  source                     = "./modules/dns"
-  base_dn                    = local.base_dn
-  region                     = var.region
-  fullnode_count             = var.fullnode_count
-  validator_count            = var.validator_count
-  geth_count                 = var.geth_count
-  route53_zone_id            = var.route53_zone_id
-  deployment_name            = var.deployment_name
-  explorer_count             = var.explorer_count
-  devnet_id                  = module.networking.devnet_id
-  aws_lb_int_rpc_domain      = module.elb.aws_lb_int_rpc_domain
-  aws_lb_ext_rpc_geth_domain = module.elb.aws_lb_ext_rpc_geth_domain
-  aws_lb_explorer_domain     = module.elb.aws_lb_explorer_domain
-  aws_lb_faucet_domain       = module.elb.aws_lb_faucet_domain
-  aws_lb_ext_rpc_domain      = module.elb.aws_lb_ext_rpc_domain
-  aws_lb_p2p_domain          = module.elb.aws_lb_p2p_domain
-  validator_private_ips      = module.ec2.validator_private_ips
-  fullnode_private_ips       = module.ec2.fullnode_private_ips
-  geth_private_ips           = module.ec2.geth_private_ips
-  explorer_private_ips       = module.ec2.explorer_private_ips
-  aws_rds_cluster_explorer   = module.rds.aws_rds_cluster_explorer
+  source                                = "./modules/dns"
+  base_dn                               = local.base_dn
+  region                                = var.region
+  fullnode_count                        = var.fullnode_count
+  validator_count                       = var.validator_count
+  geth_count                            = var.geth_count
+  route53_zone_id                       = var.route53_zone_id
+  deployment_name                       = var.deployment_name
+  explorer_count                        = var.explorer_count
+  devnet_id                             = module.networking.devnet_id
+  aws_lb_int_rpc_domain                 = module.elb.aws_lb_int_rpc_domain
+  aws_lb_ext_rpc_geth_domain            = module.elb.aws_lb_ext_rpc_geth_domain
+  aws_lb_explorer_domain                = module.elb.aws_lb_explorer_domain
+  aws_lb_smart_contract_verifier_domain = module.elb.aws_lb_smart_contract_verifier_domain
+  aws_lb_faucet_domain                  = module.elb.aws_lb_faucet_domain
+  aws_lb_ext_rpc_domain                 = module.elb.aws_lb_ext_rpc_domain
+  aws_lb_p2p_domain                     = module.elb.aws_lb_p2p_domain
+  validator_private_ips                 = module.ec2.validator_private_ips
+  fullnode_private_ips                  = module.ec2.fullnode_private_ips
+  geth_private_ips                      = module.ec2.geth_private_ips
+  explorer_private_ips                  = module.ec2.explorer_private_ips
+  aws_rds_cluster_explorer              = module.rds.aws_rds_cluster_explorer
 }
 
 module "ebs" {
@@ -73,27 +74,28 @@ module "ec2" {
 }
 
 module "elb" {
-  source                      = "./modules/elb"
-  http_rpc_port               = var.http_rpc_port
-  rootchain_rpc_port          = var.rootchain_rpc_port
-  fullnode_count              = var.fullnode_count
-  validator_count             = var.validator_count
-  geth_count                  = var.geth_count
-  route53_zone_id             = var.route53_zone_id
-  base_id                     = local.base_id
-  explorer_count              = var.explorer_count
-  devnet_private_subnet_ids   = module.networking.devnet_private_subnet_ids
-  devnet_public_subnet_ids    = module.networking.devnet_public_subnet_ids
-  fullnode_instance_ids       = module.ec2.fullnode_instance_ids
-  validator_instance_ids      = module.ec2.validator_instance_ids
-  geth_instance_ids           = module.ec2.geth_instance_ids
-  explorer_instance_ids       = module.ec2.explorer_instance_ids
-  devnet_id                   = module.networking.devnet_id
-  security_group_open_http_id = module.securitygroups.security_group_open_http_id
-  security_group_default_id   = module.securitygroups.security_group_default_id
-  certificate_arn             = module.dns.certificate_arn
-  certificate_explorer_arn    = module.dns.certificate_explorer_arn
-  certificate_faucet_arn      = module.dns.certificate_faucet_arn
+  source                                  = "./modules/elb"
+  http_rpc_port                           = var.http_rpc_port
+  rootchain_rpc_port                      = var.rootchain_rpc_port
+  fullnode_count                          = var.fullnode_count
+  validator_count                         = var.validator_count
+  geth_count                              = var.geth_count
+  route53_zone_id                         = var.route53_zone_id
+  base_id                                 = local.base_id
+  explorer_count                          = var.explorer_count
+  devnet_private_subnet_ids               = module.networking.devnet_private_subnet_ids
+  devnet_public_subnet_ids                = module.networking.devnet_public_subnet_ids
+  fullnode_instance_ids                   = module.ec2.fullnode_instance_ids
+  validator_instance_ids                  = module.ec2.validator_instance_ids
+  geth_instance_ids                       = module.ec2.geth_instance_ids
+  explorer_instance_ids                   = module.ec2.explorer_instance_ids
+  devnet_id                               = module.networking.devnet_id
+  security_group_open_http_id             = module.securitygroups.security_group_open_http_id
+  security_group_default_id               = module.securitygroups.security_group_default_id
+  certificate_arn                         = module.dns.certificate_arn
+  certificate_explorer_arn                = module.dns.certificate_explorer_arn
+  certificate_faucet_arn                  = module.dns.certificate_faucet_arn
+  certificate_smart_contract_verifier_arn = module.dns.certificate_smart_contract_verifier_arn
 }
 
 module "networking" {

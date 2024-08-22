@@ -84,3 +84,7 @@ variable "explorer_instance_ids" {
 variable "certificate_faucet_arn" {
   type = string
 }
+
+variable "certificate_smart_contract_verifier_arn" {
+  type = string
+}

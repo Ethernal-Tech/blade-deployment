@@ -329,3 +329,57 @@ resource "aws_lb_listener" "faucet_secure" {
     target_group_arn = aws_lb_target_group.faucet[0].arn
   }
 }
+
+resource "aws_lb" "smart_contract_verifier" {
+  count              = var.explorer_count
+  name               = "sc-verifier-${var.base_id}"
+  load_balancer_type = "application"
+  internal           = false
+  subnets            = var.devnet_public_subnet_ids
+  security_groups    = [var.security_group_open_http_id, var.security_group_default_id]
+}
+
+resource "aws_lb_target_group" "smart_contract_verifier" {
+  count       = var.explorer_count
+  name        = "sc-verifier-${var.base_id}"
+  protocol    = "HTTP"
+  target_type = "instance"
+  vpc_id      = var.devnet_id
+  port        = 8043
+
+  health_check {
+    healthy_threshold   = 5
+    unhealthy_threshold = 2
+    path                = "/health"
+  }
+}
+
+resource "aws_lb_target_group_attachment" "smart_contract_verifier" {
+  count            = length(var.explorer_instance_ids)
+  target_group_arn = aws_lb_target_group.smart_contract_verifier[count.index].arn
+  target_id        = element(var.explorer_instance_ids, count.index)
+  port             = 8043
+}
+
+resource "aws_lb_listener" "smart_contract_verifier" {
+  count             = var.explorer_count
+  load_balancer_arn = aws_lb.smart_contract_verifier[0].arn
+  port              = 80
+  protocol          = "HTTP"
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.smart_contract_verifier[0].arn
+  }
+}
+
+resource "aws_lb_listener" "smart_contract_verifier_secure" {
+  count             = var.explorer_count
+  load_balancer_arn = aws_lb.smart_contract_verifier[0].arn
+  port              = 443
+  protocol          = "HTTPS"
+  certificate_arn   = var.certificate_smart_contract_verifier_arn
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.smart_contract_verifier[0].arn
+  }
+}
