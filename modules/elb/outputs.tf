@@ -21,3 +21,7 @@ output "aws_lb_explorer_domain" {
 output "aws_lb_faucet_domain" {
   value = var.explorer_count == 1 ? aws_lb.faucet[0].dns_name : ""
 }
+
+output "aws_lb_smart_contract_verifier_domain" {
+  value = var.explorer_count == 1 ? aws_lb.smart_contract_verifier[0].dns_name : ""
+}

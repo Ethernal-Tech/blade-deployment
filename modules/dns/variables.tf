@@ -86,3 +86,7 @@ variable "aws_rds_cluster_explorer" {
 variable "aws_lb_faucet_domain" {
   type = string
 }
+
+variable "aws_lb_smart_contract_verifier_domain" {
+  type = string
+}
