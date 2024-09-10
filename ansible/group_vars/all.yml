@@ -20,7 +20,7 @@ max_enqueued: 276480
 polycli_tag: 0.1.30 # https://github.com/maticnetwork/polygon-cli/releases
 blade_tag: develop
 geth_tag: v1.12.0
-go_tag: 1.21.6.linux-amd64
+go_tag: 1.22.6.linux-amd64
 ## If the L1 is NOT an unlocked test account, then you'll need some wallet
 # for funding validators. The address and private key here are used for this purpose
 rootchain_coinbase_address: "0xREPLACE_WITH_ETH_ADDRESS"
