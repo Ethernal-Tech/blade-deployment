@@ -44,6 +44,12 @@ source "amazon-ebs" "ubuntu" {
   availability_zone     = "us-west-2a"
   source_ami            = "ami-0efcece6bed30fd98"
   ssh_username          = "ubuntu"
+  launch_block_device_mappings {
+    device_name           = "/dev/sda1"
+    volume_size           = 15
+    volume_type           = "gp2"
+    delete_on_termination = true
+  }
   run_tags = {
     OS   = "ubuntu"
     Name = "load-test-${formatdate("YYYY-MM-DD", timestamp())}"
