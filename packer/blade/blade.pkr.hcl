@@ -9,7 +9,7 @@ packer {
 
 variable "go_tag" {
   type = string
-  default = "1.20.11.linux-amd64"
+  default = "1.22.6.linux-amd64"
 }
 
 variable "polycli_tag" {
