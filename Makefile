@@ -131,6 +131,17 @@ clear-syslog: ## Clear syslog on validators and fullnodes.
 	cd ${ANSIBLE_PLAYBOOK_PATH} && ${ansible} validator:fullnode -m shell -b -a 'truncate -s 0 /var/log/syslog'
 .PHONY: clear-syslog
 
+delete-saved-logs: ## Delete logs created and stored by logrotate
+	@read -r -p "Are you sure you want to proceed? (y/n) " answer; \
+	if [ "$$answer" != "$${answer#[Yy]}" ]; then \
+		echo "Confirmed. Proceeding with the operation."; \
+	else \
+		echo "Operation cancelled."; \
+		exit; \
+	fi; \
+	cd ${ANSIBLE_PLAYBOOK_PATH} && ${ansible} validator:fullnode -m shell -b -a 'rm -rf /var/lib/blade/logs/*'
+.PHONY: delete-saved-logs
+
 reset-blade: ## Perform reset on the blade service.
 	@read -r -p "Are you sure you want to proceed? (y/n) " answer; \
 	if [ "$$answer" != "$${answer#[Yy]}" ]; then \
