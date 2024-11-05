@@ -17,7 +17,7 @@ ExecStart=blade server --data-dir {{ blade_home_dir }} \
     --max-slots {{ max_slots }} \
     --max-enqueued {{ max_enqueued }} \
     --gossip-msg-size {{ gossip_msg_size }} \
-    --gossip_batch_size {{ gossip_batch_size }} \
+    --gossip-batch-size {{ gossip_batch_size }} \
     --log-level {{ log_level }} \
     --block-gas-target {{ block_gas_limit }} \
     --num-block-confirmations 2 \
