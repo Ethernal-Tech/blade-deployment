@@ -161,3 +161,18 @@ variable "devnet_id" {
   description = "The ID of the VPC"
   type        = string
 }
+
+variable "explorer_count" {
+  description = "The number of nodes to run as a blockchain explorer"
+  type        = number
+}
+
+variable "explorer_instance_type" {
+  description = "The type of instance that we're going to use"
+  type        = string
+}
+
+variable "explorer_ami" {
+  description = "Explorer AMI"
+}
+

@@ -12,7 +12,7 @@ resource "aws_key_pair" "devnet" {
 }
 resource "terraform_data" "cluster" { 
 
-  depends_on = [ aws_ssm_parameter.validator_bootstrap, aws_ssm_parameter.validator_config, aws_s3_bucket.state]
+  depends_on = [ aws_s3_object.validator_bootstrap, aws_ssm_parameter.validator_config, aws_s3_bucket.state]
  
   provisioner "local-exec" { # Bootstrap script called with private_ip of each node in the cluster   
     command = "${path.module}/scripts/local.sh"
@@ -37,14 +37,14 @@ resource "aws_launch_template" "validator" {
 
   vpc_security_group_ids = [var.sg_open_rpc_id, var.sg_all_node_id, var.security_group_default_id]
 
-  block_device_mappings {
-    device_name = "/dev/sdf"
-    ebs {
-      volume_size = var.node_storage
-      volume_type = "gp3"
-      encrypted   = true
-    }
-  }
+  # block_device_mappings {
+  #   device_name = "/dev/sdf"
+  #   ebs {
+  #     volume_size = var.node_storage
+  #     volume_type = "gp3"
+  #     encrypted   = true
+  #   }
+  # }
 
   metadata_options {
      instance_metadata_tags      = "enabled"
@@ -77,13 +77,15 @@ resource "aws_launch_template" "validator" {
     region            = local.region
     is_bootstrap_node = false
     hostname          =  format("validator-%03d.%s", count.index + 1, var.base_dn)
+    name =  format("validator-%03d", count.index + 1)
+    volume = aws_ebs_volume.validator[count.index].id
   }))
 
   lifecycle {
     create_before_destroy = false
   }
 
-  depends_on = [aws_ssm_parameter.validator_bootstrap]
+  depends_on = [aws_s3_object.validator_bootstrap]
 
 
 }
@@ -91,7 +93,8 @@ resource "aws_launch_template" "validator" {
 resource "aws_autoscaling_group" "validator" {
 
   count = var.validator_count
-  vpc_zone_identifier = var.devnet_private_subnet_ids
+  # availability_zones = [var.zones[count.index]]
+  vpc_zone_identifier = [element(var.devnet_private_subnet_ids,count.index)]
   name                = "${var.deployment_name}-validator-asg-${count.index}"
 
   max_size                  = 1
@@ -110,7 +113,7 @@ resource "aws_autoscaling_group" "validator" {
   instance_refresh {
     strategy = "Rolling"
     preferences {
-      min_healthy_percentage = 50
+      min_healthy_percentage = 0
     }
 
   }
@@ -159,7 +162,7 @@ resource "aws_autoscaling_group" "validator" {
     create_before_destroy = false
   }
 
-  depends_on = [aws_ssm_parameter.validator_bootstrap, terraform_data.cluster]
+  depends_on = [aws_s3_object.validator_bootstrap, terraform_data.cluster]
 
 
 }
@@ -179,13 +182,13 @@ resource "aws_launch_template" "fullnode" {
     security_groups = [var.sg_open_rpc_id, var.sg_all_node_id, var.security_group_default_id]
   }
 
-  block_device_mappings {
-    device_name = "/dev/sdf"
-    ebs {
-      volume_size = var.node_storage
-      volume_type = "gp3"
-    }
-  }
+  # block_device_mappings {
+  #   device_name = "/dev/sdf"
+  #   ebs {
+  #     volume_size = var.node_storage
+  #     volume_type = "gp3"
+  #   }
+  # }
 
   tag_specifications {
 
@@ -210,10 +213,12 @@ resource "aws_launch_template" "fullnode" {
   user_data = base64encode(templatefile("${path.module}/scripts/blade.sh", {
     deployment_name   = var.deployment_name,
     hostname          = format("fullnode-%03d", count.index + 1)
+    name = format("fullnode-%03d", count.index + 1)
     is_bootstrap_node = false
     blade_home_dir    = local.blade_home_dir
     base_dn           = var.base_dn
     region            = local.region
+    volume = aws_ebs_volume.fullnode[count.index].id
   }))
 
   lifecycle {

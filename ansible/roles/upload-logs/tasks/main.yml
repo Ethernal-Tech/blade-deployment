@@ -8,8 +8,6 @@
   community.general.archive:
     path: 
     - /var/log/syslog
-    - "{{ blade_home_dir }}/init.sh"
-    - "{{ blade_home_dir }}/bootstrap_output.txt"
     - "{{ blade_home_dir }}/bootstrap"
     dest: "/tmp/logs/{{ hostvars[inventory_hostname].tags.Hostname }}.tar.gz"
     format: gz

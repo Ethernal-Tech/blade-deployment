@@ -7,7 +7,7 @@ variable "aws_profile" {
 variable "base_instance_type" {
   description = "The type of instance that we're going to use"
   type        = string
-  default     = "c6a.large"
+  default     = "c6a.2xlarge"
 }
 
 variable "company_name" {
@@ -140,4 +140,27 @@ variable "zones" {
   description = "The availability zones for deployment"
   type        = list(string)
   default     = ["us-west-2a", "us-west-2b", "us-west-2c", "us-west-2d"]
+}
+
+variable "explorer_count" {
+  description = "The number of nodes to run as a blockchain explorer"
+  type        = number
+  default     = 1
+}
+
+variable "explorer_instance_type" {
+  description = "The type of instance that we're going to use"
+  type        = string
+  default     = "c6a.2xlarge"
+}
+
+variable "explorer_rds_master_password" {
+  description = "The master password used to configure the rds cluster"
+  type        = string
+  sensitive   = true
+}
+
+variable "explorer_ami" {
+  type = string
+
 }

@@ -39,3 +39,23 @@ blade-status:
 	cd ansible; \
 	ansible validator -m shell -b -a "systemctl status blade"
 .PHONY: blade-status
+
+upload-logs:
+	cd ansible; \
+	${ansible-playbook} upload-logs.yml
+.PHONY: upload-logs
+
+check-explorer:
+	cd ansible;\
+	ansible explorer -m shell -b -a "docker ps"
+.PHONY: check-explorer
+
+check-docker:
+	cd ansible; \
+	ansible validator -m shell -b -a "docker logs --tail 10 besu"
+.PHONY: check-docker
+
+site:
+	cd ansible; \
+	${ansible-playbook} site.yml
+.PHONY: site

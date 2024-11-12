@@ -14,10 +14,3 @@ variable "node_storage" {
   description = "The size of the storage disk attached to full nodes and validators"
   type        = number
 }
-
-variable "validator_instance_ids" {
-  type = list(string)
-}
-variable "fullnode_instance_ids" {
-  type = list(string)
-}

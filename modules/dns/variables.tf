@@ -47,3 +47,20 @@ variable "route53_zone_id" {
   description = "The ID of the hosted zone to contain the CNAME record to our LB"
   type        = string
 }
+
+variable "explorer_count" {
+  
+}
+variable "lb_explorer" {
+  
+}
+
+variable "validator_private_ips" {
+  type = list(string)
+}
+variable "fullnode_private_ips" {
+  type = list(string)
+}
+variable "geth_private_ips" {
+  type = list(string)
+}

@@ -132,7 +132,12 @@ resource "aws_iam_policy" "ec2_policy" {
              "Effect": "Allow",
             "Action": [
                 "ec2:DescribeTags",
-                "ec2:DescribeInstance"
+                "ec2:DescribeInstance",
+                "ec2:DescribeSnapshots",
+                "ec2:CreateVolume",
+                "ec2:CreateTags",
+                "ec2:AttachVolume",
+                "ec2:ModifyInstanceAttribute"
                 
             ],
             "Resource": "*"

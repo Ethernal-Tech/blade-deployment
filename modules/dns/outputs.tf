@@ -19,3 +19,8 @@ output "reverse_zone_arn" {
   value = aws_route53_zone.reverse_zone.arn
 
 }
+
+output "certificate_explorer_arn" {
+  value = aws_acm_certificate.explorer[0].arn
+  
+}

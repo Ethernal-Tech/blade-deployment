@@ -1,0 +1,83 @@
+# - name: Produce blade bootstrap script on the first validator
+#   ansible.builtin.template:
+#     src: init.sh
+#     dest: "/var/lib/besu/init.sh"
+#     mode: 0700
+#   when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"
+
+# - name: Produce blade secrets config file on the first validator
+#   ansible.builtin.template:
+#     src: initConfig.json
+#     dest: "/var/lib/besu/config.json"
+#     mode: 0700
+#   when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"
+# - name: Execute bootstrap on the first validator
+#   ansible.builtin.shell: |
+#     cd /var/lib/besu
+#     docker stop besu
+#     docker container rm besu
+#     rm -rf data
+#     mkdir data
+#     myarray=($(find ./networkFiles/keys -maxdepth 1 -mindepth 1 -type d -printf '%f '))
+#     cp ./networkFiles/keys/${myarray[0]}/* ./data
+#   when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"
+#   args:
+#     executable: /bin/bash
+# - name: Execute bootstrap on the first validator
+#   ansible.builtin.shell: |
+#     cd /var/lib/besu
+#     docker stop besu
+#     docker container rm besu
+#     rm -rf data
+#     mkdir data
+#     myarray=($(find ./networkFiles/keys -maxdepth 1 -mindepth 1 -type d -printf '%f '))
+#     cp ./networkFiles/keys/${myarray[1]}/* ./data
+#   when: hostvars[inventory_hostname].tags["Hostname"] == "validator-002"
+#   args:
+#     executable: /bin/bash
+# - name: Execute bootstrap on the first validator
+#   ansible.builtin.shell: |
+    # cd /var/lib/besu
+    # docker stop besu
+    # docker container rm besu
+    # rm -rf data
+    # mkdir data
+    # myarray=($(find ./networkFiles/keys -maxdepth 1 -mindepth 1 -type d -printf '%f '))
+    # cp ./networkFiles/keys/${myarray[0]}/* ./data
+#   when: hostvars[inventory_hostname].tags["Hostname"] == "validator-003"
+#   args:
+#     executable: /bin/bash
+# - name: Execute bootstrap on the first validator
+#   ansible.builtin.shell: |
+#     pushd /var/lib/besu
+#     aws s3 cp s3://besu-state-bucket/besu.tar.gz besu.tar.gz
+#     tar -xf besu.tar.gz
+#     mkdir data
+#     validator=$(echo {{ hostvars[inventory_hostname].tags["Hostname"] }} | grep -o -E '([1-9]{1})')
+#     validator=$(($validator))
+#     myarray=($(find ./networkFiles/keys -maxdepth 1 -mindepth 1 -type d -printf '%f '))
+#     cp ./networkFiles/keys/${myarray[$(($validator - 1))]}/* ./data
+#     popd
+#   args:
+#     executable: /bin/bash
+
+- name: Execute bootstrap on the first validator
+  ansible.builtin.shell: |
+    pushd /var/lib/besu
+    docker stop besu
+    docker container rm besu
+    docker run --name besu -d --net host -v $PWD:/app -w /app hyperledger/besu:latest --data-path=data --genesis-file=./networkFiles/genesis.json --rpc-http-enabled --rpc-http-api=ETH,NET,IBFT,TXPOOL --host-allowlist="*" --rpc-http-cors-origins="all" --p2p-port=10001 --rpc-http-port=10002 --rpc-http-host=0.0.0.0 --tx-pool-max-future-by-sender=10000 --target-gas-limit=200000000 --tx-pool-max-prioritized=10000 --tx-pool-layer-max-capacity=1000000000
+    popd
+  when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"
+  args:
+    executable: /bin/bash
+- name: Execute run
+  ansible.builtin.shell: |
+    pushd /var/lib/besu
+    docker stop besu
+    docker container rm besu
+    docker run --name besu -d --net host -v $PWD:/app -w /app hyperledger/besu:latest --data-path=data --genesis-file=./networkFiles/genesis.json --bootnodes=enode://ee076faf9651243ad3ab3e5b31e0d33a77cee1faa80863f37f4c4a4422b2d9cde1fbd11d2141ab3cd0b578a70d0a697d2cdc231d2ccd36edb6793e3a03f06578@10.10.66.134:10001 --rpc-http-enabled --rpc-http-api=ETH,NET,IBFT,TXPOOL --host-allowlist="*" --rpc-http-cors-origins="all" --p2p-port=10001 --rpc-http-port=10002 --rpc-http-host=0.0.0.0 --tx-pool-max-future-by-sender=10000 --target-gas-limit=200000000 --tx-pool-max-prioritized=10000 --tx-pool-layer-max-capacity=1000000000
+    popd
+  when: hostvars[inventory_hostname].tags["Hostname"] != "validator-001"
+  args:
+    executable: /bin/bash

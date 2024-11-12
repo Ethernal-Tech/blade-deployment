@@ -17,13 +17,14 @@ ExecStartPre=/usr/bin/docker pull ${ docker_image }
 ExecStart=/usr/bin/docker run --rm --log-driver=awslogs --log-opt awslogs-group=docker-logs-${deployment_name} --name %n -u 1001:1001 --net host -w /blade -v /etc/blade:/etc/blade -v ${blade_home_dir}:/blade:z ${ docker_image } server --data-dir /blade \
     --chain /blade/bootstrap/genesis.json \
     --grpc-address 0.0.0.0:${ blade_grpc_port } \
-    --json-rpc-batch-request-limit 999 \
+    --json-rpc-batch-request-limit 0 \
     --libp2p 0.0.0.0:${ blade_p2p_port } \
     --jsonrpc 0.0.0.0:${ blade_jsonrpc_port } \
     --prometheus 0.0.0.0:${ blade_prometheus_port } \
     --max-slots ${ max_slots } \
     --max-enqueued ${ max_enqueued }\
-    --log-level INFO \
+     --gossip-msg-size ${ gossip_msg_size } \
+    --log-level DEBUG \
     --block-gas-target ${ block_gas_limit } \
     --num-block-confirmations 2 \
     --secrets-config /blade/bootstrap/secrets/${hostname}_config.json \

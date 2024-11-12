@@ -22,3 +22,17 @@ variable "devnet_id" {
   description = "The ID of the VPC"
   type        = string
 }
+
+variable "validator_primary_network_interface_ids" {
+  type = list(string)
+}
+variable "fullnode_primary_network_interface_ids" {
+  type = list(string)
+}
+variable "geth_primary_network_interface_ids" {
+  type = list(string)
+}
+variable "geth_count" {
+  description = "The number of geth nodes that we're going to deploy"
+  type        = number
+}

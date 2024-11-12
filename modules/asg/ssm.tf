@@ -8,31 +8,6 @@ resource "aws_ssm_parameter" "cw_agent_config" {
   })
 }
 
-resource "aws_ssm_parameter" "validator_bootstrap" {
-  name = format("/%s/bootstrap.sh", var.deployment_name)
-  type = "String"
-  value = templatefile("${path.module}/scripts/bootstrap.sh", {
-    hostvars              = local.hostvars
-    validators            = local.validators
-    fullnodes             = local.fullnodes
-    blade_home_dir        = local.blade_home_dir
-    blade_p2p_port        = local.blade_p2p_port
-    block_gas_limit       = local.block_gas_limit
-    loadtest_account      = local.loadtest_account
-    block_time            = local.block_time
-    chain_id              = local.chain_id
-    native_token_config   = local.native_token_config
-    base_dn               = var.base_dn
-    clean_deploy_title    = var.deployment_name
-    is_bridge_active      = local.is_bridge_active
-    is_london_fork_active = local.is_london_fork_active
-    docker_image          = local.docker_image
-    bootstrap_dir         = local.bootstrap_dir
-
-  })
-
-}
-
 resource "aws_ssm_parameter" "validator_config" {
   name = format("/%s/config.json", var.deployment_name)
   type = "String"
@@ -63,5 +38,6 @@ resource "aws_ssm_parameter" "validator_service" {
     max_slots             = local.max_slots
     max_enqueued          = local.max_enqueued
     docker_image          = local.docker_image
+    gossip_msg_size       = local.gossip_msg_size
   })
 }

@@ -17,6 +17,10 @@ resource "aws_default_security_group" "default" {
   }
 }
 
+locals {
+  all_primary_network_interface_ids = concat(var.validator_primary_network_interface_ids, var.fullnode_primary_network_interface_ids, var.geth_primary_network_interface_ids)
+  p2p_primary_network_interface_ids = concat(var.validator_primary_network_interface_ids, var.fullnode_primary_network_interface_ids)
+}
 resource "aws_security_group" "all_node_instances" {
   name        = format("all-%s-%s-nodes", var.network_type, var.deployment_name)
   description = format("Configuration for the %s %s collection of instances", var.network_type, var.deployment_name)
@@ -29,6 +33,12 @@ resource "aws_security_group_rule" "all_node_instances" {
   protocol          = -1
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.all_node_instances.id
+}
+
+resource "aws_network_interface_sg_attachment" "all_node_instances" {
+  count                = length(local.all_primary_network_interface_ids)
+  security_group_id    = aws_security_group.all_node_instances.id
+  network_interface_id = local.all_primary_network_interface_ids[count.index]
 }
 
 resource "aws_security_group" "open_rpc" {
@@ -44,7 +54,11 @@ resource "aws_security_group_rule" "open_rpc" {
   cidr_blocks       = var.network_acl
   security_group_id = aws_security_group.open_rpc.id
 }
-
+resource "aws_network_interface_sg_attachment" "open_rpc" {
+  count                = length(local.p2p_primary_network_interface_ids)
+  security_group_id    = aws_security_group.open_rpc.id
+  network_interface_id = local.p2p_primary_network_interface_ids[count.index]
+}
 resource "aws_security_group_rule" "open_node_exporter" {
   type              = "ingress"
   from_port         = 9100

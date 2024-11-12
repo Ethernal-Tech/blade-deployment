@@ -1,5 +1,5 @@
 ---
-clean_deploy_title: xnet
+clean_deploy_title: besu
 
 #### Genesis Flags ###
 block_gas_limit: 10_000_000
@@ -50,7 +50,7 @@ haproxy_port: 10222
 blade_home_dir: /var/lib/blade
 blade_user: blade
 restore_data: false
-s3_bucket: "" # AWS S3 Bucket name
+s3_bucket: besu-state-bucket # AWS S3 Bucket name
 loadtest_account: "0x85da99c8a7c2c95964c8efd687e95e632fc533d6"
 
 ### Disk Flags ###

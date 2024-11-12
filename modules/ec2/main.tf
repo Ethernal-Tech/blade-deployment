@@ -59,11 +59,24 @@ resource "aws_instance" "validator" {
     device_index         = 0
   }
 
+ metadata_options {
+     instance_metadata_tags      = "enabled"
+  }
   tags = {
     Name     = format("validator-%03d.%s", count.index + 1, var.base_dn)
     Hostname = format("validator-%03d", count.index + 1)
     Role     = "validator"
   }
+
+  user_data = base64encode(templatefile("${path.module}/scripts/besu.sh", {
+    deployment_name   = var.deployment_name
+    blade_home_dir    = "/var/lib/besu"
+    base_dn           = var.base_dn
+    region            = "us-west-2"
+    is_bootstrap_node = false
+    hostname          =  format("validator-%03d.%s", count.index + 1, var.base_dn)
+    volume = var.validator_volume_ids[count.index]
+  }))
 }
 
 resource "aws_instance" "fullnode" {

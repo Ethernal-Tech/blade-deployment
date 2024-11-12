@@ -19,3 +19,8 @@ output "tg_ext_rpc_domain" {
 output "tg_ext_rpc_geth_domain" {
   value = aws_lb_target_group.ext_rpc_geth.arn
 }
+
+output "lb_explorer" {
+  value = aws_lb.explorer.dns_name
+  
+}

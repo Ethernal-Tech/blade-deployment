@@ -51,3 +51,11 @@ variable "route53_zone_id" {
   description = "The ID of the hosted zone to contain the CNAME record to our LB"
   type        = string
 }
+
+variable "explorer_count" {
+  
+}
+
+variable "certificate_explorer_arn" {
+  
+}

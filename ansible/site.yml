@@ -29,6 +29,6 @@
 - hosts: fullnode:validator
   become: true
   tags:
-    - blade
+    - besu
   roles:
-    - blade
+    - besu

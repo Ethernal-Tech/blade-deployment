@@ -18,12 +18,12 @@ variable "polycli_tag" {
 }
 
 source "amazon-ebs" "ubuntu" {
-  ami_name      = "packer-linux-aws-blade-new"
+  ami_name      = "packer-linux-aws-dap"
   instance_type = "t2.micro"
   region        = "us-west-2"
   source_ami_filter {
     filters = {
-      name                = "ubuntu/images/*ubuntu-focal-20.04-amd64-server-*"
+      name                = "ubuntu/images/*ubuntu-jammy-22.04-amd64-server-*"
       root-device-type    = "ebs"
       virtualization-type = "hvm"
     }
@@ -121,7 +121,7 @@ build {
     "sudo useradd -g blade-group -u 1001 blade",
     "sudo usermod -a -G docker blade",
     "sudo mkdir /etc/blade && sudo chown -R blade:blade-group /etc/blade && sudo chmod 0750 /etc/blade",
-    "sudo cp /tmp/run.sh /etc/blade/run.sh && sudo chmod +x /etc/blade/run.sh"
+    "cd /home/ubunutu && git clone https://github.com/Ethernal-Tech/blade-deployment-app.git"
   ]
 }
 
