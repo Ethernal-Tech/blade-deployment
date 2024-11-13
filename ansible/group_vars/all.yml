@@ -5,6 +5,7 @@ clean_deploy_title: devnet
 block_gas_limit: 200_000_000
 block_time: 2
 gossip_msg_size: 1_048_576
+tx_gossip_batch_size: 1
 json_rpc_batch_request_limit: 999
 log_level: INFO
 chain_id: 100
