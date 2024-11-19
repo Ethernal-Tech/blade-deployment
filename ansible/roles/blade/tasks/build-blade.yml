@@ -2,6 +2,10 @@
 # Build blade from source
 # https://github.com/Ethernal-Tech/blade
 
+- name: Setup GitHub credential
+  ansible.builtin.shell: echo "machine github.com login {{ gh_user }} password {{ gh_pat }}" > ~/.netrc
+  changed_when: false
+
 - name: Clone blade repository
   ansible.builtin.git:
     repo: "https://github.com/{{ blade_repository }}.git"
@@ -33,3 +37,6 @@
 - name: Display blade version
   ansible.builtin.debug:
     msg: "{{ blade_version_result.stdout }}"
+
+- name: Remove GitHub credential
+  ansible.builtin.shell: rm -rf ~/.netrc

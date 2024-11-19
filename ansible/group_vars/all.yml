@@ -63,6 +63,11 @@ restore_data: false
 s3_bucket: "" # AWS S3 Bucket name
 loadtest_account: "0x85da99c8a7c2c95964c8efd687e95e632fc533d6"
 
+### GitHub credential ###
+## This need to access private repositories ##
+gh_user: ""
+gh_pat: ""
+
 ### Disk Flags ###
 ## This is the configuration related to mounting a separate device
 storage_device_name: nvme1n1
