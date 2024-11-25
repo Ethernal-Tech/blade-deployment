@@ -9,7 +9,7 @@ resource "aws_s3_bucket" "state" {
 
 resource "aws_s3_object" "validator_bootstrap" {
   bucket = aws_s3_bucket.state.bucket
-  key = format("/%s/bootstrap.sh", var.deployment_name)
+  key    = format("/%s/bootstrap.sh", var.deployment_name)
   content = templatefile("${path.module}/scripts/bootstrap.sh", {
     hostvars              = local.hostvars
     validators            = local.validators

@@ -17,7 +17,7 @@ output "base_id" {
   value = local.base_id
 }
 output "pk_ansible" {
-  value     = module.ec2.pk_ansible
+  value     = module.asg.pk_ansible
   sensitive = true
 }
 

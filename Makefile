@@ -59,3 +59,7 @@ site:
 	cd ansible; \
 	${ansible-playbook} site.yml
 .PHONY: site
+
+destroy:
+	terraform destroy --auto-approve
+.PHONY: destroy

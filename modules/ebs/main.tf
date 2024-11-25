@@ -5,7 +5,7 @@ resource "aws_ebs_volume" "validator" {
   type              = "gp3"
 
   tags = {
-    Name = format("validator-%03d-volume", count.index + 1)
+    Name     = format("validator-%03d-volume", count.index + 1)
     Snapshot = "true"
   }
 }
@@ -16,7 +16,7 @@ resource "aws_ebs_volume" "fullnode" {
   size              = var.node_storage
   type              = "gp3"
   tags = {
-    Name = format("fullnode-%03d-volume", count.index + 1)
+    Name     = format("fullnode-%03d-volume", count.index + 1)
     Snapshot = "true"
   }
 }

@@ -3,11 +3,11 @@ resource "aws_ebs_volume" "validator" {
   availability_zone = element(var.zones, count.index)
   size              = var.node_storage
   type              = "gp3"
-  encrypted = true
+  encrypted         = true
 
   tags = {
-    Name = format("validator-%03d-volume-%s", count.index + 1, var.base_dn)
-    BaseDn = var.base_dn
+    Name     = format("validator-%03d-volume-%s", count.index + 1, var.base_dn)
+    BaseDn   = var.base_dn
     Snapshot = "false"
   }
 }
@@ -16,10 +16,10 @@ resource "aws_ebs_volume" "fullnode" {
   availability_zone = element(var.zones, count.index)
   size              = var.node_storage
   type              = "gp3"
-  encrypted = true
+  encrypted         = true
   tags = {
-    Name = format("fullnode-%03d-volume-%s", count.index + 1, var.base_dn)
-    BaseDn = var.base_dn
+    Name     = format("fullnode-%03d-volume-%s", count.index + 1, var.base_dn)
+    BaseDn   = var.base_dn
     Snapshot = "false"
   }
 }
@@ -29,9 +29,9 @@ resource "aws_ebs_volume" "explorer" {
   availability_zone = element(var.zones, count.index)
   size              = var.node_storage
   type              = "gp3"
-  encrypted = true
+  encrypted         = true
   tags = {
-    Name = format("explorer-%03d-volume-%s", count.index + 1, var.base_dn)
+    Name   = format("explorer-%03d-volume-%s", count.index + 1, var.base_dn)
     BaseDn = var.base_dn
   }
 }

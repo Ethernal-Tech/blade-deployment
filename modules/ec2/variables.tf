@@ -62,5 +62,5 @@ variable "geth_count" {
 }
 
 variable "validator_volume_ids" {
-  
+
 }

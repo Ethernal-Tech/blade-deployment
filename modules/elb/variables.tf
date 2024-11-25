@@ -53,9 +53,9 @@ variable "route53_zone_id" {
 }
 
 variable "explorer_count" {
-  
+
 }
 
 variable "certificate_explorer_arn" {
-  
+
 }

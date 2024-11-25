@@ -15,7 +15,7 @@ resource "aws_grafana_workspace" "monitoring" {
     subnet_ids         = var.devnet_private_subnet_ids
   }
   lifecycle {
-    ignore_changes = [ vpc_configuration["subnet_ids"] ]
+    ignore_changes = [vpc_configuration["subnet_ids"]]
   }
 }
 

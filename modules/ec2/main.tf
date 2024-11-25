@@ -59,8 +59,8 @@ resource "aws_instance" "validator" {
     device_index         = 0
   }
 
- metadata_options {
-     instance_metadata_tags      = "enabled"
+  metadata_options {
+    instance_metadata_tags = "enabled"
   }
   tags = {
     Name     = format("validator-%03d.%s", count.index + 1, var.base_dn)
@@ -74,8 +74,8 @@ resource "aws_instance" "validator" {
     base_dn           = var.base_dn
     region            = "us-west-2"
     is_bootstrap_node = false
-    hostname          =  format("validator-%03d.%s", count.index + 1, var.base_dn)
-    volume = var.validator_volume_ids[count.index]
+    hostname          = format("validator-%03d.%s", count.index + 1, var.base_dn)
+    volume            = var.validator_volume_ids[count.index]
   }))
 }
 

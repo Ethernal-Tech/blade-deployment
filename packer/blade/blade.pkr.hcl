@@ -18,7 +18,7 @@ variable "polycli_tag" {
 }
 
 source "amazon-ebs" "ubuntu" {
-  ami_name      = "packer-linux-aws-dap"
+  ami_name      = "packer-linux-aws-blade"
   instance_type = "t2.micro"
   region        = "us-west-2"
   source_ami_filter {
@@ -120,8 +120,7 @@ build {
     "sudo groupadd blade-group -g 1001",
     "sudo useradd -g blade-group -u 1001 blade",
     "sudo usermod -a -G docker blade",
-    "sudo mkdir /etc/blade && sudo chown -R blade:blade-group /etc/blade && sudo chmod 0750 /etc/blade",
-    "cd /home/ubunutu && git clone https://github.com/Ethernal-Tech/blade-deployment-app.git"
+    "sudo mkdir /etc/blade && sudo chown -R blade:blade-group /etc/blade && sudo chmod 0750 /etc/blade"
   ]
 }
 

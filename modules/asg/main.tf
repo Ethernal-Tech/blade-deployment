@@ -10,22 +10,22 @@ resource "aws_key_pair" "devnet" {
   key_name   = local.devnet_key_name
   public_key = var.create_ssh_key ? tls_private_key.pk.public_key_openssh : var.devnet_key_value
 }
-resource "terraform_data" "cluster" { 
+resource "terraform_data" "cluster" {
 
-  depends_on = [ aws_s3_object.validator_bootstrap, aws_ssm_parameter.validator_config, aws_s3_bucket.state]
- 
+  depends_on = [aws_s3_object.validator_bootstrap, aws_ssm_parameter.validator_config, aws_s3_bucket.state]
+
   provisioner "local-exec" { # Bootstrap script called with private_ip of each node in the cluster   
     command = "${path.module}/scripts/local.sh"
 
-    environment = {      
-      REGION = "us-west-2"
-      DEPLOYMENT_NAME = var.deployment_name  
+    environment = {
+      REGION          = "us-west-2"
+      DEPLOYMENT_NAME = var.deployment_name
     }
   }
 }
 
 resource "aws_launch_template" "validator" {
-  count = var.validator_count
+  count         = var.validator_count
   name_prefix   = "validator-${var.base_dn}"
   instance_type = var.base_instance_type
   key_name      = aws_key_pair.devnet.key_name
@@ -47,7 +47,7 @@ resource "aws_launch_template" "validator" {
   # }
 
   metadata_options {
-     instance_metadata_tags      = "enabled"
+    instance_metadata_tags = "enabled"
   }
 
   tag_specifications {
@@ -64,7 +64,7 @@ resource "aws_launch_template" "validator" {
     )
 
   }
-  
+
   private_dns_name_options {
     enable_resource_name_dns_a_record = true
     hostname_type                     = "ip-name"
@@ -76,9 +76,9 @@ resource "aws_launch_template" "validator" {
     base_dn           = var.base_dn
     region            = local.region
     is_bootstrap_node = false
-    hostname          =  format("validator-%03d.%s", count.index + 1, var.base_dn)
-    name =  format("validator-%03d", count.index + 1)
-    volume = aws_ebs_volume.validator[count.index].id
+    hostname          = format("validator-%03d.%s", count.index + 1, var.base_dn)
+    name              = format("validator-%03d", count.index + 1)
+    volume            = aws_ebs_volume.validator[count.index].id
   }))
 
   lifecycle {
@@ -94,7 +94,7 @@ resource "aws_autoscaling_group" "validator" {
 
   count = var.validator_count
   # availability_zones = [var.zones[count.index]]
-  vpc_zone_identifier = [element(var.devnet_private_subnet_ids,count.index)]
+  vpc_zone_identifier = [element(var.devnet_private_subnet_ids, count.index)]
   name                = "${var.deployment_name}-validator-asg-${count.index}"
 
   max_size                  = 1
@@ -128,7 +128,7 @@ resource "aws_autoscaling_group" "validator" {
     role_arn                = aws_iam_role.lifecycle.arn
   }
 
- tag {
+  tag {
     key                 = "Hostname"
     value               = format("validator-%03d.%s", count.index + 1, var.base_dn)
     propagate_at_launch = true
@@ -148,7 +148,7 @@ resource "aws_autoscaling_group" "validator" {
   tag {
     key = "asg:hostname_pattern"
     # Ensure that the value you choose here contains a fully qualified domain name for the zone before the @ symbol
-    value               = format("validator-%03d.%s@%s@%s", count.index + 1,var.base_dn, var.private_zone_id, var.reverse_zone_id)
+    value               = format("validator-%03d.%s@%s@%s", count.index + 1, var.base_dn, var.private_zone_id, var.reverse_zone_id)
     propagate_at_launch = true
   }
 
@@ -213,12 +213,12 @@ resource "aws_launch_template" "fullnode" {
   user_data = base64encode(templatefile("${path.module}/scripts/blade.sh", {
     deployment_name   = var.deployment_name,
     hostname          = format("fullnode-%03d", count.index + 1)
-    name = format("fullnode-%03d", count.index + 1)
+    name              = format("fullnode-%03d", count.index + 1)
     is_bootstrap_node = false
     blade_home_dir    = local.blade_home_dir
     base_dn           = var.base_dn
     region            = local.region
-    volume = aws_ebs_volume.fullnode[count.index].id
+    volume            = aws_ebs_volume.fullnode[count.index].id
   }))
 
   lifecycle {

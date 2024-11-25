@@ -22,5 +22,5 @@ output "tg_ext_rpc_geth_domain" {
 
 output "lb_explorer" {
   value = aws_lb.explorer.dns_name
-  
+
 }

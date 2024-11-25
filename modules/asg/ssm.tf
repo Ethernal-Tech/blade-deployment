@@ -1,7 +1,7 @@
 resource "aws_ssm_parameter" "cw_agent_config" {
   for_each = toset(local.hostvars)
-  name  = format("/%s/%s/cw_agent_config", var.deployment_name, each.value)
-  type  = "String"
+  name     = format("/%s/%s/cw_agent_config", var.deployment_name, each.value)
+  type     = "String"
   value = templatefile("${path.module}/scripts/cw_agent.json.tftpl", {
     role     = "validator",
     hostname = each.value

@@ -25,18 +25,18 @@ resource "aws_instance" "explorer" {
   }
 
   user_data = base64encode(templatefile("${path.module}/scripts/explorer.sh", {
-    deployment_name   = var.deployment_name,
-    blade_home_dir    = "/opt/blockscout"
-    region            = local.region
-    name = format("explorer-%03d", count.index + 1)
-    base_dn = var.base_dn
-    volume = aws_ebs_volume.explorer[count.index].id
+    deployment_name = var.deployment_name,
+    blade_home_dir  = "/opt/blockscout"
+    region          = local.region
+    name            = format("explorer-%03d", count.index + 1)
+    base_dn         = var.base_dn
+    volume          = aws_ebs_volume.explorer[count.index].id
   }))
 
   tags = {
-    Name              = format("explorer-%03d.%s", count.index + 1, var.base_dn)
-    Hostname          = format("explorer-%03d", count.index + 1)
-    Role              = "explorer"
-    "service_name"    = "node_exporter"
+    Name           = format("explorer-%03d.%s", count.index + 1, var.base_dn)
+    Hostname       = format("explorer-%03d", count.index + 1)
+    Role           = "explorer"
+    "service_name" = "node_exporter"
   }
 }

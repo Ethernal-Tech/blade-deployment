@@ -75,7 +75,7 @@ resource "aws_dlm_lifecycle_policy" "example" {
 
     target_tags = {
       Snapshot = "true"
-      BaseDn = var.base_dn
+      BaseDn   = var.base_dn
     }
   }
 }
