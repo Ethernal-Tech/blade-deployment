@@ -1,3 +1,3 @@
 bucket     = "eth-terraform-supernet-backends"
-key        = "state/xnet"
+key        = "state/blabla"
 region     = "us-west-2"

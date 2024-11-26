@@ -26,18 +26,12 @@ variable "private_network_mode" {
   description = "True if vms should bey default run in the private subnets"
   type        = bool
 }
-variable "base_devnet_key_name" {
-  description = "base key pair name to use for devnet"
-  type        = string
-}
+
 variable "deployment_name" {
   description = "The unique name for this particular deployment"
   type        = string
 }
-variable "network_type" {
-  description = "An identifier to indicate what type of network this is"
-  type        = string
-}
+
 variable "create_ssh_key" {
   description = "Should a new ssh key be created or should we use the devnet_key_value"
   type        = bool
@@ -66,51 +60,53 @@ variable "geth_count" {
   type        = number
 }
 
-variable "node_storage" {
-  description = "Size for the node storage"
-}
 
 variable "int_validator_alb_arn" {
   description = "Load balancer ARN"
+  type        = string
 }
 
 variable "ext_validator_alb_arn" {
   description = "ARN for the application load balancer"
+  type        = string
 
-}
-
-variable "ext_fullnode_alb_arn" {
-  description = "ARN for the application load balancer"
 }
 
 variable "int_fullnode_alb_arn" {
   description = "Internal Load balancer ARN for"
+  type        = string
 }
 
 variable "int_geth_alb_arn" {
   description = "Internal Load balancer ARN for geth"
+  type        = string
 }
 
 variable "zones" {
   description = "List of availability zones"
+  type        = list(string)
 }
 
 variable "sg_all_node_id" {
   description = "Security group id for all nodes"
+  type        = string
 
 }
 variable "sg_open_rpc_id" {
   description = "Open RPC Security group id for fullnodes/validators"
+  type        = string
 
 }
 
 variable "sg_open_rpc_geth_id" {
   description = "Open RPC Security group id for geth"
+  type        = string
 
 }
 
 variable "security_group_default_id" {
   description = "Default security group id"
+  type        = string
 
 }
 
@@ -119,60 +115,42 @@ variable "default_tags" {
 
 }
 
-variable "autoscale_handler_unique_identifier" {
-  description = "asg_dns_handler"
-  type        = string
-  default     = "terminating"
-}
-
-variable "use_public_ip" {
-  description = "Use public IP instead of private"
-  default     = false
-  type        = bool
-}
-
-variable "autoscale_route53zone_arn" {
-  description = "The ARN of route53 zone associated with autoscaling group"
-  type        = string
-}
-
-variable "autoscale_route53reverse_zone_arn" {
-  description = "The ARN of route53 reverse zone associated with autoscaling group"
-  type        = string
-}
-
-variable "route53_record_ttl" {
-  description = "TTL to use for the Route 53 Records created"
-  default     = 300
-  type        = number
-}
-
 variable "private_zone_id" {
   description = "ID for the private DNS zone"
-
+  type        = string
 }
 
 variable "reverse_zone_id" {
   description = "The ID of the reverse DNS zone"
-
-}
-
-variable "devnet_id" {
-  description = "The ID of the VPC"
   type        = string
 }
 
-variable "explorer_count" {
-  description = "The number of nodes to run as a blockchain explorer"
-  type        = number
+
+variable "region" {
+  type    = string
+  default = "us-west-2"
+
 }
 
-variable "explorer_instance_type" {
-  description = "The type of instance that we're going to use"
-  type        = string
+variable "blade_home_dir" {
+  type    = string
+  default = "/var/lib/blade"
+
 }
 
-variable "explorer_ami" {
-  description = "Explorer AMI"
+variable "devnet_key_name" {
+  type = string
+
 }
 
+variable "lifecycle_role" {
+
+}
+
+variable "sns_topic_arn" {
+
+}
+
+variable "node_storage" {
+
+}

@@ -7,18 +7,6 @@ variable "rootchain_rpc_port" {
   type        = number
 }
 
-variable "fullnode_count" {
-  description = "The number of full nodes that we're going to deploy"
-  type        = number
-}
-variable "validator_count" {
-  description = "The number of validators that we're going to deploy"
-  type        = number
-}
-variable "geth_count" {
-  description = "The number of geth that we're going to deploy"
-  type        = number
-}
 
 variable "devnet_private_subnet_ids" {
   description = "Subnet IDs used in the private network"
@@ -45,15 +33,6 @@ variable "security_group_default_id" {
 
 variable "certificate_arn" {
   type = string
-}
-
-variable "route53_zone_id" {
-  description = "The ID of the hosted zone to contain the CNAME record to our LB"
-  type        = string
-}
-
-variable "explorer_count" {
-
 }
 
 variable "certificate_explorer_arn" {

@@ -14,18 +14,6 @@ variable "deployment_name" {
   type        = string
 }
 
-variable "fullnode_count" {
-  description = "The number of full nodes that we're going to deploy"
-  type        = number
-}
-variable "validator_count" {
-  description = "The number of validators that we're going to deploy"
-  type        = number
-}
-variable "geth_count" {
-  description = "The number of geth that we're going to deploy"
-  type        = number
-}
 
 variable "devnet_id" {
   description = "The ID of the VPC"
@@ -48,9 +36,6 @@ variable "route53_zone_id" {
   type        = string
 }
 
-variable "explorer_count" {
-
-}
 variable "lb_explorer" {
 
 }

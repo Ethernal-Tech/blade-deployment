@@ -27,7 +27,7 @@ resource "aws_instance" "explorer" {
   user_data = base64encode(templatefile("${path.module}/scripts/explorer.sh", {
     deployment_name = var.deployment_name,
     blade_home_dir  = "/opt/blockscout"
-    region          = local.region
+    region          = var.region
     name            = format("explorer-%03d", count.index + 1)
     base_dn         = var.base_dn
     volume          = aws_ebs_volume.explorer[count.index].id

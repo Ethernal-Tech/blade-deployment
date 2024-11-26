@@ -15,10 +15,6 @@ variable "devnet_private_subnet_ids" {
   description = "Subnet IDs used in the private network"
   type        = list(string)
 }
-variable "devnet_public_subnet_ids" {
-  description = "Subnet IDs used in the public network"
-  type        = list(string)
-}
 
 
 variable "sg_all_node_id" {
@@ -30,18 +26,8 @@ variable "sg_open_rpc_id" {
 
 }
 
-variable "sg_open_rpc_geth_id" {
-  description = "Open RPC Security group id for geth"
-
-}
-
 variable "security_group_default_id" {
   description = "Default security group id"
-
-}
-
-variable "default_tags" {
-  description = "A map of tags from the parent module"
 
 }
 

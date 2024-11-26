@@ -1,8 +1,3 @@
-variable "aws_profile" {
-  description = "The AWS profile that we're going to use"
-  type        = string
-  default     = "default"
-}
 
 variable "base_instance_type" {
   description = "The type of instance that we're going to use"
@@ -148,19 +143,7 @@ variable "explorer_count" {
   default     = 1
 }
 
-variable "explorer_instance_type" {
-  description = "The type of instance that we're going to use"
-  type        = string
-  default     = "c6a.2xlarge"
-}
-
-variable "explorer_rds_master_password" {
-  description = "The master password used to configure the rds cluster"
-  type        = string
-  sensitive   = true
-}
 
 variable "explorer_ami" {
-  type = string
 
 }
