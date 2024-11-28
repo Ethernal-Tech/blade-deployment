@@ -63,14 +63,11 @@ resource "aws_launch_template" "validator" {
     create_before_destroy = false
   }
 
-
-
 }
 
 resource "aws_autoscaling_group" "validator" {
 
-  count = var.validator_count
-  # availability_zones = [var.zones[count.index]]
+  count               = var.validator_count
   vpc_zone_identifier = [element(var.devnet_private_subnet_ids, count.index)]
   name                = "${var.deployment_name}-validator-asg-${count.index}"
 
@@ -138,7 +135,4 @@ resource "aws_autoscaling_group" "validator" {
   lifecycle {
     create_before_destroy = false
   }
-
-
-
 }

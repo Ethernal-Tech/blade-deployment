@@ -5,6 +5,9 @@ init:
 	terraform init -backend-config=config.s3.tfbackend
 .PHONY: init
 
+lint:
+	tflint --disable-rule=terraform_required_providers --disable-rule=terraform_required_version --recursive
+.PHONY: lint
 
 create:
 	cd ${TERRAFORM_DIR }; \

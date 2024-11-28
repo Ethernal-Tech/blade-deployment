@@ -19,15 +19,18 @@ variable "devnet_private_subnet_ids" {
 
 variable "sg_all_node_id" {
   description = "Security group id for all nodes"
+  type        = string
 
 }
 variable "sg_open_rpc_id" {
   description = "Open RPC Security group id for fullnodes/validators"
+  type        = string
 
 }
 
 variable "security_group_default_id" {
   description = "Default security group id"
+  type        = string
 
 }
 
@@ -38,12 +41,14 @@ variable "devnet_id" {
 }
 
 variable "node_exporter_port" {
+  type        = number
   description = "Node Exporter service port"
   default     = 9100
 
 }
 
 variable "prometheus_port" {
+  type        = number
   description = "Prometheus port"
   default     = 9091
 

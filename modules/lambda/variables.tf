@@ -27,6 +27,7 @@ variable "autoscale_handler_unique_identifier" {
 }
 
 variable "deployment_name" {
+  type = string
 
 }
 

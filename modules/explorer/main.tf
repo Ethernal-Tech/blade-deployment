@@ -10,7 +10,7 @@ resource "aws_instance" "explorer" {
   ami                  = var.explorer_ami
   instance_type        = var.explorer_instance_type
   count                = var.explorer_count
-  key_name             = aws_key_pair.devnet.key_name
+  key_name             = var.devnet_key_name
   iam_instance_profile = var.ec2_profile_name
 
   root_block_device {
@@ -19,10 +19,8 @@ resource "aws_instance" "explorer" {
     volume_type           = "gp2"
   }
 
-  network_interface {
-    network_interface_id = element(aws_network_interface.explorer_private, count.index).id
-    device_index         = 0
-  }
+  vpc_security_group_ids = [var.sg_open_rpc_id, var.sg_all_node_id, var.security_group_default_id]
+
 
   user_data = base64encode(templatefile("${path.module}/scripts/explorer.sh", {
     deployment_name = var.deployment_name,

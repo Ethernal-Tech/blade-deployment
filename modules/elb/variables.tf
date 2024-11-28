@@ -33,8 +33,9 @@ variable "security_group_default_id" {
 
 variable "certificate_arn" {
   type = string
+
 }
 
 variable "certificate_explorer_arn" {
-
+  type = string
 }

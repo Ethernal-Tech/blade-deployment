@@ -38,18 +38,41 @@ variable "explorer_instance_type" {
 
 variable "explorer_ami" {
   description = "Explorer AMI"
+  type        = string
 }
 
 variable "region" {
+  description = "Region to deploy in"
   type    = string
   default = "us-west-2"
 
 }
 
 variable "zones" {
-
+  description = "Availability zones list"
+  type = list(string)
 }
 variable "node_storage" {
-
+  description = "Storage size for the EBS disj"
+  type = number
 }
 
+variable "devnet_key_name" {
+  type = string
+  
+}
+variable "sg_all_node_id" {
+  description = "Security group id for all nodes"
+  type        = string
+
+}
+variable "sg_open_rpc_id" {
+  description = "Open RPC Security group id for fullnodes/validators"
+  type        = string
+
+}
+variable "security_group_default_id" {
+  description = "Default security group id"
+  type        = string
+
+}

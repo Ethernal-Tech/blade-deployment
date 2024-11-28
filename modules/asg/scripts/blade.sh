@@ -3,12 +3,12 @@
 set -x
 
 instance=`curl -s http://169.254.169.254/latest/meta-data/instance-id`
-snapshot=$(aws ec2 describe-snapshots --region us-west-2 --max-items 1 --filters 'Name=tag:Name,Values=${name}-volume-${base_dn}' --query "Snapshots[?(StartTime>='$(date --date='-1 day' '+%Y-%m-%d')')].{ID:SnapshotId}" --output text)
+snapshot=$(aws ec2 describe-snapshots --region ${region} --max-items 1 --filters 'Name=tag:Name,Values=${name}-volume-${base_dn}' --query "Snapshots[?(StartTime>='$(date --date='-1 day' '+%Y-%m-%d')')].{ID:SnapshotId}" --output text)
 echo $snapshot
 
 if [ -z "$snapshot"];
 then
-    aws ec2 attach-volume --volume-id ${volume} --instance-id $instance --device /dev/sdf --region us-west-2
+    aws ec2 attach-volume --volume-id ${volume} --instance-id $instance --device /dev/sdf --region ${region}
     sleep 5
     parted /dev/nvme1n1 --script mklabel gpt mkpart primary ext4 0% 100%
     sleep 5
@@ -25,12 +25,12 @@ then
 
 else
     EC2_AVAIL_ZONE=`curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone`
-    volume_id=$(aws ec2 create-volume --volume-type gp3  --snapshot-id $snapshot --availability-zone $EC2_AVAIL_ZONE --tag-specifications 'ResourceType=volume,Tags=[{Key=DeploymentName,Value=mmnet},{Key=Name,Value=${name}-volume-${base_dn}}]'  --query "VolumeId" --region us-west-2 --output text)
+    volume_id=$(aws ec2 create-volume --volume-type gp3  --snapshot-id $snapshot --availability-zone $EC2_AVAIL_ZONE --tag-specifications 'ResourceType=volume,Tags=[{Key=DeploymentName,Value=${deployment_name}},{Key=Name,Value=${name}-volume-${base_dn}}]'  --query "VolumeId" --region ${region} --output text)
 
     sleep 10
-    aws ec2 attach-volume --volume-id $volume_id --instance-id $instance --device /dev/sdf --region us-west-2
+    aws ec2 attach-volume --volume-id $volume_id --instance-id $instance --device /dev/sdf --region ${region}
 
-    aws ec2 modify-instance-attribute --instance-id $instance --block-device-mappings "[{\"DeviceName\": \"/dev/sdf\",\"Ebs\":{\"DeleteOnTermination\":true}}]" --region us-west-2
+    aws ec2 modify-instance-attribute --instance-id $instance --block-device-mappings "[{\"DeviceName\": \"/dev/sdf\",\"Ebs\":{\"DeleteOnTermination\":true}}]" --region ${region}
     mkdir -p ${ blade_home_dir } 
     mount /dev/nvme1n1p1 ${ blade_home_dir }
 fi

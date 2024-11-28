@@ -97,24 +97,21 @@ variable "sg_open_rpc_id" {
   type        = string
 
 }
-
 variable "sg_open_rpc_geth_id" {
   description = "Open RPC Security group id for geth"
   type        = string
 
 }
-
 variable "security_group_default_id" {
   description = "Default security group id"
   type        = string
 
 }
-
 variable "default_tags" {
   description = "A map of tags from the parent module"
+  type        = object({})
 
 }
-
 variable "private_zone_id" {
   description = "ID for the private DNS zone"
   type        = string
@@ -124,7 +121,6 @@ variable "reverse_zone_id" {
   description = "The ID of the reverse DNS zone"
   type        = string
 }
-
 
 variable "region" {
   type    = string
@@ -139,18 +135,22 @@ variable "blade_home_dir" {
 }
 
 variable "devnet_key_name" {
-  type = string
+  description = "Name for the ssh key"
+  type        = string
 
 }
 
 variable "lifecycle_role" {
-
+  description = "ARN for the role used for the lifecycle hook"
+  type        = string
 }
 
 variable "sns_topic_arn" {
-
+  description = "SNS topic for autoscaling lifecycle hook"
+  type        = string
 }
 
 variable "node_storage" {
-
+  description = "Disk size for the external EBS volume"
+  type        = number
 }

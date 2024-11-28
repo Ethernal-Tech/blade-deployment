@@ -113,6 +113,27 @@ module "dlm" {
 
 }
 
+module "explorer" {
+  source                 = "./modules/explorer"
+  depends_on = [ module.asg ]
+  node_storage           = var.node_storage
+  explorer_ami           = var.explorer_ami
+  explorer_count         = var.explorer_count
+  explorer_instance_type = var.base_instance_type
+
+  deployment_name           = var.deployment_name
+  zones                     = var.zones
+  ec2_profile_name          = module.ssm.ec2_profile_name
+  base_dn                   = local.base_dn
+  private_network_mode      = var.private_network_mode
+  devnet_private_subnet_ids = module.networking.devnet_private_subnet_ids
+  devnet_public_subnet_ids  = module.networking.devnet_public_subnet_ids
+  devnet_key_name = "${format("%s_ssh_key", var.deployment_name)}-${local.network_type}"
+  sg_all_node_id            = module.securitygroups.security_group_all_node_instances_id
+  sg_open_rpc_id            = module.securitygroups.security_group_open_rpc_id
+  security_group_default_id = module.securitygroups.security_group_default_id
+}
+
 module "elb" {
   source                      = "./modules/elb"
   http_rpc_port               = var.http_rpc_port

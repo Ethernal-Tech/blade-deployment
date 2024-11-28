@@ -145,5 +145,5 @@ variable "explorer_count" {
 
 
 variable "explorer_ami" {
-
+  type = string
 }
