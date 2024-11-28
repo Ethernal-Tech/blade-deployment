@@ -21,6 +21,7 @@ variable "default_tags" {
 }
 
 variable "gossip_msg_size" {
+  description = "The maximum size of a gossip message"
   type    = number
   default = 67108864
 }
@@ -31,16 +32,19 @@ variable "docker_image" {
 }
 
 variable "max_enqueued" {
+  description = "The maximum number of enqueued transactions per account in the tx pool"
   type    = number
   default = 20000000
 }
 
 variable "max_slots" {
-  type    = number
+  description = "The maximum slots in the tx pool"
+  type = number
   default = 20000000
 }
 
 variable "block_gas_limit" {
+  description = "The maximum amount of gas used by all transactions in a block"
   type    = number
   default = 50000000
 
@@ -52,29 +56,34 @@ variable "region" {
 
 }
 variable "epoch_reward" {
+  description = "The unit reward size for the block sealing"
   type    = number
   default = 1000000000
 
 }
 
 variable "is_london_fork_active" {
+  description = "Indication whether London hard fork (EIP-1559) is active"
   default = false
   type    = bool
 
 }
 
 variable "is_bridge_active" {
+  description = "Indication whether bridge should be deployed"
   default = false
   type    = bool
 }
 
 variable "chain_id" {
+  description = "The ID of the chain"
   type    = number
   default = 100
 
 }
 
 variable "block_time" {
+  description = "The predefined period that determines block creation frequency"
   type    = number
   default = 1
 }

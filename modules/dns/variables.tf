@@ -15,7 +15,7 @@ variable "deployment_name" {
 }
 
 
-variable "devnet_id" {
+variable "vpc_id" {
   description = "The ID of the VPC"
   type        = string
 }
@@ -30,6 +30,7 @@ variable "lb_ext_rpc_domain" {
 
 }
 variable "lb_ext_rpc_geth_domain" {
+  default = "ARN for the geth load balancer"
   type = string
 }
 

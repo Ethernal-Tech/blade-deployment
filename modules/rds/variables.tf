@@ -20,5 +20,6 @@ variable "zones" {
 }
 
 variable "devnet_private_subnet_ids" {
+  description = "The cidr block for the private subnet in our VPC"
   type = list(string)
 }

@@ -27,6 +27,7 @@ variable "autoscale_handler_unique_identifier" {
 }
 
 variable "deployment_name" {
+  description = "The unique name for this particular deployment"
   type = string
 
 }

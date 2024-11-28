@@ -1,6 +1,6 @@
 # Default Security Group of VPC should allow all traffic that's internal
 resource "aws_default_security_group" "default" {
-  vpc_id = var.devnet_id
+  vpc_id = var.vpc_id
 
   ingress {
     from_port = "0"
@@ -20,7 +20,7 @@ resource "aws_default_security_group" "default" {
 resource "aws_security_group" "all_node_instances" {
   name        = format("all-%s-%s-nodes", var.network_type, var.deployment_name)
   description = format("Configuration for the %s %s collection of instances", var.network_type, var.deployment_name)
-  vpc_id      = var.devnet_id
+  vpc_id      = var.vpc_id
 }
 resource "aws_security_group_rule" "all_node_instances" {
   type              = "egress"
@@ -35,7 +35,7 @@ resource "aws_security_group_rule" "all_node_instances" {
 resource "aws_security_group" "open_rpc" {
   name        = "internal-rpc-access"
   description = "Allowing internal rpc"
-  vpc_id      = var.devnet_id
+  vpc_id      = var.vpc_id
 }
 resource "aws_security_group_rule" "open_rpc" {
   type              = "ingress"
@@ -67,7 +67,7 @@ resource "aws_security_group_rule" "open_prometheys" {
 resource "aws_security_group" "open_http" {
   name        = "external-explorer-access"
   description = "Allowing explorer acccess"
-  vpc_id      = var.devnet_id
+  vpc_id      = var.vpc_id
 }
 resource "aws_security_group_rule" "open_http" {
   type              = "ingress"
@@ -89,7 +89,7 @@ resource "aws_security_group_rule" "open_https" {
 resource "aws_security_group" "open_rpc_geth" {
   name        = "internal-geth-access"
   description = "configuration for geth access"
-  vpc_id      = var.devnet_id
+  vpc_id      = var.vpc_id
 }
 resource "aws_security_group_rule" "open_rpc_geth" {
   type              = "ingress"

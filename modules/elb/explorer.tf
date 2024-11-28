@@ -10,7 +10,7 @@ resource "aws_lb_target_group" "explorer" {
   name        = "explorer-${var.base_id}"
   protocol    = "HTTP"
   target_type = "instance"
-  vpc_id      = var.devnet_id
+  vpc_id      = var.vpc_id
   port        = 4000
 }
 resource "aws_lb_listener" "explorer" {

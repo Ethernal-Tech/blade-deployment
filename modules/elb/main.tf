@@ -8,7 +8,7 @@ resource "aws_lb_target_group" "int_rpc" {
   name        = "int-rpc-${var.base_id}"
   protocol    = "TCP"
   target_type = "instance"
-  vpc_id      = var.devnet_id
+  vpc_id      = var.vpc_id
   port        = var.http_rpc_port
 }
 
@@ -34,7 +34,7 @@ resource "aws_lb_target_group" "ext_rpc" {
   name        = "ext-rpc-${var.base_id}"
   protocol    = "HTTP"
   target_type = "instance"
-  vpc_id      = var.devnet_id
+  vpc_id      = var.vpc_id
   port        = var.http_rpc_port
 }
 
@@ -71,7 +71,7 @@ resource "aws_lb_target_group" "ext_rpc_geth" {
   name        = "ext-rpc-rootchain-${var.base_id}"
   protocol    = "HTTP"
   target_type = "instance"
-  vpc_id      = var.devnet_id
+  vpc_id      = var.vpc_id
   port        = var.rootchain_rpc_port
 }
 

@@ -11,7 +11,7 @@ resource "aws_key_pair" "devnet" {
 resource "aws_security_group" "aodt" {
   description = "Allow traffic from AODT ec2 for scraping metrics"
 
-  vpc_id = var.devnet_id
+  vpc_id = var.vpc_id
 
   egress {
     protocol    = "TCP"

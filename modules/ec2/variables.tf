@@ -53,6 +53,7 @@ variable "devnet_public_subnet_ids" {
 }
 
 variable "ec2_profile_name" {
+  default = "TODO"
   type = string
 }
 
@@ -62,5 +63,6 @@ variable "geth_count" {
 }
 
 variable "validator_volume_ids" {
+  description = "TODO"
   type = string
 }

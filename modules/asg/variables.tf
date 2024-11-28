@@ -51,7 +51,7 @@ variable "devnet_public_subnet_ids" {
 }
 
 variable "ec2_profile_name" {
-  description = "value"
+  description = "TODO"
   type        = string
 }
 

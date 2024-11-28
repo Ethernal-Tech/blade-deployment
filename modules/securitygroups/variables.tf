@@ -18,7 +18,7 @@ variable "rootchain_rpc_port" {
   description = "The TCP port that will be used for rootchain (for bridge)"
   type        = number
 }
-variable "devnet_id" {
+variable "vpc_id" {
   description = "The ID of the VPC"
   type        = string
 }

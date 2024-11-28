@@ -17,25 +17,30 @@ variable "devnet_public_subnet_ids" {
   type        = list(string)
 }
 
-variable "devnet_id" {
+variable "vpc_id" {
   description = "The ID of the VPC"
   type        = string
 }
 variable "base_id" {
+  description = "TODO"
   type = string
 }
 variable "security_group_open_http_id" {
+  description = "TODO"
   type = string
 }
 variable "security_group_default_id" {
+  description = "TODO"
   type = string
 }
 
 variable "certificate_arn" {
+  description = "TODO"
   type = string
 
 }
 
 variable "certificate_explorer_arn" {
+  description = "TODO"
   type = string
 }

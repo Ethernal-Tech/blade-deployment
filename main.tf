@@ -30,7 +30,7 @@ module "dns" {
   region                 = var.region
   route53_zone_id        = var.route53_zone_id
   deployment_name        = var.deployment_name
-  devnet_id              = module.networking.devnet_id
+  vpc_id              = module.networking.vpc_id
   lb_int_rpc_domain      = module.elb.aws_lb_int_rpc_domain
   lb_ext_rpc_geth_domain = module.elb.aws_lb_ext_rpc_geth_domain
   lb_ext_rpc_domain      = module.elb.aws_lb_ext_rpc_domain
@@ -47,8 +47,7 @@ module "securitygroups" {
   network_acl        = var.network_acl
   http_rpc_port      = var.http_rpc_port
   rootchain_rpc_port = var.rootchain_rpc_port
-
-  devnet_id = module.networking.devnet_id
+  vpc_id = module.networking.vpc_id
 }
 
 module "bootstrap" {
@@ -141,7 +140,7 @@ module "elb" {
   base_id                     = local.base_id
   devnet_private_subnet_ids   = module.networking.devnet_private_subnet_ids
   devnet_public_subnet_ids    = module.networking.devnet_public_subnet_ids
-  devnet_id                   = module.networking.devnet_id
+  vpc_id                   = module.networking.vpc_id
   security_group_open_http_id = module.securitygroups.security_group_open_http_id
   security_group_default_id   = module.securitygroups.security_group_default_id
   certificate_arn             = module.dns.certificate_arn

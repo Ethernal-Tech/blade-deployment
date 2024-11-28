@@ -34,7 +34,7 @@ variable "security_group_default_id" {
 
 }
 
-variable "devnet_id" {
+variable "vpc_id" {
   description = "The ID of the VPC"
   type        = string
 
