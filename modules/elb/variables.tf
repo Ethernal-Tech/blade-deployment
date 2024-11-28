@@ -8,11 +8,11 @@ variable "rootchain_rpc_port" {
 }
 
 
-variable "devnet_private_subnet_ids" {
+variable "private_subnet_ids" {
   description = "Subnet IDs used in the private network"
   type        = list(string)
 }
-variable "devnet_public_subnet_ids" {
+variable "public_subnet_ids" {
   description = "Subnet IDs used in the public network"
   type        = list(string)
 }
@@ -23,24 +23,24 @@ variable "vpc_id" {
 }
 variable "base_id" {
   description = "TODO"
-  type = string
+  type        = string
 }
 variable "security_group_open_http_id" {
   description = "TODO"
-  type = string
+  type        = string
 }
 variable "security_group_default_id" {
   description = "TODO"
-  type = string
+  type        = string
 }
 
 variable "certificate_arn" {
   description = "TODO"
-  type = string
+  type        = string
 
 }
 
 variable "certificate_explorer_arn" {
   description = "TODO"
-  type = string
+  type        = string
 }

@@ -1,7 +1,7 @@
-output "devnet_public_subnet_ids" {
+output "public_subnet_ids" {
   value = aws_subnet.devnet_public[*].id
 }
-output "devnet_private_subnet_ids" {
+output "private_subnet_ids" {
   value = aws_subnet.devnet_private[*].id
 }
 output "vpc_id" {

@@ -152,7 +152,7 @@ resource "aws_lambda_function" "autoscale_handling" {
     }
   }
   # vpc_config {
-  #   subnet_ids = var.devnet_private_subnet_ids
+  #   subnet_ids = var.private_subnet_ids
   #   security_group_ids = var.security_group_default_id
   # }
 }

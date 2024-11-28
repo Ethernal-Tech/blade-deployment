@@ -68,7 +68,7 @@ resource "aws_launch_template" "validator" {
 resource "aws_autoscaling_group" "validator" {
 
   count               = var.validator_count
-  vpc_zone_identifier = [element(var.devnet_private_subnet_ids, count.index)]
+  vpc_zone_identifier = [element(var.private_subnet_ids, count.index)]
   name                = "${var.deployment_name}-validator-asg-${count.index}"
 
   max_size                  = 1

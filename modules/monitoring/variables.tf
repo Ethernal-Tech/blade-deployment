@@ -11,7 +11,7 @@ variable "network_type" {
   type        = string
 }
 
-variable "devnet_private_subnet_ids" {
+variable "private_subnet_ids" {
   description = "Subnet IDs used in the private network"
   type        = list(string)
 }

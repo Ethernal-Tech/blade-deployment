@@ -2,7 +2,7 @@ resource "aws_lb" "int_rpc" {
   name               = "int-rpc-${var.base_id}"
   load_balancer_type = "network"
   internal           = true
-  subnets            = var.devnet_private_subnet_ids
+  subnets            = var.private_subnet_ids
 }
 resource "aws_lb_target_group" "int_rpc" {
   name        = "int-rpc-${var.base_id}"
@@ -27,7 +27,7 @@ resource "aws_lb" "ext_rpc" {
   name               = "ext-rpc-${var.base_id}"
   load_balancer_type = "application"
   internal           = false
-  subnets            = var.devnet_public_subnet_ids
+  subnets            = var.public_subnet_ids
   security_groups    = [var.security_group_open_http_id, var.security_group_default_id]
 }
 resource "aws_lb_target_group" "ext_rpc" {
@@ -64,7 +64,7 @@ resource "aws_lb" "ext_rpc_geth" {
   name               = "ext-rpc-rootchain-${var.base_id}"
   load_balancer_type = "application"
   internal           = false
-  subnets            = var.devnet_public_subnet_ids
+  subnets            = var.public_subnet_ids
   security_groups    = [var.security_group_open_http_id, var.security_group_default_id]
 }
 resource "aws_lb_target_group" "ext_rpc_geth" {

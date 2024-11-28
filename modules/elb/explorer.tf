@@ -2,7 +2,7 @@ resource "aws_lb" "explorer" {
   name               = "explorer-${var.base_id}"
   load_balancer_type = "application"
   internal           = false
-  subnets            = var.devnet_public_subnet_ids
+  subnets            = var.public_subnet_ids
   security_groups    = [var.security_group_open_http_id, var.security_group_default_id]
 }
 

@@ -21,17 +21,17 @@ variable "vpc_id" {
 }
 variable "lb_int_rpc_domain" {
   description = "ARN for the internal load balancer"
-  type = string
+  type        = string
 }
 
 variable "lb_ext_rpc_domain" {
   description = "ARN for the RPC load balancer"
-  type = string
+  type        = string
 
 }
 variable "lb_ext_rpc_geth_domain" {
   default = "ARN for the geth load balancer"
-  type = string
+  type    = string
 }
 
 variable "route53_zone_id" {
@@ -41,5 +41,5 @@ variable "route53_zone_id" {
 
 variable "lb_explorer" {
   description = "ARN for the explorer load balancer"
-  type = string
+  type        = string
 }

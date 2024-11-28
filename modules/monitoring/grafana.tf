@@ -12,7 +12,7 @@ resource "aws_grafana_workspace" "monitoring" {
   data_sources = ["PROMETHEUS", "CLOUDWATCH"]
   vpc_configuration {
     security_group_ids = [var.security_group_default_id, var.sg_all_node_id, var.sg_open_rpc_id]
-    subnet_ids         = var.devnet_private_subnet_ids
+    subnet_ids         = var.private_subnet_ids
   }
   lifecycle {
     ignore_changes = [vpc_configuration["subnet_ids"]]

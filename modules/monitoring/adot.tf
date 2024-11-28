@@ -52,7 +52,7 @@ resource "aws_instance" "adot_collector" {
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.aodt.id]
   iam_instance_profile   = aws_iam_instance_profile.aodt_profile.name
-  subnet_id              = var.devnet_private_subnet_ids[0]
+  subnet_id              = var.private_subnet_ids[0]
   key_name               = aws_key_pair.devnet.key_name
 
   user_data = base64encode(templatefile("${path.module}/scripts/adot.sh", {

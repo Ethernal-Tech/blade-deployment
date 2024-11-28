@@ -10,7 +10,7 @@ resource "aws_secretsmanager_secret_version" "blockscout_rds_password" {
 
 resource "aws_db_subnet_group" "explorer" {
   name       = "blockscout-${var.base_id}"
-  subnet_ids = var.devnet_private_subnet_ids
+  subnet_ids = var.private_subnet_ids
 }
 
 resource "aws_rds_cluster" "explorer" {

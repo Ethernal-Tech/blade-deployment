@@ -11,11 +11,11 @@ variable "deployment_name" {
   type        = string
 }
 
-variable "devnet_private_subnet_ids" {
+variable "private_subnet_ids" {
   description = "Subnet IDs used in the private network"
   type        = list(string)
 }
-variable "devnet_public_subnet_ids" {
+variable "public_subnet_ids" {
   description = "Subnet IDs used in the public network"
   type        = list(string)
 }
@@ -43,23 +43,23 @@ variable "explorer_ami" {
 
 variable "region" {
   description = "Region to deploy in"
-  type    = string
-  default = "us-west-2"
+  type        = string
+  default     = "us-west-2"
 
 }
 
 variable "zones" {
   description = "Availability zones list"
-  type = list(string)
+  type        = list(string)
 }
 variable "node_storage" {
   description = "Storage size for the EBS disj"
-  type = number
+  type        = number
 }
 
 variable "devnet_key_name" {
   type = string
-  
+
 }
 variable "sg_all_node_id" {
   description = "Security group id for all nodes"

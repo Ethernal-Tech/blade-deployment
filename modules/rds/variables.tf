@@ -19,7 +19,7 @@ variable "zones" {
   type        = list(string)
 }
 
-variable "devnet_private_subnet_ids" {
+variable "private_subnet_ids" {
   description = "The cidr block for the private subnet in our VPC"
-  type = list(string)
+  type        = list(string)
 }

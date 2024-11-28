@@ -30,7 +30,7 @@ module "dns" {
   region                 = var.region
   route53_zone_id        = var.route53_zone_id
   deployment_name        = var.deployment_name
-  vpc_id              = module.networking.vpc_id
+  vpc_id                 = module.networking.vpc_id
   lb_int_rpc_domain      = module.elb.aws_lb_int_rpc_domain
   lb_ext_rpc_geth_domain = module.elb.aws_lb_ext_rpc_geth_domain
   lb_ext_rpc_domain      = module.elb.aws_lb_ext_rpc_domain
@@ -47,7 +47,7 @@ module "securitygroups" {
   network_acl        = var.network_acl
   http_rpc_port      = var.http_rpc_port
   rootchain_rpc_port = var.rootchain_rpc_port
-  vpc_id = module.networking.vpc_id
+  vpc_id             = module.networking.vpc_id
 }
 
 module "bootstrap" {
@@ -81,8 +81,8 @@ module "asg" {
   deployment_name           = var.deployment_name
   create_ssh_key            = var.create_ssh_key
   devnet_key_value          = var.devnet_key_value
-  devnet_private_subnet_ids = module.networking.devnet_private_subnet_ids
-  devnet_public_subnet_ids  = module.networking.devnet_public_subnet_ids
+  private_subnet_ids        = module.networking.private_subnet_ids
+  public_subnet_ids         = module.networking.public_subnet_ids
   ec2_profile_name          = module.ssm.ec2_profile_name
   zones                     = var.zones
   int_fullnode_alb_arn      = module.elb.tg_ext_rpc_domain
@@ -114,7 +114,7 @@ module "dlm" {
 
 module "explorer" {
   source                 = "./modules/explorer"
-  depends_on = [ module.asg ]
+  depends_on             = [module.asg]
   node_storage           = var.node_storage
   explorer_ami           = var.explorer_ami
   explorer_count         = var.explorer_count
@@ -125,9 +125,9 @@ module "explorer" {
   ec2_profile_name          = module.ssm.ec2_profile_name
   base_dn                   = local.base_dn
   private_network_mode      = var.private_network_mode
-  devnet_private_subnet_ids = module.networking.devnet_private_subnet_ids
-  devnet_public_subnet_ids  = module.networking.devnet_public_subnet_ids
-  devnet_key_name = "${format("%s_ssh_key", var.deployment_name)}-${local.network_type}"
+  private_subnet_ids        = module.networking.private_subnet_ids
+  public_subnet_ids         = module.networking.public_subnet_ids
+  devnet_key_name           = "${format("%s_ssh_key", var.deployment_name)}-${local.network_type}"
   sg_all_node_id            = module.securitygroups.security_group_all_node_instances_id
   sg_open_rpc_id            = module.securitygroups.security_group_open_rpc_id
   security_group_default_id = module.securitygroups.security_group_default_id
@@ -138,9 +138,9 @@ module "elb" {
   http_rpc_port               = var.http_rpc_port
   rootchain_rpc_port          = var.rootchain_rpc_port
   base_id                     = local.base_id
-  devnet_private_subnet_ids   = module.networking.devnet_private_subnet_ids
-  devnet_public_subnet_ids    = module.networking.devnet_public_subnet_ids
-  vpc_id                   = module.networking.vpc_id
+  private_subnet_ids          = module.networking.private_subnet_ids
+  public_subnet_ids           = module.networking.public_subnet_ids
+  vpc_id                      = module.networking.vpc_id
   security_group_open_http_id = module.securitygroups.security_group_open_http_id
   security_group_default_id   = module.securitygroups.security_group_default_id
   certificate_arn             = module.dns.certificate_arn

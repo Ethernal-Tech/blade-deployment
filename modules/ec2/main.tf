@@ -18,7 +18,7 @@ resource "aws_key_pair" "devnet" {
 
 resource "aws_network_interface" "validator_private" {
   count     = var.validator_count
-  subnet_id = element(var.private_network_mode ? var.devnet_private_subnet_ids : var.devnet_public_subnet_ids, count.index)
+  subnet_id = element(var.private_network_mode ? var.private_subnet_ids : var.public_subnet_ids, count.index)
 
   tags = {
     Name = format("validator-private-%03d.%s", count.index + 1, var.base_dn)
@@ -26,7 +26,7 @@ resource "aws_network_interface" "validator_private" {
 }
 resource "aws_network_interface" "fullnode_private" {
   count     = var.fullnode_count
-  subnet_id = element(var.private_network_mode ? var.devnet_private_subnet_ids : var.devnet_public_subnet_ids, count.index)
+  subnet_id = element(var.private_network_mode ? var.private_subnet_ids : var.public_subnet_ids, count.index)
 
   tags = {
     Name = format("fullnode-private-%03d.%s", count.index + 1, var.base_dn)
@@ -34,7 +34,7 @@ resource "aws_network_interface" "fullnode_private" {
 }
 resource "aws_network_interface" "geth_private" {
   count     = var.geth_count
-  subnet_id = element(var.private_network_mode ? var.devnet_private_subnet_ids : var.devnet_public_subnet_ids, count.index)
+  subnet_id = element(var.private_network_mode ? var.private_subnet_ids : var.public_subnet_ids, count.index)
 
   tags = {
     Name = format("geth-private-%03d.%s", count.index + 1, var.base_dn)
