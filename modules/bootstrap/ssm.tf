@@ -41,5 +41,6 @@ resource "aws_ssm_parameter" "validator_service" {
     max_enqueued          = var.max_enqueued
     docker_image          = var.docker_image
     gossip_msg_size       = var.gossip_msg_size
+    price_limit           = var.price_limit
   })
 }
