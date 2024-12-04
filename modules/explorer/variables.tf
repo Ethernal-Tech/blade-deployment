@@ -36,11 +36,6 @@ variable "explorer_instance_type" {
   type        = string
 }
 
-variable "explorer_ami" {
-  description = "Explorer AMI"
-  type        = string
-}
-
 variable "region" {
   description = "Region to deploy in"
   type        = string

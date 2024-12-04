@@ -27,6 +27,7 @@ ExecStart=/usr/bin/docker run --rm --log-driver=awslogs --log-opt awslogs-group=
     --log-level DEBUG \
     --block-gas-target ${ block_gas_limit } \
     --num-block-confirmations 2 \
+    --price-limit ${ price_limit } \
     --secrets-config /blade/bootstrap/secrets/${hostname}_config.json \
     %{ if is_bootstraper }
     --relayer \

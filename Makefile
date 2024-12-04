@@ -49,3 +49,12 @@ apply: init
 	terraform apply -no-color -var-file=${varsFilename} -auto-approve > .${PATH_SEPARATOR}${reportFolder}${PATH_SEPARATOR}${outFilename}
 # TODO copy report to S3, delete local file
 .PHONY: apply
+
+
+lint:
+	tflint --disable-rule=terraform_required_providers --disable-rule=terraform_required_version --recursive
+.PHONY: lint
+
+fix:
+	tflint --disable-rule=terraform_required_providers --disable-rule=terraform_required_version --fix --recursive
+.PHONY: fix

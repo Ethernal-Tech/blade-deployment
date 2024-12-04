@@ -1,9 +1,8 @@
 locals {
   network_type = "blade"
-  base_ami     = "ami-076041c05aae7dba0"
-  geth_ami     = "ami-06d59880babda767d"
-  base_dn      = format("%s.%s.%s.private", var.deployment_name, local.network_type, var.company_name)
-  base_id      = format("%s-%s", var.deployment_name, local.network_type)
+
+  base_dn = format("%s.%s.%s.private", var.deployment_name, local.network_type, var.company_name)
+  base_id = format("%s-%s", var.deployment_name, local.network_type)
   default_tags = {
     Environment    = var.environment
     Network        = local.network_type
@@ -60,13 +59,24 @@ module "securitygroups" {
 }
 
 module "bootstrap" {
-  source          = "./modules/bootstrap"
-  validator_count = var.validator_count
-  fullnode_count  = var.fullnode_count
-  deployment_name = var.deployment_name
-  base_dn         = local.base_dn
-  default_tags    = local.default_tags
-  region          = var.region
+  source                = "./modules/bootstrap"
+  validator_count       = var.validator_count
+  fullnode_count        = var.fullnode_count
+  deployment_name       = var.deployment_name
+  base_dn               = local.base_dn
+  default_tags          = local.default_tags
+  region                = var.region
+  epoch_reward          = var.epoch_reward
+  block_gas_limit       = var.block_gas_limit
+  max_enqueued          = var.max_enqueued
+  max_slots             = var.max_slots
+  block_time            = var.block_time
+  is_bridge_active      = var.is_bridge_active
+  is_london_fork_active = var.is_london_fork_active
+  chain_id              = var.chain_id
+  gossip_msg_size       = var.gossip_msg_size
+  price_limit           = var.price_limit
+
 }
 
 module "lambda" {
@@ -83,7 +93,6 @@ module "asg" {
   depends_on                = [module.bootstrap, module.lambda]
   base_dn                   = local.base_dn
   base_instance_type        = var.base_instance_type
-  base_ami                  = local.base_ami
   fullnode_count            = var.fullnode_count
   geth_count                = var.geth_count
   validator_count           = var.validator_count
@@ -104,7 +113,6 @@ module "asg" {
   sg_open_rpc_geth_id       = module.securitygroups.security_group_open_rpc_geth_id
   security_group_default_id = module.securitygroups.security_group_default_id
   default_tags              = local.default_tags
-  geth_ami                  = local.geth_ami
   private_zone_id           = module.dns.private_zone_arn
   reverse_zone_id           = module.dns.reverse_zone_arn
   devnet_key_name           = "${format("%s_ssh_key", var.deployment_name)}-${local.network_type}"
@@ -126,7 +134,6 @@ module "explorer" {
   source                 = "./modules/explorer"
   depends_on             = [module.asg]
   node_storage           = var.node_storage
-  explorer_ami           = var.explorer_ami
   explorer_count         = var.explorer_count
   explorer_instance_type = var.base_instance_type
 

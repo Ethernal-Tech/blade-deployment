@@ -1,9 +1,17 @@
+data "aws_ami" "geth_ami" {
+  most_recent = true
+  owners      = ["self"]
+  filter {
+    name   = "name"
+    values = ["packer-linux-aws-blade"]
+  }
+}
 resource "aws_launch_template" "geth" {
   count         = var.geth_count
   name_prefix   = "geth-${var.base_dn}"
   instance_type = var.base_instance_type
   key_name      = aws_key_pair.devnet.key_name
-  image_id      = var.geth_ami
+  image_id      = data.aws_ami.geth_ami.id
 
   iam_instance_profile {
     name = var.ec2_profile_name

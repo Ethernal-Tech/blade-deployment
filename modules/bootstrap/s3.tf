@@ -28,6 +28,7 @@ resource "aws_s3_object" "validator_bootstrap" {
     docker_image          = var.docker_image
     bootstrap_dir         = local.bootstrap_dir
     epoch_reward          = var.epoch_reward
+    price_limit           = var.price_limit
 
   })
 

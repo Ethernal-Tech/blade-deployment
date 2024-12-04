@@ -8,9 +8,9 @@ resource "aws_network_interface" "explorer_private" {
 
 data "aws_ami" "explorer_ami" {
   most_recent = true
-  owners = ["self"]
+  owners      = ["self"]
   filter {
-    name = "name"
+    name   = "name"
     values = ["blockscout-ami-2"]
   }
 }
@@ -21,7 +21,7 @@ resource "aws_instance" "explorer" {
   count                = var.explorer_count
   key_name             = var.devnet_key_name
   iam_instance_profile = var.ec2_profile_name
-  subnet_id = element(var.private_network_mode ? var.private_subnet_ids : var.public_subnet_ids, count.index)
+  subnet_id            = element(var.private_network_mode ? var.private_subnet_ids : var.public_subnet_ids, count.index)
 
   root_block_device {
     delete_on_termination = true

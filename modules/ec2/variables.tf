@@ -68,5 +68,5 @@ variable "validator_volume_ids" {
 }
 
 variable "region" {
-
+  type = string
 }

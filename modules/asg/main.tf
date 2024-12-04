@@ -12,10 +12,10 @@ resource "aws_key_pair" "devnet" {
 }
 data "aws_ami" "base_ami" {
   most_recent = true
-  owners = ["self"]
+  owners      = ["self"]
   filter {
-    name = "name"
-    values = [ "packer-linux-aws-blade" ]
+    name   = "name"
+    values = ["packer-linux-aws-blade"]
   }
 }
 

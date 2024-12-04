@@ -56,5 +56,6 @@ variable "prometheus_port" {
 
 variable "region" {
   description = "The region to deploy in"
+  type        = string
 
 }
