@@ -44,7 +44,6 @@ variable "explorer_ami" {
 variable "region" {
   description = "Region to deploy in"
   type        = string
-  default     = "us-west-2"
 
 }
 

@@ -123,8 +123,7 @@ variable "reverse_zone_id" {
 }
 
 variable "region" {
-  type    = string
-  default = "us-west-2"
+  type = string
 
 }
 

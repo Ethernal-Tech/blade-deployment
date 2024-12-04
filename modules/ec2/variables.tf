@@ -66,3 +66,7 @@ variable "validator_volume_ids" {
   description = "TODO"
   type        = string
 }
+
+variable "region" {
+
+}

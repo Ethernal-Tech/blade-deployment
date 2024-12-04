@@ -2,7 +2,7 @@
     "Type": "aws-ssm",
     "Name": "host",
     "Extra": {
-      "region": "us-west-2",
+      "region": "${ region }",
       "ssm-parameter-path": "/${ deployment_name }" 
     }
 } 

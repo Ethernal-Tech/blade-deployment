@@ -12,5 +12,5 @@ locals {
   memory_high           = "70%"
   memory_max            = "80%"
   native_token_config   = "Blade:BLADE:18:true"
-  bootstrap_dir         = "/tmp/bootstrap"
+  bootstrap_dir         = "/tmp/${random_pet.server.id}/bootstrap"
 }

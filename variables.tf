@@ -131,12 +131,6 @@ variable "validator_count" {
   }
 }
 
-variable "zones" {
-  description = "The availability zones for deployment"
-  type        = list(string)
-  default     = ["us-west-2a", "us-west-2b", "us-west-2c", "us-west-2d"]
-}
-
 variable "explorer_count" {
   description = "The number of nodes to run as a blockchain explorer"
   type        = number

@@ -1,45 +1,51 @@
-TERRAFORM_DIR:=./changeme
+ifeq ($(OS),Windows_NT)
+	PATH_SEPARATOR := "\"
+else
+	PATH_SEPARATOR := "/"
+endif
+reportFolder:=reports
+outFilename:=external_plan_test.tfplan
+varsFilename:=external_vars.tfvars
+outReportFilename:=plan_test.txt
 
+# Init target
 init:
-	cd ${TERRAFORM_DIR }; \
+	@echo "Running init from external path."
 	terraform init -backend-config=config.s3.tfbackend
 .PHONY: init
 
-lint:
-	tflint --disable-rule=terraform_required_providers --disable-rule=terraform_required_version --recursive
-.PHONY: lint
+plan: init
+	@echo "Running plan from external path."
+	@echo ${PWD}
+	mkdir -p ${reportFolder}
 
-create:
-	cd ${TERRAFORM_DIR }; \
-	sudo rm -rf /tmp/*
-	terraform apply -auto-approve
-	
-.PHONY: create
-
-keys:
-	cd ${TERRAFORM_DIR }; \
-	terraform output pk_ansible > ~/private.key
-	chmod 600 ~/private.key 
-	eval "$(ssh-agent)"
-	ssh-add ~/private.key
-.PHONY: keys
-
+.PHONY: plan
+# Show target
 show:
-	cd ${TERRAFORM_DIR }; \
+	@echo "Running show from external path."
 	terraform show
 .PHONY: show
-
+# Validate target
 validate:
-	cd ${TERRAFORM_DIR }; \
-	terraform validate
+	@echo "Running validate from external path."
+	terraform validate -no-color
 .PHONY: validate
-
+# State target
 state:
-	cd ${TERRAFORM_DIR }; \
-	terraform state list
+	@echo "Running state from external path."
+	terraform state list -no-color
 .PHONY: state
-
+# Destroy target
 destroy:
-	cd ${TERRAFORM_DIR }; \
-	terraform destroy --auto-approve
+	@echo "Running destroy from external path."
+	mkdir -p ${reportFolder}
+	terraform destroy -no-color -auto-approve > .${PATH_SEPARATOR}${reportFolder}${PATH_SEPARATOR}${outFilename}
+# TODO copy report to S3, delete local file
 .PHONY: destroy
+# Apply target
+apply: init
+	@echo "Running apply from external path."
+	mkdir -p ${reportFolder}
+	terraform apply -no-color -var-file=${varsFilename} -auto-approve > .${PATH_SEPARATOR}${reportFolder}${PATH_SEPARATOR}${outFilename}
+# TODO copy report to S3, delete local file
+.PHONY: apply

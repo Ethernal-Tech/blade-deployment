@@ -51,8 +51,7 @@ variable "block_gas_limit" {
 }
 
 variable "region" {
-  type    = string
-  default = "us-west-2"
+  type = string
 
 }
 variable "epoch_reward" {

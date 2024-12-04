@@ -53,3 +53,8 @@ variable "prometheus_port" {
   default     = 9091
 
 }
+
+variable "region" {
+  description = "The region to deploy in"
+
+}

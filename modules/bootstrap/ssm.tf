@@ -4,7 +4,8 @@ resource "aws_ssm_parameter" "cw_agent_config" {
   type     = "String"
   value = templatefile("${path.module}/scripts/cw_agent.json.tftpl", {
     role     = "validator",
-    hostname = each.value
+    hostname = each.value,
+    region   = var.region
   })
 }
 
@@ -13,6 +14,7 @@ resource "aws_ssm_parameter" "validator_config" {
   type = "String"
   value = templatefile("${path.module}/scripts/config.json", {
     deployment_name = var.deployment_name
+    region          = var.region
   })
 }
 

@@ -3,7 +3,7 @@ resource "aws_launch_template" "fullnode" {
   name_prefix   = "fullnode-${var.base_dn}"
   instance_type = var.base_instance_type
   key_name      = aws_key_pair.devnet.key_name
-  image_id      = var.base_ami
+  image_id      = data.aws_ami.base_ami.id
 
   iam_instance_profile {
     name = var.ec2_profile_name

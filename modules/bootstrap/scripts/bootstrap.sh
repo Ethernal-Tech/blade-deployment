@@ -9,7 +9,7 @@ main() {
 
     %{ for item in hostvars }
         
-        sed 's/host/${item}/g' /tmp/config.json > secrets/${item}_config.json
+        sed 's/host/${item}/g' ../config.json > secrets/${item}_config.json
         $blade secrets init --config secrets/${item}_config.json --json > ${item}.json
     
     %{ endfor }

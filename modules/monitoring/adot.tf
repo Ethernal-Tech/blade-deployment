@@ -56,7 +56,7 @@ resource "aws_instance" "adot_collector" {
   key_name               = aws_key_pair.devnet.key_name
 
   user_data = base64encode(templatefile("${path.module}/scripts/adot.sh", {
-    region               = "us-west-2",
+    region               = var.region,
     prometheus_endopoint = aws_prometheus_workspace.prometheus.prometheus_endpoint
     node_exporter_port   = var.node_exporter_port
     prometheus_port      = var.prometheus_port

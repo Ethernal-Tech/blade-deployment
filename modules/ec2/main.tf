@@ -72,7 +72,7 @@ resource "aws_instance" "validator" {
     deployment_name   = var.deployment_name
     blade_home_dir    = "/var/lib/besu"
     base_dn           = var.base_dn
-    region            = "us-west-2"
+    region            = var.region
     is_bootstrap_node = false
     hostname          = format("validator-%03d.%s", count.index + 1, var.base_dn)
     volume            = var.validator_volume_ids[count.index]

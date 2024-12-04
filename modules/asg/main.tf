@@ -10,13 +10,21 @@ resource "aws_key_pair" "devnet" {
   key_name   = var.devnet_key_name
   public_key = var.create_ssh_key ? tls_private_key.pk.public_key_openssh : var.devnet_key_value
 }
+data "aws_ami" "base_ami" {
+  most_recent = true
+  owners = ["self"]
+  filter {
+    name = "name"
+    values = [ "packer-linux-aws-blade" ]
+  }
+}
 
 resource "aws_launch_template" "validator" {
   count         = var.validator_count
   name_prefix   = "validator-${var.base_dn}"
   instance_type = var.base_instance_type
   key_name      = aws_key_pair.devnet.key_name
-  image_id      = var.base_ami
+  image_id      = data.aws_ami.base_ami.id
 
   iam_instance_profile {
     name = var.ec2_profile_name

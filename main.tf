@@ -12,6 +12,15 @@ locals {
     BaseDN         = local.base_dn
     Name           = local.base_dn
   }
+  zones = data.aws_availability_zones.zones.names
+}
+
+data "aws_availability_zones" "zones" {
+  state = "available"
+  filter {
+    name   = "region-name"
+    values = [var.region]
+  }
 }
 terraform {
   backend "s3" {}
@@ -57,6 +66,7 @@ module "bootstrap" {
   deployment_name = var.deployment_name
   base_dn         = local.base_dn
   default_tags    = local.default_tags
+  region          = var.region
 }
 
 module "lambda" {
@@ -84,7 +94,7 @@ module "asg" {
   private_subnet_ids        = module.networking.private_subnet_ids
   public_subnet_ids         = module.networking.public_subnet_ids
   ec2_profile_name          = module.ssm.ec2_profile_name
-  zones                     = var.zones
+  zones                     = local.zones
   int_fullnode_alb_arn      = module.elb.tg_ext_rpc_domain
   int_geth_alb_arn          = module.elb.tg_ext_rpc_geth_domain
   int_validator_alb_arn     = module.elb.tg_int_rpc_domain
@@ -101,6 +111,7 @@ module "asg" {
   sns_topic_arn             = module.lambda.sns_topic_arn
   lifecycle_role            = module.lambda.lifecycle_role
   node_storage              = var.node_storage
+  region                    = var.region
 }
 
 module "dlm" {
@@ -108,7 +119,6 @@ module "dlm" {
   source          = "./modules/dlm"
   base_dn         = local.base_dn
   deployment_name = var.deployment_name
-
 
 }
 
@@ -121,7 +131,7 @@ module "explorer" {
   explorer_instance_type = var.base_instance_type
 
   deployment_name           = var.deployment_name
-  zones                     = var.zones
+  zones                     = local.zones
   ec2_profile_name          = module.ssm.ec2_profile_name
   base_dn                   = local.base_dn
   private_network_mode      = var.private_network_mode
@@ -131,6 +141,7 @@ module "explorer" {
   sg_all_node_id            = module.securitygroups.security_group_all_node_instances_id
   sg_open_rpc_id            = module.securitygroups.security_group_open_rpc_id
   security_group_default_id = module.securitygroups.security_group_default_id
+  region                    = var.region
 }
 
 module "elb" {
@@ -155,7 +166,7 @@ module "networking" {
   devnet_vpc_block      = var.devnet_vpc_block
   devnet_public_subnet  = var.devnet_public_subnet
   devnet_private_subnet = var.devnet_private_subnet
-  zones                 = var.zones
+  zones                 = local.zones
 }
 
 module "ssm" {
