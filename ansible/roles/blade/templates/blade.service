@@ -10,7 +10,7 @@ Wants=network-online.target
 ExecStart=blade server --data-dir {{ blade_home_dir }} \
     --chain {{ blade_home_dir }}/bootstrap/genesis.json \
     --grpc-address 0.0.0.0:{{ blade_grpc_port }} \
-    --json-rpc-batch-request-limit {{ json_rpc_batch_request_limit }} \
+    --jsonrpc-batch-request-limit {{ jsonrpc_batch_request_limit }} \
     --libp2p 0.0.0.0:{{ blade_p2p_port }} \
     --jsonrpc 0.0.0.0:{{ blade_jsonrpc_port }} \
     --prometheus 127.0.0.1:{{ blade_prometheus_port }} \
