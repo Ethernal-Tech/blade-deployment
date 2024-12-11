@@ -206,3 +206,8 @@ variable "price_limit" {
   type        = number
   default     = 0
 }
+
+variable "lb_config" {
+  type = map(list(number))
+
+}

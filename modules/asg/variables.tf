@@ -145,3 +145,8 @@ variable "node_storage" {
   description = "Disk size for the external EBS volume"
   type        = number
 }
+
+variable "load_balancers" {
+  type = map(list(number))
+
+}

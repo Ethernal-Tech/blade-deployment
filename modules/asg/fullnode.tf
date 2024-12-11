@@ -1,3 +1,7 @@
+locals {
+  load_balancers = transpose(var.load_balancers)
+}
+
 resource "aws_launch_template" "fullnode" {
   count         = var.fullnode_count
   name_prefix   = "fullnode-${var.base_dn}"
@@ -36,7 +40,7 @@ resource "aws_launch_template" "fullnode" {
 
   user_data = base64encode(templatefile("${path.module}/scripts/blade.sh", {
     deployment_name   = var.deployment_name,
-    hostname          = format("fullnode-%03d", count.index + 1)
+    hostname          = format("fullnode-%03d.%s", count.index + 1, var.base_dn)
     name              = format("fullnode-%03d", count.index + 1)
     is_bootstrap_node = false
     blade_home_dir    = var.blade_home_dir
@@ -68,7 +72,7 @@ resource "aws_autoscaling_group" "fullnode" {
     id      = aws_launch_template.fullnode[count.index].id
     version = aws_launch_template.fullnode[count.index].latest_version
   }
-  target_group_arns = [var.int_fullnode_alb_arn]
+  target_group_arns = flatten([[var.int_fullnode_alb_arn], local.load_balancers[count.index]])
   tag {
     key                 = "Hostname"
     value               = format("fullnode-%03d.%s", count.index + 1, var.base_dn)
@@ -76,7 +80,7 @@ resource "aws_autoscaling_group" "fullnode" {
   }
   tag {
     key                 = "Name"
-    value               = format("fullnode-%03d", count.index + 1)
+    value               = format("fullnode-%03d.%s", count.index + 1, var.base_dn)
     propagate_at_launch = true
   }
 
@@ -98,4 +102,3 @@ resource "aws_autoscaling_group" "fullnode" {
   }
 
 }
-

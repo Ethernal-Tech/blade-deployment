@@ -33,7 +33,7 @@ terraform {
 }
 
 module "dns" {
-  source                 = "./modules/dns"
+  source                 = "git@github.com:Ethernal-Tech/blade-deployment.git//modules/dns?ref=v1.0.3"
   base_dn                = local.base_dn
   region                 = var.region
   route53_zone_id        = var.route53_zone_id
@@ -46,7 +46,7 @@ module "dns" {
 }
 
 module "securitygroups" {
-  source = "./modules/securitygroups"
+  source = "git@github.com:Ethernal-Tech/blade-deployment.git//modules/securitygroups?ref=v1.0.3"
   depends_on = [
     module.networking
   ]
@@ -59,7 +59,7 @@ module "securitygroups" {
 }
 
 module "bootstrap" {
-  source                = "./modules/bootstrap"
+  source                = "git@github.com:Ethernal-Tech/blade-deployment.git//modules/bootstrap?ref=v1.0.3"
   validator_count       = var.validator_count
   fullnode_count        = var.fullnode_count
   deployment_name       = var.deployment_name
@@ -80,13 +80,23 @@ module "bootstrap" {
 }
 
 module "lambda" {
-  source                              = "./modules/lambda"
+  source                              = "git@github.com:Ethernal-Tech/blade-deployment.git//modules/lambda?ref=v1.0.3"
   autoscale_handler_unique_identifier = "lanching"
   autoscale_route53zone_arn           = module.dns.private_zone_arn
   autoscale_route53reverse_zone_arn   = module.dns.reverse_zone_arn
   deployment_name                     = var.deployment_name
 }
 
+module "alb" {
+  source                      = "./modules/alb"
+  http_rpc_port               = var.http_rpc_port
+  base_id                     = local.base_id
+  public_subnet_ids           = module.networking.public_subnet_ids
+  vpc_id                      = module.networking.vpc_id
+  security_group_open_http_id = module.securitygroups.security_group_open_http_id
+  security_group_default_id   = module.securitygroups.security_group_default_id
+  names                       = toset(keys(var.lb_config))
+}
 
 module "asg" {
   source                    = "./modules/asg"
@@ -120,18 +130,21 @@ module "asg" {
   lifecycle_role            = module.lambda.lifecycle_role
   node_storage              = var.node_storage
   region                    = var.region
+  load_balancers = {
+    for k, v in module.alb.lb_arns : v => var.lb_config[k]
+  }
 }
 
 module "dlm" {
 
-  source          = "./modules/dlm"
+  source          = "git@github.com:Ethernal-Tech/blade-deployment.git//modules/dlm?ref=v1.0.3"
   base_dn         = local.base_dn
   deployment_name = var.deployment_name
 
 }
 
 module "explorer" {
-  source                 = "./modules/explorer"
+  source                 = "git@github.com:Ethernal-Tech/blade-deployment.git//modules/explorer?ref=v1.0.3"
   depends_on             = [module.asg]
   node_storage           = var.node_storage
   explorer_count         = var.explorer_count
@@ -152,7 +165,7 @@ module "explorer" {
 }
 
 module "elb" {
-  source                      = "./modules/elb"
+  source                      = "git@github.com:Ethernal-Tech/blade-deployment.git//modules/elb?ref=v1.0.3"
   http_rpc_port               = var.http_rpc_port
   rootchain_rpc_port          = var.rootchain_rpc_port
   base_id                     = local.base_id
@@ -168,7 +181,7 @@ module "elb" {
 }
 
 module "networking" {
-  source                = "./modules/networking"
+  source                = "git@github.com:Ethernal-Tech/blade-deployment.git//modules/networking?ref=v1.0.3"
   base_dn               = local.base_dn
   devnet_vpc_block      = var.devnet_vpc_block
   devnet_public_subnet  = var.devnet_public_subnet
@@ -177,7 +190,7 @@ module "networking" {
 }
 
 module "ssm" {
-  source          = "./modules/ssm"
+  source          = "git@github.com:Ethernal-Tech/blade-deployment.git//modules/ssm?ref=v1.0.3"
   base_dn         = local.base_dn
   deployment_name = var.deployment_name
   network_type    = local.network_type

@@ -117,7 +117,7 @@ resource "aws_autoscaling_group" "validator" {
   }
   tag {
     key                 = "Name"
-    value               = format("validator-%03d", count.index + 1)
+    value               = format("validator-%03d.%s", count.index + 1, var.base_dn)
     propagate_at_launch = true
   }
 

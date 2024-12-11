@@ -21,7 +21,7 @@ source "amazon-ebs" "ubuntu" {
   ami_name      = "blockscout-ami-2"
   instance_type = "t2.micro"
   region        = "us-west-2"
-  ami_regions   = ["us-west-1"]
+  ami_regions   = ["us-west-1","eu-central-1"]
   source_ami_filter {
     filters = {
       name                = "ubuntu/images/*ubuntu-jammy-22.04-amd64-server-*"
@@ -76,4 +76,3 @@ build {
 
   }
 }
-

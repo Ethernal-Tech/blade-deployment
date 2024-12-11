@@ -58,3 +58,10 @@ lint:
 fix:
 	tflint --disable-rule=terraform_required_providers --disable-rule=terraform_required_version --fix --recursive
 .PHONY: fix
+
+params:
+	for param in $$(aws ssm describe-parameters --query "Parameters[?contains(Name, 'mmnet')].Name" --output text); do \
+	   echo $$param; \
+				aws ssm delete-parameter  --name $$param; \
+	done
+.PHONY: params

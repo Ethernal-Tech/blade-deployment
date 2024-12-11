@@ -21,7 +21,7 @@ source "amazon-ebs" "ubuntu" {
   ami_name      = "packer-linux-aws-blade"
   instance_type = "t2.micro"
   region        = "us-west-2"
-  ami_regions   = ["us-west-1"]
+  ami_regions   = ["us-west-1", "eu-central-1"]
   source_ami_filter {
     filters = {
       name                = "ubuntu/images/*ubuntu-jammy-22.04-amd64-server-*"
@@ -37,7 +37,7 @@ source "amazon-ebs" "ubuntu" {
 
 build {
   name = "packer-build-ubuntu"
-  
+
   sources = [
     "source.amazon-ebs.ubuntu"
   ]
