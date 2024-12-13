@@ -49,6 +49,8 @@ main() {
             --test
     %{ endif }
 
+
+    chown -R $USER: genesis.json
     tar czf ${ base_dn }.tar.gz *.json secrets/
     aws s3 cp ${ base_dn }.tar.gz s3://${ clean_deploy_title }-state-bucket/${ base_dn }.tar.gz
     popd
