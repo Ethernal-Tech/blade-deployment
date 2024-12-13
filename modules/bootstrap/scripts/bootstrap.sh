@@ -4,14 +4,14 @@ main() {
     mkdir ${ bootstrap_dir } ${ bootstrap_dir }/secrets
     pushd ${ bootstrap_dir }
     docker pull ${ docker_image }
-    blade='docker run --rm --net host -v '$HOME'/.aws/credentials:/root/.aws/credentials -u root -w /data -v ${ bootstrap_dir }:/data ${ docker_image }'
+    blade='docker run --rm --net host -v '$HOME'/.aws/credentials:/home/blade/.aws/credentials -u blade -w /data -v ${ bootstrap_dir }:/data ${ docker_image }'
 
 
     %{ for item in hostvars }
-        
+
         sed 's/host/${item}/g' ../config.json > secrets/${item}_config.json
         $blade secrets init --config secrets/${item}_config.json --json > ${item}.json
-    
+
     %{ endfor }
 
     ZERO_ADDRESS=0x0000000000000000000000000000000000000000
@@ -38,7 +38,7 @@ main() {
 
     %{ if is_bridge_active }
         $blade bridge server 2>&1 | tee bridge-server.log &
-        
+
         $blade bridge fund \
             --addresses $(cat validator-*.json fullnode-*.json | jq -r ".[0].address" | paste -sd ',' - | tr -d '\n') \
             --amounts $(paste -sd ',' <(yes "1000000000000000000000000" | head -n `ls validator-*.json fullnode-*.json | wc -l`) | tr -d '\n')

@@ -59,7 +59,7 @@ module "securitygroups" {
 }
 
 module "bootstrap" {
-  source                = "git@github.com:Ethernal-Tech/blade-deployment.git//modules/bootstrap?ref=v1.0.3"
+  source                = "./modules/bootstrap"
   validator_count       = var.validator_count
   fullnode_count        = var.fullnode_count
   deployment_name       = var.deployment_name
