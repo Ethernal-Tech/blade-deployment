@@ -1,3 +1,5 @@
+include .env
+
 ifeq ($(OS),Windows_NT)
 	PATH_SEPARATOR := "\"
 else

@@ -82,3 +82,15 @@ variable "price_limit" {
   description = "the minimum gas price limit to enforce for acceptance into the pool"
   type        = number
 }
+
+variable "access_key_id" {
+  type      = string
+  sensitive = true
+
+}
+
+variable "secret_access_key" {
+  type      = string
+  sensitive = true
+
+}

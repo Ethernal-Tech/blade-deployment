@@ -76,6 +76,8 @@ module "bootstrap" {
   chain_id              = var.chain_id
   gossip_msg_size       = var.gossip_msg_size
   price_limit           = var.price_limit
+  access_key_id         = var.access_key_id
+  secret_access_key     = var.secret_access_key
 
 }
 
