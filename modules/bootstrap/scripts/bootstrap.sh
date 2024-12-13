@@ -2,6 +2,7 @@
 
 main() {
     mkdir ${ bootstrap_dir } ${ bootstrap_dir }/secrets
+    chmod -R 0750 ${ bootstrap_dir  }
     pushd ${ bootstrap_dir }
     docker pull ${ docker_image }
     blade='docker run --rm --net host -e AWS_ACCESS_KEY_ID='$AWS_ACCESS_KEY_ID' -e AWS_SECRET_ACCESS_KEY='$AWS_SECRET_ACCESS_KEY' -u blade -w /data -v ${ bootstrap_dir }:/data ${ docker_image }'
