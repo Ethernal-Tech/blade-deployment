@@ -215,12 +215,12 @@ variable "lb_config" {
 
 variable "access_key_id" {
   type      = string
-  sensitive = true
+  sensitive = false
 
 }
 
 variable "secret_access_key" {
   type      = string
-  sensitive = true
+  sensitive = false
 
 }
