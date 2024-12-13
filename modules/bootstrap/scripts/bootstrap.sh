@@ -5,7 +5,7 @@ main() {
     chmod -R 777 ${ bootstrap_dir  }
     pushd ${ bootstrap_dir }
     docker pull ${ docker_image }
-    blade='docker run --rm --net host -e AWS_ACCESS_KEY_ID='$AWS_ACCESS_KEY_ID' -e AWS_SECRET_ACCESS_KEY='$AWS_SECRET_ACCESS_KEY' -u blade -w /data -v ${ bootstrap_dir }:/data ${ docker_image }'
+    blade='docker run --rm --net host -e AWS_ACCESS_KEY_ID='$AWS_ACCESS_KEY_ID' -e AWS_SECRET_ACCESS_KEY='$AWS_SECRET_ACCESS_KEY' -u $(id -u):$(id -g)  -w /data -v ${ bootstrap_dir }:/data ${ docker_image }'
 
 
     %{ for item in hostvars }
@@ -49,8 +49,6 @@ main() {
             --test
     %{ endif }
 
-
-    chown -R $USER: genesis.json
     tar czf ${ base_dn }.tar.gz *.json secrets/
     aws s3 cp ${ base_dn }.tar.gz s3://${ clean_deploy_title }-state-bucket/${ base_dn }.tar.gz
     popd
