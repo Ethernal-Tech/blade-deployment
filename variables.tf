@@ -224,3 +224,14 @@ variable "secret_access_key" {
   sensitive = false
 
 }
+
+variable "validator_instance_type" {
+  description = "The type of instance that we're going to use"
+  type        = string
+  default     = "c6a.2xlarge"
+}
+variable "fullnode_instance_type" {
+  description = "The type of instance that we're going to use"
+  type        = string
+  default     = "c6a.2xlarge"
+}

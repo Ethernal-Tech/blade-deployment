@@ -135,6 +135,8 @@ module "asg" {
   load_balancers = {
     for k, v in module.alb.lb_arns : v => var.lb_config[k]
   }
+  validator_instance_type = var.validator_instance_type
+  fullnode_instance_type  = var.fullnode_instance_type
 }
 
 module "dlm" {

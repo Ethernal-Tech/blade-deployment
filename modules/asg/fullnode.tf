@@ -5,7 +5,7 @@ locals {
 resource "aws_launch_template" "fullnode" {
   count         = var.fullnode_count
   name_prefix   = "fullnode-${var.base_dn}"
-  instance_type = var.base_instance_type
+  instance_type = var.fullnode_instance_type
   key_name      = aws_key_pair.devnet.key_name
   image_id      = data.aws_ami.base_ami.id
 

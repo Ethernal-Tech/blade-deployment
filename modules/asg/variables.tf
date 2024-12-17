@@ -6,6 +6,15 @@ variable "base_instance_type" {
   description = "The type of instance that we're going to use"
   type        = string
 }
+
+variable "validator_instance_type" {
+  description = "The type of instance that we're going to use"
+  type        = string
+}
+variable "fullnode_instance_type" {
+  description = "The type of instance that we're going to use"
+  type        = string
+}
 variable "fullnode_count" {
   description = "The number of full nodes that we're going to deploy"
   type        = number

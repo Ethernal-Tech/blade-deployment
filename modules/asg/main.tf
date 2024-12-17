@@ -22,7 +22,7 @@ data "aws_ami" "base_ami" {
 resource "aws_launch_template" "validator" {
   count         = var.validator_count
   name_prefix   = "validator-${var.base_dn}"
-  instance_type = var.base_instance_type
+  instance_type = var.validator_instance_type
   key_name      = aws_key_pair.devnet.key_name
   image_id      = data.aws_ami.base_ami.id
 
