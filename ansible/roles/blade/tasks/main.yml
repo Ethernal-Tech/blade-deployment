@@ -41,6 +41,10 @@
         dest: /etc/blade/validatorlist.txt
         mode: '0700'
 
+- name: Config socket
+  ansible.builtin.include_tasks: config-socket.yml
+  when: config_socket
+
 - name: Build blade binary
   block:
     - name: Install go

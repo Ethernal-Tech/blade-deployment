@@ -27,12 +27,13 @@ main() {
         --premine $ZERO_ADDRESS \
         {% if (is_london_fork_active) %} --burn-contract 0:$ZERO_ADDRESS \ {% endif %}
         --epoch-size 10 \
-        --reward-wallet 0xDEADBEEF:1000000 \
+        --reward-wallet 0xDEADBEEF:{{ reward_wallet_balance }} \
         --block-time {{ block_time }}s \
         --native-token-config {{ native_token_config }} \
         --blade-admin $(cat validator-001.{{ base_dn }}.json | jq -r '.[0].address') \
         --proxy-contracts-admin $PROXY_CONTRACTS_ADMIN \
-        --base-fee-config 1000000000
+        --base-fee-config 1000000000 \
+        --epoch-reward {{ epoch_reward }}
 
     {% if (is_bridge_active) %}
         blade bridge server 2>&1 | tee bridge-server.log &
