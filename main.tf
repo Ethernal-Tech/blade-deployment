@@ -78,6 +78,7 @@ module "bootstrap" {
   price_limit           = var.price_limit
   access_key_id         = var.access_key_id
   secret_access_key     = var.secret_access_key
+  docker_image          = var.docker_image
 
 }
 
@@ -100,8 +101,9 @@ module "alb" {
   names                       = toset(keys(var.lb_config))
 }
 
+
 module "asg" {
-  source                    = "./modules/asg"
+  source                    = "./modules/as2"
   depends_on                = [module.bootstrap, module.lambda]
   base_dn                   = local.base_dn
   base_instance_type        = var.base_instance_type
@@ -125,8 +127,8 @@ module "asg" {
   sg_open_rpc_geth_id       = module.securitygroups.security_group_open_rpc_geth_id
   security_group_default_id = module.securitygroups.security_group_default_id
   default_tags              = local.default_tags
-  private_zone_id           = module.dns.private_zone_arn
-  reverse_zone_id           = module.dns.reverse_zone_arn
+  private_zone_id           = module.dns.private_zone_id
+  reverse_zone_id           = module.dns.reverse_zone_id
   devnet_key_name           = "${format("%s_ssh_key", var.deployment_name)}-${local.network_type}"
   sns_topic_arn             = module.lambda.sns_topic_arn
   lifecycle_role            = module.lambda.lifecycle_role
@@ -148,7 +150,7 @@ module "dlm" {
 }
 
 module "explorer" {
-  source                 = "git@github.com:Ethernal-Tech/blade-deployment.git//modules/explorer?ref=v1.0.3"
+  source                 = "./modules/explorer"
   depends_on             = [module.asg]
   node_storage           = var.node_storage
   explorer_count         = var.explorer_count
@@ -166,6 +168,9 @@ module "explorer" {
   sg_open_rpc_id            = module.securitygroups.security_group_open_rpc_id
   security_group_default_id = module.securitygroups.security_group_default_id
   region                    = var.region
+  blockscout_db_password    = var.blockscout_db_password
+  blade_jsonrpc_port        = 10002
+  chain_id                  = var.chain_id
 }
 
 module "elb" {

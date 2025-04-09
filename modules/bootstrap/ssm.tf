@@ -24,23 +24,40 @@ resource "aws_ssm_parameter" "validator_service" {
   name = format("/%s/%s.service", var.deployment_name, each.value)
   type = "String"
   value = templatefile("${path.module}/scripts/blade.service", {
-    blade_home_dir        = local.blade_home_dir
-    deployment_name       = var.deployment_name
-    blade_p2p_port        = local.blade_p2p_port
-    blade_grpc_port       = local.blade_grpc_port
-    blade_jsonrpc_port    = local.blade_jsonrpc_port
-    blade_prometheus_port = local.blade_prometheus_port
-    block_gas_limit       = var.block_gas_limit
-    base_dn               = var.base_dn
-    hostname              = each.value
-    is_bootstraper        = startswith(each.value, "validator-001") ? false : true,
-    blade_user            = local.blade_user
-    memory_high           = local.memory_high
-    memory_max            = local.memory_max
-    max_slots             = var.max_slots
-    max_enqueued          = var.max_enqueued
-    docker_image          = var.docker_image
-    gossip_msg_size       = var.gossip_msg_size
-    price_limit           = var.price_limit
+    blade_home_dir           = local.blade_home_dir
+    deployment_name          = var.deployment_name
+    blade_p2p_port           = local.blade_p2p_port
+    blade_grpc_port          = local.blade_grpc_port
+    blade_jsonrpc_port       = local.blade_jsonrpc_port
+    blade_prometheus_port    = local.blade_prometheus_port
+    block_gas_limit          = var.block_gas_limit
+    base_dn                  = var.base_dn
+    hostname                 = each.value
+    blade_user               = local.blade_user
+    memory_high              = local.memory_high
+    memory_max               = local.memory_max
+    max_slots                = var.max_slots
+    max_enqueued             = var.max_enqueued
+    docker_image             = var.docker_image
+    gossip_msg_size          = var.gossip_msg_size
+    price_limit              = var.price_limit
+    json_batch_request_limit = local.json_batch_request_limit
+  })
+}
+
+resource "aws_ssm_parameter" "faucet_service" {
+
+
+  name = format("/%s/faucet.service", var.deployment_name)
+  type = "String"
+  value = templatefile("${path.module}/scripts/faucet.service", {
+    blade_jsonrpc_port = local.blade_jsonrpc_port
+    base_dn            = var.base_dn
+    memory_high        = local.memory_high
+    memory_max         = local.memory_max
+    faucet_privkey     = "TODO"
+    faucet_amount      = "TODO"
+    faucet_minutes     = "TODO"
+    faucet_port        = "TODO"
   })
 }

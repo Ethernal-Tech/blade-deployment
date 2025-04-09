@@ -70,3 +70,17 @@ variable "security_group_default_id" {
   type        = string
 
 }
+
+variable "blockscout_db_password" {
+  type      = string
+  sensitive = true
+}
+
+variable "blade_jsonrpc_port" {
+  type = number
+}
+
+variable "chain_id" {
+  type = number
+
+}

@@ -9,3 +9,10 @@ resource "aws_ebs_volume" "explorer" {
     BaseDn = var.base_dn
   }
 }
+
+# resource "aws_volume_attachment" "explorer" {
+#   count       = var.explorer_count
+#   device_name = "/dev/sdf"
+#   volume_id   = aws_ebs_volume.explorer[count.index].id
+#   instance_id = aws_instance.explorer[count.index].id
+# }

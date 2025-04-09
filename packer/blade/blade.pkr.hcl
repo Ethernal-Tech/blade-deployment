@@ -18,7 +18,7 @@ variable "polycli_tag" {
 }
 
 source "amazon-ebs" "ubuntu" {
-  ami_name      = "packer-linux-aws-blade"
+  ami_name      = "packer-linux-aws-blade-faucet"
   instance_type = "t2.micro"
   region        = "us-west-2"
   ami_regions   = ["us-west-1", "eu-central-1"]
@@ -123,6 +123,15 @@ build {
     "sudo usermod -a -G docker blade",
     "sudo mkdir /etc/blade && sudo chown -R blade:blade-group /etc/blade && sudo chmod 0750 /etc/blade"
   ]
+}
+
+provisioner "shell" {
+environment_vars = [
+  "DEBIAN_FRONTEND=noninteractive",
+  "POLYCLI_TAG=${var.polycli_tag}"
+]
+execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+script           = "${path.root}/scripts/faucet.sh"
 }
 
 

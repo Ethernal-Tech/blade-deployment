@@ -68,9 +68,9 @@ resource "aws_instance" "validator" {
     Role     = "validator"
   }
 
-  user_data = base64encode(templatefile("${path.module}/scripts/besu.sh", {
+  user_data = base64encode(templatefile("${path.module}/scripts/blade.sh", {
     deployment_name   = var.deployment_name
-    blade_home_dir    = "/var/lib/besu"
+    blade_home_dir    = "/var/lib/blade"
     base_dn           = var.base_dn
     region            = var.region
     is_bootstrap_node = false

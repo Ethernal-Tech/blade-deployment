@@ -146,7 +146,7 @@ variable "gossip_msg_size" {
 
 variable "docker_image" {
   type    = string
-  default = "0xethernal/blade:0.0.8"
+  default = "0xethernal/blade:1.1.0-test"
 }
 
 variable "max_enqueued" {
@@ -234,4 +234,10 @@ variable "fullnode_instance_type" {
   description = "The type of instance that we're going to use"
   type        = string
   default     = "c6a.2xlarge"
+}
+
+variable "blockscout_db_password" {
+  type      = string
+  sensitive = true
+
 }

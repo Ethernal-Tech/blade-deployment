@@ -26,8 +26,7 @@ variable "gossip_msg_size" {
 }
 
 variable "docker_image" {
-  type    = string
-  default = "0xethernal/blade:0.0.8"
+  type = string
 }
 
 variable "max_enqueued" {

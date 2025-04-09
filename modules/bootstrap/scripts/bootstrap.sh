@@ -28,13 +28,13 @@ main() {
         --block-gas-limit ${ block_gas_limit } \
         --premine ${ loadtest_account }:$AMT_24 \
         --premine $ZERO_ADDRESS %{ if is_london_fork_active } --burn-contract 0:$ZERO_ADDRESS  %{ endif } \
-        --epoch-size 10 \
-        --reward-wallet 0xDEADBEEF:0xD3C21BCECCEDA1000000 \
+        --epoch-size ${ epoch_size } \
+        --reward-wallet ${reward_wallet} \
         --block-time ${ block_time }s \
         --native-token-config ${ native_token_config } \
         --blade-admin $(cat ${validators[0]}.json | jq -r '.[0].address') \
         --proxy-contracts-admin $PROXY_CONTRACTS_ADMIN \
-        --base-fee-config 1000000000 \
+        --base-fee-config ${ base_fee_config } \
         --epoch-reward ${ epoch_reward }
 
     %{ if is_bridge_active }

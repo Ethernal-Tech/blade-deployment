@@ -31,6 +31,12 @@ resource "aws_instance" "explorer" {
 
   vpc_security_group_ids = [var.sg_open_rpc_id, var.sg_all_node_id, var.security_group_default_id]
 
+  ebs_block_device {
+    device_name = "/dev/sdf"
+    volume_size = var.node_storage
+    volume_type = "gp3"
+  }
+
 
   user_data = base64encode(templatefile("${path.module}/scripts/explorer.sh", {
     deployment_name = var.deployment_name,
