@@ -10,6 +10,7 @@ jsonrpc_batch_request_limit: 999
 log_level: INFO
 chain_id: 100
 epoch_reward: 1
+epoch_size: 10
 reward_wallet_balance: 1000000
 config_socket: false
 journal_rotate_size: 1000

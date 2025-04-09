@@ -22,10 +22,7 @@ ExecStart=blade server --data-dir {{ blade_home_dir }} \
     --block-gas-target {{ block_gas_limit }} \
     --num-block-confirmations 2 \
     --journal-rotate-size {{ journal_rotate_size }} \
-    --secrets-config {{ blade_home_dir }}/bootstrap/secrets/{{ hostvars[inventory_hostname].tags.Hostname }}.{{ base_dn }}_config.json \
-    {% if (hostvars[inventory_hostname].tags.Hostname == "validator-001") %}
-    --relayer \
-    {% endif %}
+    --secrets-config {{ blade_home_dir }}/bootstrap/secrets/{{ hostvars[inventory_hostname].tags.Hostname }}.{{ base_dn }}_config.json
 
 MemoryHigh={{ (ansible_memtotal_mb * 0.7) | round | int }}M
 MemoryMax={{ (ansible_memtotal_mb * 0.8) | round | int }}M
