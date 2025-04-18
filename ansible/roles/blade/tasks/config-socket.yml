@@ -1,0 +1,38 @@
+---
+- name: Get init net.core.rmem_max
+  ansible.builtin.command: cat /proc/sys/net/core/rmem_max
+  register: init_rmem_max
+
+- name: Get init net.ipv4.tcp_rmem
+  ansible.builtin.command: cat /proc/sys/net/ipv4/tcp_rmem
+  register: init_tcp_rmem
+
+- name: Display init net.core.rmem_max
+  ansible.builtin.debug:
+    msg: "{{ init_rmem_max.stdout }}"
+
+- name: Display init net.ipv4.tcp_rmem
+  ansible.builtin.debug:
+    msg: "{{ init_tcp_rmem.stdout }}"
+
+- name: Change net.core.rmem_max and net.ipv4.tcp_rmem
+  ansible.builtin.shell: |
+    sudo sysctl -w net.core.rmem_max=6291456
+    sudo sysctl -w net.ipv4.tcp_rmem='4096 2097152 6291456'
+  changed_when: false
+
+- name: Get changed net.core.rmem_max
+  ansible.builtin.command: cat /proc/sys/net/core/rmem_max
+  register: changed_rmem_max
+
+- name: Get changed net.ipv4.tcp_rmem
+  ansible.builtin.command: cat /proc/sys/net/ipv4/tcp_rmem
+  register: changed_tcp_rmem
+
+- name: Display changed net.core.rmem_max
+  ansible.builtin.debug:
+    msg: "{{ changed_rmem_max.stdout }}"
+
+- name: Display changed net.ipv4.tcp_rmem
+  ansible.builtin.debug:
+    msg: "{{ changed_tcp_rmem.stdout }}"

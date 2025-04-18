@@ -137,7 +137,7 @@ resource "aws_instance" "explorer" {
 
   root_block_device {
     delete_on_termination = true
-    volume_size           = 30
+    volume_size           = 60
     volume_type           = "gp2"
     tags = {
       "nx-servicename" = "732"

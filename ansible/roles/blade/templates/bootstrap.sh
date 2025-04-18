@@ -23,16 +23,18 @@ main() {
         {% for item in hostvars %}{% if (hostvars[item].tags.Role == "validator") %} --validators /dns4/{{ hostvars[item].tags["Name"] }}/tcp/{{ blade_p2p_port }}/p2p/$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].node_id'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].address' | sed 's/^0x//'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].bls_pubkey') {% endif %}{% endfor %} \
         {% for item in hostvars %}{% if (hostvars[item].tags.Role == "fullnode") %} --premine $(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].address'):$AMT_24 {% endif %}{% endfor %} \
         --block-gas-limit {{ block_gas_limit }} \
+        --premine {{ loadtest_account }}:$AMT_70 \
         --premine {{ faucet_account }}:$AMT_70 \
-        --premine $ZERO_ADDRESS \
+        --premine $ZERO_ADDRESS:$AMT_70 \
         {% if (is_london_fork_active) %} --burn-contract 0:$ZERO_ADDRESS \ {% endif %}
-        --epoch-size 10 \
-        --reward-wallet 0xDEADBEEF:1000000 \
+        --epoch-size {{ epoch_size }} \
+        --reward-wallet 0xDEADBEEF:{{ reward_wallet_balance }} \
         --block-time {{ block_time }}s \
         --native-token-config {{ native_token_config }} \
         --blade-admin $(cat validator-001.{{ base_dn }}.json | jq -r '.[0].address') \
         --proxy-contracts-admin $PROXY_CONTRACTS_ADMIN \
-        --base-fee-config 1000000000
+        --base-fee-config 1000000000 \
+        --epoch-reward {{ epoch_reward }}
 
     {% if (is_bridge_active) %}
         blade bridge server 2>&1 | tee bridge-server.log &
