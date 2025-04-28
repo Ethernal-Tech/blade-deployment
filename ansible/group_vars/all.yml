@@ -74,4 +74,4 @@ country_name: US
 email_address: admin@ethernal.tech
 organization_name: Ethernal Tech
 
-slack_webhook: "https://hooks.slack.com/services/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"
+slack_webhook: ""

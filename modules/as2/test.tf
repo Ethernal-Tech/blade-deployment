@@ -85,6 +85,7 @@ resource "aws_instance" "test" {
 }
 
 resource "aws_autoscaling_group" "test" {
+  name             = "testnode_asg_${var.deployment_name}"
   count            = var.enable_test_nodes ? 1 : 0
   max_size         = 1
   min_size         = 0
