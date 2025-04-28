@@ -23,5 +23,3 @@ resource "aws_ebs_volume" "fullnode" {
     Snapshot = "false"
   }
 }
-
-

@@ -15,7 +15,7 @@ data "aws_ami" "base_ami" {
   owners      = ["self"]
   filter {
     name   = "name"
-    values = ["packer-linux-aws-blade"]
+    values = ["packer-linux-aws-blade-faucet"]
   }
 }
 
@@ -65,10 +65,12 @@ resource "aws_launch_template" "validator" {
     hostname          = format("validator-%03d.%s", count.index + 1, var.base_dn)
     name              = format("validator-%03d", count.index + 1)
     volume            = element(aws_ebs_volume.validator, count.index).id
+    blade_version     = var.blade_version
   }))
 
   lifecycle {
     create_before_destroy = false
+    ignore_changes        = [image_id]
   }
 
 }
@@ -95,13 +97,6 @@ resource "aws_instance" "validator" {
   lifecycle {
     create_before_destroy = false
   }
-}
-
-resource "aws_alb_target_group_attachment" "int" {
-  count            = var.validator_count
-  target_group_arn = var.int_validator_alb_arn
-  target_id        = aws_instance.validator[count.index].id
-
 }
 
 resource "aws_alb_target_group_attachment" "ext" {

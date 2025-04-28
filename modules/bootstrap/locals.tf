@@ -13,8 +13,8 @@ locals {
   memory_max               = "80%"
   native_token_config      = "Blade:BLADE:18:true"
   bootstrap_dir            = "/tmp/${random_pet.server.id}/bootstrap"
-  epoch_size               = 1000
+  epoch_size               = 10
   base_fee_config          = 1000000000
-  reward_wallet            = "0xDEADBEEF:10000000"
+  reward_wallet            = "0xDEADBEEF"
   json_batch_request_limit = 0
 }

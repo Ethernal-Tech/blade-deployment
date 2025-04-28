@@ -1,0 +1,51 @@
+---
+- name: Start Blade
+  ansible.builtin.shell: systemctl start blade
+- name: Sleep
+  ansible.builtin.pause:
+    minutes: 5
+- name: Call RPC
+  ansible.builtin.shell: cast bn --rpc-url "https://rpc.testnet.ethernal.work"
+  register: rpc_bn
+- name: Call local node RPC
+  ansible.builtin.shell: cast bn --rpc-url localhost:10002
+  register: node_bn
+- name: Compare outputs
+  ansible.builtin.shell: |
+    if [ "{{ rpc_bn.stdout }}" = "{{ node_bn.stdout }}" ]; then
+      echo "Fullnode {{ hostvars[inventory_hostname].tags["Hostname"] }} is synced with network"
+    else
+      echo "Fullnode {{ hostvars[inventory_hostname].tags["Hostname"] }} has not fully synced after an hour"
+    fi
+  register: comparison_output
+- name: Sleep
+  ansible.builtin.pause:
+    minutes: 5
+- name: Call local node RPC
+  ansible.builtin.shell: cast bn --rpc-url localhost:10002
+  register: node_bn_future
+- name: Compare outputs
+  ansible.builtin.shell: |
+    if [ "{{ node_bn_future.stdout }}" = "{{ node_bn.stdout }}" ]; then
+      echo "Fullnode {{ hostvars[inventory_hostname].tags["Hostname"] }} is not syncing"
+    else
+      echo "Fullnode {{ hostvars[inventory_hostname].tags["Hostname"] }} is syncing "
+    fi
+  register: comparison_output_node
+- name: Show comparison result
+  debug:
+    var: comparison_output.stdout
+- name: Show network result
+  debug:
+    var: rpc_bn.stdout
+- name: Show node result
+  debug:
+    var: node_bn.stdout
+- name: Start Blade
+  ansible.builtin.shell: systemctl stop blade
+- name: Send slack notification
+  ansible.builtin.shell: |
+    curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"{{comparison_output.stdout}}\"}"  {{slack_webhook}}
+- name: Send slack notification
+  ansible.builtin.shell: |
+    curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"{{comparison_output_node.stdout}}\"}" {{slack_webhook}}

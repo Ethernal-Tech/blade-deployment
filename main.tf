@@ -33,7 +33,7 @@ terraform {
 }
 
 module "dns" {
-  source                 = "git@github.com:Ethernal-Tech/blade-deployment.git//modules/dns?ref=v1.0.3"
+  source                 = "./modules/dns"
   base_dn                = local.base_dn
   region                 = var.region
   route53_zone_id        = var.route53_zone_id
@@ -79,12 +79,14 @@ module "bootstrap" {
   access_key_id         = var.access_key_id
   secret_access_key     = var.secret_access_key
   docker_image          = var.docker_image
+  faucet_privkey        = var.faucet_privkey
+  faucet_account        = var.faucet_account
 
 }
 
 module "lambda" {
   source                              = "git@github.com:Ethernal-Tech/blade-deployment.git//modules/lambda?ref=v1.0.3"
-  autoscale_handler_unique_identifier = "lanching"
+  autoscale_handler_unique_identifier = "launching"
   autoscale_route53zone_arn           = module.dns.private_zone_arn
   autoscale_route53reverse_zone_arn   = module.dns.reverse_zone_arn
   deployment_name                     = var.deployment_name
@@ -118,7 +120,7 @@ module "asg" {
   public_subnet_ids         = module.networking.public_subnet_ids
   ec2_profile_name          = module.ssm.ec2_profile_name
   zones                     = local.zones
-  int_fullnode_alb_arn      = module.elb.tg_ext_rpc_domain
+  int_fullnode_alb_arn      = module.elb.tg_int_rpc_domain
   int_geth_alb_arn          = module.elb.tg_ext_rpc_geth_domain
   int_validator_alb_arn     = module.elb.tg_int_rpc_domain
   ext_validator_alb_arn     = module.elb.tg_ext_rpc_domain
@@ -141,13 +143,25 @@ module "asg" {
   fullnode_instance_type  = var.fullnode_instance_type
 }
 
-module "dlm" {
-
-  source          = "git@github.com:Ethernal-Tech/blade-deployment.git//modules/dlm?ref=v1.0.3"
-  base_dn         = local.base_dn
-  deployment_name = var.deployment_name
-
+module "monitoring" {
+  source                    = "./modules/monitoring"
+  base_dn                   = local.base_dn
+  sg_all_node_id            = module.securitygroups.security_group_all_node_instances_id
+  sg_open_rpc_id            = module.securitygroups.security_group_open_rpc_id
+  security_group_default_id = module.securitygroups.security_group_default_id
+  vpc_id                    = module.networking.vpc_id
+  private_subnet_ids        = module.networking.private_subnet_ids
+  network_type              = local.network_type
+  deployment_name           = var.deployment_name
+  region                    = var.region
 }
+# module "dlm" {
+
+#   source          = "git@github.com:Ethernal-Tech/blade-deployment.git//modules/dlm?ref=v1.0.3"
+#   base_dn         = local.base_dn
+#   deployment_name = var.deployment_name
+
+# }
 
 module "explorer" {
   source                 = "./modules/explorer"
@@ -171,10 +185,11 @@ module "explorer" {
   blockscout_db_password    = var.blockscout_db_password
   blade_jsonrpc_port        = 10002
   chain_id                  = var.chain_id
+  explorer_target_group     = module.elb.tg_explorer_domain
 }
 
 module "elb" {
-  source                      = "git@github.com:Ethernal-Tech/blade-deployment.git//modules/elb?ref=v1.0.3"
+  source                      = "./modules/elb"
   http_rpc_port               = var.http_rpc_port
   rootchain_rpc_port          = var.rootchain_rpc_port
   base_id                     = local.base_id

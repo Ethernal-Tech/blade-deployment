@@ -84,3 +84,7 @@ variable "chain_id" {
   type = number
 
 }
+
+variable "explorer_target_group" {
+  type = string
+}

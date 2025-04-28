@@ -28,8 +28,13 @@ ExecStart=/usr/bin/docker run --rm --log-driver=awslogs --log-opt awslogs-group=
     --block-gas-target ${ block_gas_limit } \
     --num-block-confirmations 2 \
     --price-limit ${ price_limit } \
+    --journal-rotate-size 10000 \
     --tx-gossip-batch-size 10000 \
-    --secrets-config /blade/bootstrap/secrets/${hostname}_config.json
+    --secrets-config /blade/bootstrap/secrets/${hostname}_config.json \
+    %{ if is_bootstraper }
+    --relayer \
+    %{ endif }
+
 
 MemoryHigh=${ memory_high}
 MemoryMax=${ memory_max }

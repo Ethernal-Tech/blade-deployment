@@ -1,0 +1,15 @@
+- hosts: testnode
+  become: true
+  gather_facts: false
+  tags:
+    - always
+  tasks:
+    - name: Wait for all hosts to be reachable
+      ansible.builtin.wait_for_connection:
+
+- hosts: testnode
+  become: true
+  tags:
+    - test
+  roles:
+    - test

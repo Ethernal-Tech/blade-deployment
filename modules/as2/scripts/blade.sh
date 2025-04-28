@@ -16,7 +16,7 @@ then
     sleep 5
     partprobe /dev/nvme1n1p1
     sleep 5
-    mkdir -p ${ blade_home_dir } 
+    mkdir -p ${ blade_home_dir }
     mount /dev/nvme1n1p1 ${ blade_home_dir }
     echo UUID=`(blkid /dev/nvme1n1p1 -s UUID -o value)` ${ blade_home_dir }       ext4     defaults,nofail         1       2 >> /etc/fstab
 
@@ -31,26 +31,33 @@ else
     aws ec2 attach-volume --volume-id $volume_id --instance-id $instance --device /dev/sdf --region ${region}
 
     aws ec2 modify-instance-attribute --instance-id $instance --block-device-mappings "[{\"DeviceName\": \"/dev/sdf\",\"Ebs\":{\"DeleteOnTermination\":true}}]" --region ${region}
-    mkdir -p ${ blade_home_dir } 
+    mkdir -p ${ blade_home_dir }
     mount /dev/nvme1n1p1 ${ blade_home_dir }
 fi
 
+pushd ${ blade_home_dir }
+
+wget https://github.com/Ethernal-Tech/blade/releases/download/v${blade_version}/blade_${blade_version}_linux_amd64.tar.gz && tar -xvzf blade_${blade_version}_linux_amd64.tar.gz && chmod +x blade && cp blade /usr/local/bin/blade
 
 
 
 aws s3 cp s3://${deployment_name}-state-bucket/${ base_dn }.tar.gz /tmp/${ base_dn }.tar.gz && \
 mkdir ${ blade_home_dir }/bootstrap && chown blade ${ blade_home_dir }/bootstrap && chgrp blade-group ${ blade_home_dir }/bootstrap && \
-tar -xf /tmp/${ base_dn }.tar.gz --directory ${ blade_home_dir }/bootstrap 
+tar -xf /tmp/${ base_dn }.tar.gz --directory ${ blade_home_dir }/bootstrap
 
 chown -R blade:blade-group ${ blade_home_dir }/bootstrap
 
 aws ssm get-parameter --region ${region} --name /${deployment_name}/${hostname}.service --query Parameter.Value --output text > /etc/systemd/system/blade.service && \
-chmod 0644 /etc/systemd/system/blade.service 
+chmod 0644 /etc/systemd/system/blade.service
 sudo systemctl daemon-reload
 sudo systemctl enable blade && \
 sudo systemctl start blade
 
+aws ssm get-parameter --region ${region} --name /${deployment_name}/faucet.service --query Parameter.Value --output text > /etc/systemd/system/faucet.service && \
+chmod 0644 /etc/systemd/system/faucet.service
+sudo systemctl daemon-reload
+sudo systemctl enable faucet && \
+sudo systemctl start faucet
 
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c ssm:/${deployment_name}/${hostname}/cw_agent_config
 systemctl status amazon-cloudwatch-agent.service
-

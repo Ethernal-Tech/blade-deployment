@@ -1,5 +1,5 @@
 ---
-clean_deploy_title: besu
+clean_deploy_title: testnet
 
 #### Genesis Flags ###
 block_gas_limit: 10_000_000
@@ -27,7 +27,7 @@ ansible_ssh_private_key_file: ~/private.key
 ansible_ssh_common_args: >
   -o IdentitiesOnly=yes
   -o StrictHostKeyChecking=no
-  -o ProxyCommand="sh -c \"aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'\""
+  -o ProxyCommand="sh -c \"aws ssm start-session --region us-west-1 --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'\""
 ansible_user: ubuntu
 ansible_become: true
 ansible_ssh_retries: 5
@@ -50,7 +50,7 @@ haproxy_port: 10222
 blade_home_dir: /var/lib/blade
 blade_user: blade
 restore_data: false
-s3_bucket: besu-state-bucket # AWS S3 Bucket name
+s3_bucket: testnet-state-bucket # AWS S3 Bucket name
 loadtest_account: "0x85da99c8a7c2c95964c8efd687e95e632fc533d6"
 
 ### Disk Flags ###
@@ -73,3 +73,5 @@ key_type: RSA # Others include DSA, ECC, Ed25519, Ed448, X25519, X448
 country_name: US
 email_address: admin@ethernal.tech
 organization_name: Ethernal Tech
+
+slack_webhook: "https://hooks.slack.com/services/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"

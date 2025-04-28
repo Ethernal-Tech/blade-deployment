@@ -48,10 +48,12 @@ resource "aws_launch_template" "fullnode" {
     base_dn           = var.base_dn
     region            = var.region
     volume            = element(aws_ebs_volume.fullnode, count.index).id
+    blade_version     = var.blade_version
   }))
 
   lifecycle {
     create_before_destroy = false
+    ignore_changes        = [image_id]
   }
 
 }

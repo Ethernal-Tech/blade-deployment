@@ -84,12 +84,23 @@ variable "price_limit" {
 
 variable "access_key_id" {
   type      = string
-  sensitive = false
+  sensitive = true
 
 }
 
 variable "secret_access_key" {
   type      = string
-  sensitive = false
+  sensitive = true
+
+}
+
+variable "faucet_privkey" {
+  type      = string
+  sensitive = true
+
+}
+
+variable "faucet_account" {
+  type = string
 
 }

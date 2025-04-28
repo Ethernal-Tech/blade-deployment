@@ -1,21 +1,36 @@
 [Unit]
-Description=Blade Faucet
-Documentation=https://github.com/chainflag/eth-faucet.git
+Description=Blade Client
+Documentation=https://github.com/Ethernal-Tech/blade
+
 
 # Bring this up after the network is online
 After=network-online.target
 Wants=network-online.target
 
 [Service]
-WorkingDirectory=/opt/eth-faucet
-ExecStart=eth-faucet -wallet.provider http://int-rpc.${ base_dn }:${ blade_jsonrpc_port } \
-      -wallet.privkey ${ faucet_privkey } \
-      -httpport ${ faucet_port } \
-      -faucet.amount ${ faucet_amount } \
-      -faucet.minutes ${ faucet_minutes } \
-      -faucet.name "Blade testnet" \
-      -faucet.symbol "BLADE" \
-      -proxycount 1
+TimeoutStartSec=0
+Restart=always
+ExecStart=/usr/local/bin/blade server --data-dir ${blade_home_dir} \
+    --chain ${blade_home_dir}/bootstrap/genesis.json \
+    --grpc-address 0.0.0.0:${ blade_grpc_port } \
+    --jsonrpc-batch-request-limit ${ json_batch_request_limit } \
+    --libp2p 0.0.0.0:${ blade_p2p_port } \
+    --jsonrpc 0.0.0.0:${ blade_jsonrpc_port } \
+    --prometheus 0.0.0.0:${ blade_prometheus_port } \
+    --max-slots ${ max_slots } \
+    --max-enqueued ${ max_enqueued }\
+     --gossip-msg-size ${ gossip_msg_size } \
+    --log-level DEBUG \
+    --block-gas-target ${ block_gas_limit } \
+    --num-block-confirmations 2 \
+    --price-limit ${ price_limit } \
+    --journal-rotate-size 10000 \
+    --tx-gossip-batch-size 10000 \
+    --secrets-config ${blade_home_dir}/bootstrap/secrets/${hostname}_config.json \
+    %{ if is_bootstraper }
+    --relayer \
+    %{ endif }
+
 
 MemoryHigh=${ memory_high}
 MemoryMax=${ memory_max }
@@ -26,19 +41,19 @@ RestartSec=5s
 
 Type=simple
 
-User=blade
-Group=blade-group
+User=${ blade_user }
+Group=${ blade_user }-group
 
 TimeoutStartSec=infinity
 TimeoutStopSec=600
 
-RuntimeDirectory=faucet
-RuntimeDirectoryMode=0750
+RuntimeDirectory=blade
+RuntimeDirectoryMode=0700
 
-ConfigurationDirectory=faucet
-ConfigurationDirectoryMode=0750
+ConfigurationDirectory=blade
+ConfigurationDirectoryMode=0700
 
-StateDirectory=faucet
+StateDirectory=blade
 StateDirectoryMode=0750
 
 # Hardening measures
@@ -53,8 +68,8 @@ PrivateTmp=true
 # Mount /usr, /boot/ and /etc read-only for the process.
 ProtectSystem=full
 
-# We can't protect home because of the installation process of cargo/rust
-ProtectHome=false
+# Deny access to /home, /root and /run/user
+ProtectHome=true
 
 # Disallow the process and all of its children to gain
 # new privileges through execve().
@@ -64,10 +79,8 @@ NoNewPrivileges=true
 # such as /dev/null, /dev/zero and /dev/random.
 PrivateDevices=true
 
-# rustc: error while loading shared libraries:
-# libLLVM-15-rust-1.66.1-stable.so: cannot enable executable stack as
-# shared object requires: Operation not permitted
-MemoryDenyWriteExecute=false
+# Deny the creation of writable and executable memory mappings.
+MemoryDenyWriteExecute=true
 
 # Deny any ability to create namespaces. Should not be needed
 RestrictNamespaces=true
@@ -87,7 +100,7 @@ ProtectKernelModules=true
 # Access to proc/sys/, /sys/, /proc/sysrq-trigger, /proc/latency_stats, /proc/acpi, /proc/timer_stats, /proc/fs and /proc/irq is not needed
 ProtectKernelTunables=true
 
-# From the docs "As the SUID/SGID bits are mechanisms to elevate privileges, and allow users to acquire the identity of other users, it is recommended to restrict creation of SUID/SGID files to the few programs that actually require them"
+# From the docsk "As the SUID/SGID bits are mechanisms to elevate privileges, and allow users to acquire the identity of other users, it is recommended to restrict creation of SUID/SGID files to the few programs that actually require them"
 RestrictSUIDSGID=true
 
 [Install]

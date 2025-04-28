@@ -1,22 +1,26 @@
 ## Grafana workspace
-
+provider "aws" {
+  alias  = "us-west-2"
+  region = "us-west-2"
+}
 resource "aws_grafana_workspace" "monitoring" {
+  provider                 = aws.us-west-2
   account_access_type      = "CURRENT_ACCOUNT"
   authentication_providers = ["AWS_SSO"]
   permission_type          = "SERVICE_MANAGED"
   role_arn                 = aws_iam_role.assume.arn
-  grafana_version          = 9.4
+  grafana_version          = 10.4
   name                     = "${var.deployment_name}-monitoring"
   description              = "Grafana workspace for monitoring ${var.deployment_name}"
 
   data_sources = ["PROMETHEUS", "CLOUDWATCH"]
-  vpc_configuration {
-    security_group_ids = [var.security_group_default_id, var.sg_all_node_id, var.sg_open_rpc_id]
-    subnet_ids         = var.private_subnet_ids
-  }
-  lifecycle {
-    ignore_changes = [vpc_configuration["subnet_ids"]]
-  }
+  # vpc_configuration {
+  #   security_group_ids = [var.security_group_default_id, var.sg_all_node_id, var.sg_open_rpc_id]
+  #   subnet_ids         = var.private_subnet_ids
+  # }
+  # lifecycle {
+  #   ignore_changes = [vpc_configuration["subnet_ids"]]
+  # }
 }
 
 resource "aws_iam_role" "assume" {
@@ -64,7 +68,7 @@ resource "aws_iam_policy" "grafana_policy" {
                 "ec2:DescribeInstanceStatus",
                 "ec2:DescribeTags",
                 "ec2:DescribeInstances",
-                "ec2:DescribeREgions"
+                "ec2:DescribeRegions"
             ],
             "Resource": "*"
         },
@@ -111,6 +115,7 @@ resource "aws_iam_role_policy_attachment" "grafana_policy_role" {
 
 ## Adding the grafana user created manually in IAM  as the admin
 resource "aws_grafana_role_association" "admin" {
+  provider     = aws.us-west-2
   role         = "ADMIN"
   user_ids     = ["48a1c310-1051-70e1-146d-e703747811eb"]
   workspace_id = aws_grafana_workspace.monitoring.id

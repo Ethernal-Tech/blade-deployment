@@ -215,13 +215,13 @@ variable "lb_config" {
 
 variable "access_key_id" {
   type      = string
-  sensitive = false
+  sensitive = true
 
 }
 
 variable "secret_access_key" {
   type      = string
-  sensitive = false
+  sensitive = true
 
 }
 
@@ -239,5 +239,17 @@ variable "fullnode_instance_type" {
 variable "blockscout_db_password" {
   type      = string
   sensitive = true
+
+}
+
+
+variable "faucet_privkey" {
+  type      = string
+  sensitive = true
+
+}
+
+variable "faucet_account" {
+  type = string
 
 }

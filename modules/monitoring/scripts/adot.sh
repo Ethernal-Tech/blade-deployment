@@ -18,7 +18,7 @@ receivers:
               port: ${node_exporter_port}
               filters:
                 - name: tag:service_name
-                  values: 
+                  values:
                   - node_exporter
           relabel_configs:
             - source_labels:
@@ -36,7 +36,7 @@ receivers:
               port: ${prometheus_port}
               filters:
                 - name: tag:service_name
-                  values: 
+                  values:
                   - node_exporter
           relabel_configs:
             - source_labels:
@@ -55,7 +55,7 @@ exporters:
       authenticator: sigv4auth
 extensions:
   sigv4auth:
-    region: "${region}"
+    region: "us-west-2"
 service:
   extensions: [sigv4auth]
   pipelines:

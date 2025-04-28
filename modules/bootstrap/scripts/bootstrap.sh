@@ -19,6 +19,7 @@ main() {
     PROXY_CONTRACTS_ADMIN=0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed
 
     AMT_24=1000000000000000000000000
+    AMT_70=10000000000000000000000000000000000000000000000000000000000000000000000
 
     $blade genesis \
         --consensus polybft \
@@ -27,7 +28,8 @@ main() {
         %{ for item in fullnodes } --premine $(cat ${item}.json | jq -r '.[0].address'):$AMT_24 %{ endfor } \
         --block-gas-limit ${ block_gas_limit } \
         --premine ${ loadtest_account }:$AMT_24 \
-        --premine $ZERO_ADDRESS %{ if is_london_fork_active } --burn-contract 0:$ZERO_ADDRESS  %{ endif } \
+        --premine ${ faucet_account }:$AMT_70 \
+        --premine $ZERO_ADDRESS:$AMT_24 %{ if is_london_fork_active } --burn-contract 0:$ZERO_ADDRESS  %{ endif } \
         --epoch-size ${ epoch_size } \
         --reward-wallet ${reward_wallet} \
         --block-time ${ block_time }s \

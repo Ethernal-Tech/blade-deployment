@@ -159,3 +159,15 @@ variable "load_balancers" {
   type = map(list(number))
 
 }
+
+variable "blade_version" {
+  type    = string
+  default = "1.2.1"
+
+}
+
+variable "enable_test_nodes" {
+  type    = bool
+  default = true
+
+}

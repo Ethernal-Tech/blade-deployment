@@ -48,7 +48,7 @@ resource "aws_security_group" "aodt" {
 
 resource "aws_instance" "adot_collector" {
 
-  ami                    = "ami-08116b9957a259459"
+  ami                    = "ami-00b83635663b87a05"
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.aodt.id]
   iam_instance_profile   = aws_iam_instance_profile.aodt_profile.name
@@ -139,9 +139,3 @@ resource "aws_iam_instance_profile" "aodt_profile" {
   name = "aodt-profile.${var.base_dn}"
   role = aws_iam_role.aodt_role.name
 }
-
-
-
-
-
-

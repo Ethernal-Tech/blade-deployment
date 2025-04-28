@@ -53,4 +53,13 @@ resource "aws_instance" "explorer" {
     Role           = "explorer"
     "service_name" = "node_exporter"
   }
+  lifecycle {
+    ignore_changes = [ami]
+  }
+}
+
+resource "aws_alb_target_group_attachment" "ext" {
+  count            = var.explorer_count
+  target_group_arn = var.explorer_target_group
+  target_id        = aws_instance.explorer[count.index].id
 }
