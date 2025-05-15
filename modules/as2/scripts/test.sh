@@ -16,7 +16,10 @@ echo UUID=`(blkid /dev/nvme1n1p1 -s UUID -o value)` ${ blade_home_dir }       ex
 
 chmod -R 777 ${ blade_home_dir }
 
+
 pushd ${ blade_home_dir }
+
+mkdir logs && chmod 755 logs
 
 wget https://github.com/Ethernal-Tech/blade/releases/download/v${blade_version}/blade_${blade_version}_linux_amd64.tar.gz && tar -xvzf blade_${blade_version}_linux_amd64.tar.gz && chmod +x blade && cp blade /usr/local/bin/blade
 
@@ -37,3 +40,23 @@ aws ssm get-parameter --region ${region} --name /${deployment_name}/fullnode_tes
 chmod 0644 /etc/systemd/system/blade.service
 sudo systemctl daemon-reload
 sudo systemctl enable blade
+
+cat > /etc/logrotate.d/blade.conf << EOF
+${ blade_home_dir }/logs/*.log
+{
+        maxsize 1G
+        daily
+        missingok
+        rotate 14
+        notifempty
+        compress
+        delaycompress
+}
+EOF
+
+chmod 0644 /etc/logrotate.d/blade.conf
+logrotate -d /etc/logrotate.d/blade.conf
+
+systemctl daemon-reload
+systemctl enable logrotate.timer
+systemctl restart logrotate.timer

@@ -3,7 +3,7 @@
   ansible.builtin.shell: systemctl start blade
 - name: Sleep
   ansible.builtin.pause:
-    minutes: 60
+    minutes: 5
 - name: Call RPC
   ansible.builtin.shell: cast bn --rpc-url "https://rpc.testnet.ethernal.work"
   register: rpc_bn
