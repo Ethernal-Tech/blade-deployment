@@ -82,18 +82,6 @@ variable "price_limit" {
   type        = number
 }
 
-variable "access_key_id" {
-  type      = string
-  sensitive = true
-
-}
-
-variable "secret_access_key" {
-  type      = string
-  sensitive = true
-
-}
-
 variable "faucet_privkey" {
   type      = string
   sensitive = true
@@ -102,5 +90,11 @@ variable "faucet_privkey" {
 
 variable "faucet_account" {
   type = string
+
+}
+
+variable "ec2_password" {
+  type      = string
+  sensitive = true
 
 }

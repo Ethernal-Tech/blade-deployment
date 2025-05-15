@@ -18,4 +18,5 @@ is_london_fork_active   = true
 chain_id                = 21000
 docker_image            = "0xethernal/blade:1.2.0"
 lb_config               = {}
-epoch_reward            = 0
+epoch_reward            = 1000000000
+ec2_password            = "$1$RVItviZN$8ElNkGzY9C8AZRF2oaBKR1"

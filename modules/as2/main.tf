@@ -86,6 +86,12 @@ resource "aws_instance" "validator" {
     version = aws_launch_template.validator[count.index].latest_version
   }
 
+  root_block_device {
+    delete_on_termination = true
+    volume_size           = 30
+    volume_type           = "gp2"
+  }
+
   tags = {
     Hostname               = format("validator-%03d.%s", count.index + 1, var.base_dn)
     Name                   = format("validator-%03d.%s", count.index + 1, var.base_dn)

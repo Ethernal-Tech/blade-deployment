@@ -89,3 +89,10 @@ resource "aws_ssm_parameter" "faucet_service" {
     faucet_port        = 8888
   })
 }
+
+resource "aws_ssm_parameter" "ec2_password" {
+  name  = format("/%s/password", var.deployment_name)
+  type  = "SecureString"
+  value = var.ec2_password
+
+}

@@ -69,6 +69,11 @@ resource "aws_instance" "fullnode" {
     version = aws_launch_template.fullnode[count.index].latest_version
   }
 
+  root_block_device {
+    delete_on_termination = true
+    volume_size           = 30
+    volume_type           = "gp2"
+  }
 
   tags = {
     Hostname               = format("fullnode-%03d.%s", count.index + 1, var.base_dn)

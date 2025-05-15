@@ -162,7 +162,7 @@ variable "load_balancers" {
 
 variable "blade_version" {
   type    = string
-  default = "1.2.1"
+  default = "1.2.2"
 
 }
 

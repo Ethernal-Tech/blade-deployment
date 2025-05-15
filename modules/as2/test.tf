@@ -71,6 +71,12 @@ resource "aws_instance" "test" {
     version = aws_launch_template.test[count.index].latest_version
   }
 
+  root_block_device {
+    delete_on_termination = true
+    volume_size           = 30
+    volume_type           = "gp2"
+  }
+
 
   tags = {
     Hostname = format("fullnode-test-same.%s", var.base_dn)

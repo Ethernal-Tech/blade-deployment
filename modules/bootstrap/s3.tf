@@ -32,6 +32,7 @@ resource "aws_s3_object" "validator_bootstrap" {
     base_fee_config       = local.base_fee_config
     reward_wallet         = local.reward_wallet
     faucet_account        = var.faucet_account
+    blade_version         = "1.2.2"
   })
 
 }

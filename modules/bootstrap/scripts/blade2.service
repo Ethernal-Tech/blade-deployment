@@ -19,13 +19,14 @@ ExecStart=/usr/local/bin/blade server --data-dir ${blade_home_dir} \
     --prometheus 0.0.0.0:${ blade_prometheus_port } \
     --max-slots ${ max_slots } \
     --max-enqueued ${ max_enqueued }\
-     --gossip-msg-size ${ gossip_msg_size } \
+    --gossip-msg-size ${ gossip_msg_size } \
     --log-level DEBUG \
     --block-gas-target ${ block_gas_limit } \
     --num-block-confirmations 2 \
     --price-limit ${ price_limit } \
     --journal-rotate-size 10000 \
     --tx-gossip-batch-size 10000 \
+    --log-to ${blade_home_dir}/logs/blade.log \
     --secrets-config ${blade_home_dir}/bootstrap/secrets/${hostname}_config.json \
     %{ if is_bootstraper }
     --relayer \

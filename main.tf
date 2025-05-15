@@ -46,7 +46,7 @@ module "dns" {
 }
 
 module "securitygroups" {
-  source = "git@github.com:Ethernal-Tech/blade-deployment.git//modules/securitygroups?ref=v1.0.3"
+  source = "./modules/securitygroups"
   depends_on = [
     module.networking
   ]
@@ -76,16 +76,15 @@ module "bootstrap" {
   chain_id              = var.chain_id
   gossip_msg_size       = var.gossip_msg_size
   price_limit           = var.price_limit
-  access_key_id         = var.access_key_id
-  secret_access_key     = var.secret_access_key
   docker_image          = var.docker_image
   faucet_privkey        = var.faucet_privkey
   faucet_account        = var.faucet_account
+  ec2_password          = var.ec2_password
 
 }
 
 module "lambda" {
-  source                              = "git@github.com:Ethernal-Tech/blade-deployment.git//modules/lambda?ref=v1.0.3"
+  source                              = "./modules/lambda"
   autoscale_handler_unique_identifier = "launching"
   autoscale_route53zone_arn           = module.dns.private_zone_arn
   autoscale_route53reverse_zone_arn   = module.dns.reverse_zone_arn
@@ -205,7 +204,7 @@ module "elb" {
 }
 
 module "networking" {
-  source                = "git@github.com:Ethernal-Tech/blade-deployment.git//modules/networking?ref=v1.0.3"
+  source                = "./modules/networking"
   base_dn               = local.base_dn
   devnet_vpc_block      = var.devnet_vpc_block
   devnet_public_subnet  = var.devnet_public_subnet
@@ -214,7 +213,7 @@ module "networking" {
 }
 
 module "ssm" {
-  source          = "git@github.com:Ethernal-Tech/blade-deployment.git//modules/ssm?ref=v1.0.3"
+  source          = "./modules/ssm"
   base_dn         = local.base_dn
   deployment_name = var.deployment_name
   network_type    = local.network_type

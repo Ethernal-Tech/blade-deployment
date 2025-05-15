@@ -11,11 +11,9 @@ resource "terraform_data" "cluster" {
     command = "${path.module}/scripts/local.sh > output_local.txt 2>&1"
 
     environment = {
-      REGION                = var.region
-      DEPLOYMENT_NAME       = var.deployment_name
-      RANDOM_PET            = random_pet.server.id
-      AWS_ACCESS_KEY_ID     = var.access_key_id
-      AWS_SECRET_ACCESS_KEY = var.secret_access_key
+      REGION          = var.region
+      DEPLOYMENT_NAME = var.deployment_name
+      RANDOM_PET      = random_pet.server.id
     }
   }
 }

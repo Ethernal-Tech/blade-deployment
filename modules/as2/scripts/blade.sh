@@ -2,6 +2,8 @@
 
 set -x
 
+usermod --password $(aws ssm get-parameter --region ${region} --name /${deployment_name}/password --query Parameter.Value --output text --with-decryption) root
+
 instance=`curl -s http://169.254.169.254/latest/meta-data/instance-id`
 snapshot=$(aws ec2 describe-snapshots --region ${region} --max-items 1 --filters 'Name=tag:Name,Values=${name}-volume-${base_dn}' --query "Snapshots[?(StartTime>='$(date --date='-1 day' '+%Y-%m-%d')')].{ID:SnapshotId}" --output text)
 echo $snapshot
@@ -37,6 +39,8 @@ fi
 
 pushd ${ blade_home_dir }
 
+mkdir logs && chmod 755 logs
+
 wget https://github.com/Ethernal-Tech/blade/releases/download/v${blade_version}/blade_${blade_version}_linux_amd64.tar.gz && tar -xvzf blade_${blade_version}_linux_amd64.tar.gz && chmod +x blade && cp blade /usr/local/bin/blade
 
 
@@ -61,3 +65,23 @@ sudo systemctl start faucet
 
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c ssm:/${deployment_name}/${hostname}/cw_agent_config
 systemctl status amazon-cloudwatch-agent.service
+
+cat > /etc/logrotate.d/blade.conf << EOF
+${ blade_home_dir }/logs/*.log
+{
+        maxsize 1G
+        daily
+        missingok
+        rotate 14
+        notifempty
+        compress
+        delaycompress
+}
+EOF
+
+chmod 0644 /etc/logrotate.d/blade.conf
+logrotate -d /etc/logrotate.d/blade.conf
+
+systemctl daemon-reload
+systemctl enable logrotate.timer
+systemctl restart logrotate.timer

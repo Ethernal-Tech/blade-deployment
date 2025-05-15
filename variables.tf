@@ -213,17 +213,6 @@ variable "lb_config" {
 }
 
 
-variable "access_key_id" {
-  type      = string
-  sensitive = true
-
-}
-
-variable "secret_access_key" {
-  type      = string
-  sensitive = true
-
-}
 
 variable "validator_instance_type" {
   description = "The type of instance that we're going to use"
@@ -250,6 +239,11 @@ variable "faucet_privkey" {
 }
 
 variable "faucet_account" {
+  type = string
+
+}
+
+variable "ec2_password" {
   type = string
 
 }
