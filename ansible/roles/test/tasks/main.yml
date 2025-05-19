@@ -1,21 +1,21 @@
 ---
 - name: Start Blade
   ansible.builtin.shell: systemctl start blade
+  tags: before
 - name: Sleep
+  tags: before
   ansible.builtin.pause:
     minutes: 60
-- name: Reset the connection
-  ansible.builtin.meta: reset_connection
-- name: Wait for SSH to be available after sleep
-  ansible.builtin.wait_for_connection:
-    timeout: 300
 - name: Call RPC
   ansible.builtin.shell: cast bn --rpc-url "https://rpc.testnet.ethernal.work"
+  tags: after
   register: rpc_bn
 - name: Call local node RPC
   ansible.builtin.shell: cast bn --rpc-url localhost:10002
+  tags: after
   register: node_bn
 - name: Compare outputs
+  tags: after
   ansible.builtin.shell: |
     if [ "{{ rpc_bn.stdout }}" = "{{ node_bn.stdout }}" ]; then
       echo "Fullnode {{ hostvars[inventory_hostname].tags["Hostname"] }} is synced with network. "
@@ -24,12 +24,15 @@
     fi
   register: comparison_output
 - name: Sleep
+  tags: after
   ansible.builtin.pause:
     minutes: 5
 - name: Call local node RPC
+  tags: after
   ansible.builtin.shell: cast bn --rpc-url localhost:10002
   register: node_bn_future
 - name: Compare outputs
+  tags: after
   ansible.builtin.shell: |
     if [ "{{ node_bn_future.stdout }}" = "{{ node_bn.stdout }}" ]; then
       echo "Fullnode {{ hostvars[inventory_hostname].tags["Hostname"] }} is not syncing. Block number: {{ node_bn_future.stdout }}"
@@ -38,19 +41,25 @@
     fi
   register: comparison_output_node
 - name: Show comparison result
+  tags: after
   debug:
     var: comparison_output.stdout
 - name: Show network result
+  tags: after
   debug:
     var: rpc_bn.stdout
 - name: Show node result
+  tags: after
   debug:
     var: node_bn.stdout
 - name: Start Blade
+  tags: after
   ansible.builtin.shell: systemctl stop blade
 - name: Send slack notification
+  tags: afer
   ansible.builtin.shell: |
     curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"{{comparison_output.stdout}}\"}"  {{slack_webhook}}
 - name: Send slack notification
+  tags: after
   ansible.builtin.shell: |
     curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"{{comparison_output_node.stdout}}\"}" {{slack_webhook}}
