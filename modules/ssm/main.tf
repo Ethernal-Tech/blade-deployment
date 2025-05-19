@@ -47,7 +47,10 @@ resource "aws_iam_policy" "ec2_policy" {
                 "ssm:PutParameter",
                 "ssm:UpdateAssociationStatus",
                 "ssm:UpdateInstanceAssociationStatus",
-                "ssm:UpdateInstanceInformation"
+                "ssm:UpdateInstanceInformation",
+                "ssm:StartSession",
+                "ssm:SendCommand",
+                "ssm:GetCommandInvocation"
             ],
             "Resource": "*"
         },
@@ -124,7 +127,7 @@ resource "aws_iam_policy" "ec2_policy" {
             "Effect": "Allow",
             "Action": [
                 "aps:RemoteWrite"
-                
+
             ],
             "Resource": "*"
         },
@@ -138,7 +141,7 @@ resource "aws_iam_policy" "ec2_policy" {
                 "ec2:CreateTags",
                 "ec2:AttachVolume",
                 "ec2:ModifyInstanceAttribute"
-                
+
             ],
             "Resource": "*"
 
@@ -170,4 +173,3 @@ resource "aws_iam_instance_profile" "ec2_profile" {
   name = "ssm-profile.${var.base_dn}"
   role = aws_iam_role.ec2_role.name
 }
-
