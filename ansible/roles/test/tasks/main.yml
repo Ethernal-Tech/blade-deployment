@@ -4,6 +4,9 @@
 - name: Sleep
   ansible.builtin.pause:
     minutes: 60
+- name: Wait for SSH to be available after sleep
+  ansible.builtin.wait_for_connection:
+    timeout: 300
 - name: Call RPC
   ansible.builtin.shell: cast bn --rpc-url "https://rpc.testnet.ethernal.work"
   register: rpc_bn
