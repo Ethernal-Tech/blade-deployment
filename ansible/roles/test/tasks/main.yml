@@ -56,7 +56,7 @@
   tags: after
   ansible.builtin.shell: systemctl stop blade
 - name: Send slack notification
-  tags: afer
+  tags: after
   ansible.builtin.shell: |
     curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"{{comparison_output.stdout}}\"}"  {{slack_webhook}}
 - name: Send slack notification
