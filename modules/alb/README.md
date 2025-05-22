@@ -1,4 +1,4 @@
-This module defines scope based application load balancers. The load balancer listens on HTTP and HTTPS port.
+This module defines SCOPE based application load balancers. The load balancer listens on HTTP and HTTPS port and are used for grouping validators/fullnodes.
 
 MANDATORY: false
 USED: false
